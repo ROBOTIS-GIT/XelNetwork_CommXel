@@ -25,7 +25,9 @@ bool ros2::init(const uint8_t* p_server_ip, uint16_t server_port, OnTopic callba
   return g_is_rmw_init;
 }
 
-void ros2::spin()
+void ros2::spin(ros2::Node *node)
 {
+  node->callback();
+
   micrortps::runCommunication();
 }
