@@ -69,7 +69,7 @@ void apInit(void)
     cmdifPrintf("osThreadCreate : threadButtonLed fail\n");
   }
 
-  osThreadDef(threadROS2, threadROS2, osPriorityNormal, 0, 8*1024/4);
+  osThreadDef(threadROS2, threadROS2, osPriorityNormal, 0, 16*1024/4);
   ret = osThreadCreate (osThread(threadROS2), NULL);
   if (ret == NULL)
   {
@@ -107,11 +107,11 @@ static void threadButtonLed(void const * argument)
 
   for(;;)
   {
-    if (buttonGetPressed(_DEF_BUTTON1))
+    if (buttonGetPressedEvent(_DEF_BUTTON1))
     {
       ledOn(_DEF_LED1);
     }
-    else if (buttonGetReleased(_DEF_BUTTON1))
+    else if (buttonGetReleasedEvent(_DEF_BUTTON1))
     {
       ledOff(_DEF_LED1);
     }
@@ -135,9 +135,16 @@ public:
     memset(cell_voltage_data_, 0, sizeof(cell_voltage_data_));
 
     publisher_ = this->createPublisher<sensor_msgs::BatteryState>("BatteryState");
-    publisher_->setPublishInterval(2); // 2 hz
+    if(publisher_ != NULL)
+    {
+      publisher_->setPublishInterval(2); // 2 hz
+    }
+
     subscriber_ = this->createSubscriber<sensor_msgs::BatteryState>("BatteryState");
-    subscriber_->subscribe(STREAMID_BUILTIN_RELIABLE);
+    if(subscriber_ != NULL)
+    {
+      subscriber_->subscribe(STREAMID_BUILTIN_RELIABLE);
+    }
   }
 
 
@@ -145,15 +152,21 @@ private:
 
   void callback()
   {
-    if(publisher_->isTimeToPublish())
+    if(publisher_ != NULL)
     {
-      callbackBatteryStatePub();
+      if(publisher_->isTimeToPublish())
+      {
+        callbackBatteryStatePub();
+      }
     }
 
     if(is_get_BatteryState_topic)
     {
-      subscriber_->subscribe(STREAMID_BUILTIN_RELIABLE);
-      is_get_BatteryState_topic = false;
+      if(subscriber_ != NULL)
+      {
+        subscriber_->subscribe(STREAMID_BUILTIN_RELIABLE);
+        is_get_BatteryState_topic = false;
+      }
     }
   }
 
@@ -162,7 +175,7 @@ private:
     nano_time_ = get_nano_time();
 
     sensor_msgs::BatteryState battery_state_topic;
-    battery_state_topic.header.frame_id = (char*) "OpenCR BatteryState";
+    battery_state_topic.header.frame_id = (char*) "CommXel BatteryState";
     battery_state_topic.header.stamp.sec = nano_time_/1000000000;
     battery_state_topic.header.stamp.nanosec = nano_time_%1000000000;
 
@@ -188,7 +201,10 @@ private:
     battery_state_topic.location = (char*)"Seoul";
     battery_state_topic.serial_number = (char*)"123-456-789";
 
-    publisher_->publish(&battery_state_topic, STREAMID_BUILTIN_RELIABLE);
+    if(publisher_ != NULL)
+    {
+      publisher_->publish(&battery_state_topic, STREAMID_BUILTIN_RELIABLE);
+    }
   }
 
 
@@ -198,6 +214,7 @@ private:
   float cell_voltage_data_[3];
   uint64_t nano_time_;
 };
+
 
 static void threadROS2(void const * argument)
 {
@@ -213,7 +230,15 @@ static void threadROS2(void const * argument)
   const uint8_t server_ip[4] = {192,168,60,88};
   uint16_t server_port = 2020;
 
-  ros2::init(server_ip, server_port, on_topic);
+  for( ;; )
+  {
+    ledToggle(_DEF_LED1);
+
+    if(ros2::init(server_ip, server_port, on_topic) == true)
+    {
+      break;
+    };
+  }
 #else
   //Serial
   ros2::init(NULL);
