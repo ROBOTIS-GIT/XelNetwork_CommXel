@@ -227,13 +227,11 @@ static void threadROS2(void const * argument)
     }
   }
 
-  const uint8_t server_ip[4] = {192,168,60,88};
-  uint16_t server_port = 2020;
+  const uint8_t server_ip[4] = {192,168,60,136};  //FIXME
+  uint16_t server_port = 2020;  //FIXME
 
   for( ;; )
   {
-    ledToggle(_DEF_LED1);
-
     if(ros2::init(server_ip, server_port, on_topic) == true)
     {
       break;
