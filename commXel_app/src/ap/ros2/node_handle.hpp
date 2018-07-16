@@ -23,13 +23,12 @@ public:
   {
   }
 
-  virtual void callback(void)
-  {
-    return;
-  }
-
-  void (*timerCallback)(void);
-  void (*topicCallback)(void);
+//  virtual void callback(void)
+//  {
+//    return;
+//  }
+//  void (*timerCallback)(void);
+//  void (*topicCallback)(void);
 
   uint32_t last_call_time_us;
   uint32_t callback_interval_us;
