@@ -10,10 +10,17 @@
 
 #include "publisher.hpp"
 #include "subscriber.hpp"
+#include "topic.hpp"
 
+
+void onTopicCallback(ObjectId id, MicroBuffer* serialized_topic, void* args);
 
 
 namespace ros2 {
+
+extern char* client_communication_method;
+extern uint8_t* server_ip;
+extern uint16_t server_port;
 
 class Node
 {
@@ -25,6 +32,15 @@ class Node
     {
       err_code = 0;
       participant_.is_init = false;
+      if(strcmp(client_communication_method, "Serial") == 0)
+      {
+        micrortps::setup(onTopicCallback, (void*) this);
+      }
+      else
+      {
+        micrortps::setup(server_ip, server_port, onTopicCallback, (void*) this);
+      }
+
       node_register_state_ = micrortps::createParticipant(&this->participant_);
     }
 
@@ -113,7 +129,8 @@ class Node
       return p_sub;
     }
 
-    virtual void callback(void) = 0;
+    virtual void timerCallback(void) = 0;
+    virtual void userTopicCallback(uint8_t topic_id, void* topic_msg) = 0;
 
     NodeHandle* pub_list_[20];
     NodeHandle* sub_list_[20];
@@ -145,8 +162,8 @@ class Node
 };
 
 
-bool init(OnTopic callback);
-bool init(const uint8_t* p_server_ip, uint16_t server_port, OnTopic callback);
+bool init();
+bool init(uint8_t* p_server_ip, uint16_t server_port);
 void spin(Node *node);
 
 

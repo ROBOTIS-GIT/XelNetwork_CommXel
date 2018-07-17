@@ -9,25 +9,259 @@
 #include "ros2.hpp"
 
 
-static bool g_is_rmw_init = false;
-
-bool ros2::init(OnTopic callback)
-{
-  g_is_rmw_init = micrortps::setup(callback);
-
-  return g_is_rmw_init;
+namespace ros2 {
+  char* client_communication_method;
+  uint8_t* server_ip;
+  uint16_t server_port;
 }
 
-bool ros2::init(const uint8_t* p_server_ip, uint16_t server_port, OnTopic callback)
+bool ros2::init()
 {
-  g_is_rmw_init = micrortps::setup(p_server_ip, server_port, callback);
+  ros2::client_communication_method = (char*)"Serial";
 
-  return g_is_rmw_init;
+  return true;
+}
+
+bool ros2::init(uint8_t* p_server_ip, uint16_t server_port)
+{
+  ros2::client_communication_method = (char*)"Ethernet";
+  ros2::server_ip = p_server_ip;
+  ros2::server_port = server_port;
+
+  return true;
 }
 
 void ros2::spin(ros2::Node *node)
 {
-  node->callback();
+  node->timerCallback();
 
   micrortps::runCommunication();
+}
+
+
+
+#include "std_msgs/Bool.hpp"
+#include "std_msgs/Empty.hpp"
+#include "std_msgs/Header.hpp"
+#include "std_msgs/Int64.hpp"
+#include "std_msgs/MultiArrayDimension.hpp"
+#include "std_msgs/String.hpp"
+
+#include "sensor_msgs/BatteryState.hpp"
+#include "sensor_msgs/Imu.hpp"
+#include "sensor_msgs/LaserScan.hpp"
+
+#include "nav_msgs/Odometry.hpp"
+
+#include "geometry_msgs/Point.hpp"
+#include "geometry_msgs/Pose.hpp"
+#include "geometry_msgs/PoseWithCovariance.hpp"
+#include "geometry_msgs/Quaternion.hpp"
+#include "geometry_msgs/Transform.hpp"
+#include "geometry_msgs/TransformStamped.hpp"
+#include "geometry_msgs/Twist.hpp"
+#include "geometry_msgs/TwistWithCovariance.hpp"
+#include "geometry_msgs/Vector3.hpp"
+
+#include "diagnostic_msgs/KeyValue.hpp"
+
+#include "turtlebot3_msgs/SensorState.hpp"
+#include "turtlebot3_msgs/Sound.hpp"
+#include "turtlebot3_msgs/VersionInfo.hpp"
+
+
+void onTopicCallback(ObjectId id, MicroBuffer* serialized_topic, void* args)
+{
+  ros2::Node* node = (ros2::Node*) args;
+  uint8_t topic_id = id.data[0];
+
+  switch(topic_id)
+  {
+    case STD_MSGS_BOOL_TOPIC:
+    {
+      std_msgs::Bool topic;
+      topic.deserialize(serialized_topic, &topic);
+      node->userTopicCallback(topic.id_, (void*)&topic);
+      break;
+    }
+
+    case STD_MSGS_STRING_TOPIC:
+    {
+      std_msgs::String topic;
+      topic.deserialize(serialized_topic, &topic);
+      node->userTopicCallback(topic.id_, (void*)&topic);
+      break;
+    }
+
+    case STD_MSGS_INT64_TOPIC:
+    {
+      std_msgs::Int64 topic;
+      topic.deserialize(serialized_topic, &topic);
+      node->userTopicCallback(topic.id_, (void*)&topic);
+      break;
+    }
+
+    case STD_MSGS_EMPTY_TOPIC:
+    {
+      std_msgs::Empty topic;
+      topic.deserialize(serialized_topic, &topic);
+      node->userTopicCallback(topic.id_, (void*)&topic);
+      break;
+    }
+
+    case STD_MSGS_HEADER_TOPIC:
+    {
+      std_msgs::Header topic;
+      topic.deserialize(serialized_topic, &topic);
+      node->userTopicCallback(topic.id_, (void*)&topic);
+      break;
+    }
+
+    case STD_MSGS_MULTI_ARRAY_DIMENSION_TOPIC:
+    {
+      std_msgs::MultiArrayDimension topic;
+      topic.deserialize(serialized_topic, &topic);
+      node->userTopicCallback(topic.id_, (void*)&topic);
+      break;
+    }
+
+    case GEOMETRY_MSGS_VECTOR3_TOPIC:
+    {
+      geometry_msgs::Vector3 topic;
+      topic.deserialize(serialized_topic, &topic);
+      node->userTopicCallback(topic.id_, (void*)&topic);
+      break;
+    }
+
+    case GEOMETRY_MSGS_TWIST_TOPIC:
+    {
+      geometry_msgs::Twist topic;
+      topic.deserialize(serialized_topic, &topic);
+      node->userTopicCallback(topic.id_, (void*)&topic);
+      break;
+    }
+
+    case GEOMETRY_MSGS_QUATERNION_TOPIC:
+    {
+      geometry_msgs::Quaternion topic;
+      topic.deserialize(serialized_topic, &topic);
+      node->userTopicCallback(topic.id_, (void*)&topic);
+      break;
+    }
+
+    case GEOMETRY_MSGS_POINT_TOPIC:
+    {
+      geometry_msgs::Point topic;
+      topic.deserialize(serialized_topic, &topic);
+      node->userTopicCallback(topic.id_, (void*)&topic);
+      break;
+    }
+
+    case GEOMETRY_MSGS_POSE_TOPIC:
+    {
+      geometry_msgs::Pose topic;
+      topic.deserialize(serialized_topic, &topic);
+      node->userTopicCallback(topic.id_, (void*)&topic);
+      break;
+    }
+
+    case GEOMETRY_MSGS_POSE_WITH_CONVARIANCE_TOPIC:
+    {
+      geometry_msgs::PoseWithCovariance topic;
+      topic.deserialize(serialized_topic, &topic);
+      node->userTopicCallback(topic.id_, (void*)&topic);
+      break;
+    }
+
+    case GEOMETRY_MSGS_TWIST_WITH_CONVARIANCE_TOPIC:
+    {
+      geometry_msgs::TwistWithCovariance topic;
+      topic.deserialize(serialized_topic, &topic);
+      node->userTopicCallback(topic.id_, (void*)&topic);
+      break;
+    }
+
+    case GEOMETRY_MSGS_TRANSFORM_TOPIC:
+    {
+      geometry_msgs::Transform topic;
+      topic.deserialize(serialized_topic, &topic);
+      node->userTopicCallback(topic.id_, (void*)&topic);
+      break;
+    }
+
+    case GEOMETRY_MSGS_TRANSFORM_STAMPED_TOPIC:
+    {
+      geometry_msgs::TransformStamped topic;
+      topic.deserialize(serialized_topic, &topic);
+      node->userTopicCallback(topic.id_, (void*)&topic);
+      break;
+    }
+
+    case DIAGNOSTIC_MSGS_KEY_VALUE_TOPIC:
+    {
+      diagnostic_msgs::KeyValue topic;
+      topic.deserialize(serialized_topic, &topic);
+      node->userTopicCallback(topic.id_, (void*)&topic);
+      break;
+    }
+
+    case SENSOR_MSGS_IMU_TOPIC:
+    {
+      sensor_msgs::Imu topic;
+      topic.deserialize(serialized_topic, &topic);
+      node->userTopicCallback(topic.id_, (void*)&topic);
+      break;
+    }
+
+    case SENSOR_MSGS_LASER_SCAN_TOPIC:
+    {
+      sensor_msgs::LaserScan topic;
+      topic.deserialize(serialized_topic, &topic);
+      node->userTopicCallback(topic.id_, (void*)&topic);
+      break;
+    }
+
+    case SENSOR_MSGS_BATTERY_STATE_TOPIC:
+    {
+      sensor_msgs::BatteryState topic;
+      topic.deserialize(serialized_topic, &topic);
+      node->userTopicCallback(topic.id_, (void*)&topic);
+      break;
+    }
+
+    case NAV_MSGS_ODOMETRY_TOPIC:
+    {
+      nav_msgs::Odometry topic;
+      topic.deserialize(serialized_topic, &topic);
+      node->userTopicCallback(topic.id_, (void*)&topic);
+      break;
+    }
+
+    case TURTLEBOT3_MSGS_SOUND_TOPIC:
+    {
+      turtlebot3_msgs::Sound topic;
+      topic.deserialize(serialized_topic, &topic);
+      node->userTopicCallback(topic.id_, (void*)&topic);
+      break;
+    }
+
+    case TURTLEBOT3_MSGS_VERSION_INFO_TOPIC:
+    {
+      turtlebot3_msgs::VersionInfo topic;
+      topic.deserialize(serialized_topic, &topic);
+      node->userTopicCallback(topic.id_, (void*)&topic);
+      break;
+    }
+
+    case TURTLEBOT3_MSGS_SENSOR_STATE_TOPIC:
+    {
+      turtlebot3_msgs::SensorState topic;
+      topic.deserialize(serialized_topic, &topic);
+      node->userTopicCallback(topic.id_, (void*)&topic);
+      break;
+    }
+
+    default:
+      break;
+  }
 }

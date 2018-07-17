@@ -26,9 +26,9 @@ ClientKey    g_client_key = {{0xAA, 0xBB, 0xCC, 0xDD}};
 //
 
 
-bool micrortps::setup(OnTopic callback)
+bool micrortps::setup(OnTopic callback, void* callback_arg)
 {
-  if(new_serial_session(&g_rtps_session, g_session_id, g_client_key, "opencr_usb", callback, NULL) == false)
+  if(new_serial_session(&g_rtps_session, g_session_id, g_client_key, "opencr_usb", callback, callback_arg) == false)
   {
     return false;
   }
@@ -39,9 +39,9 @@ bool micrortps::setup(OnTopic callback)
 }
 
 
-bool micrortps::setup(const uint8_t* p_server_ip, uint16_t server_port, OnTopic callback)
+bool micrortps::setup(const uint8_t* p_server_ip, uint16_t server_port, OnTopic callback, void* callback_arg)
 {
-  if(new_udp_session(&g_rtps_session, g_session_id, g_client_key, p_server_ip, server_port, callback, NULL) == false)
+  if(new_udp_session(&g_rtps_session, g_session_id, g_client_key, p_server_ip, server_port, callback, callback_arg) == false)
   {
     return false;
   }
@@ -167,3 +167,6 @@ uint8_t micrortps::getLastStatus()
 {
   return g_rtps_session.last_status.status;
 }
+
+
+

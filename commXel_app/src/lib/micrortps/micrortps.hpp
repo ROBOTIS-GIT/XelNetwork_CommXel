@@ -38,8 +38,8 @@ typedef struct Participant{
 } Participant_t;
 
 
-bool setup(OnTopic callback);
-bool setup(const uint8_t* p_server_ip, uint16_t server_port, OnTopic callback);
+bool setup(OnTopic callback, void* callback_arg);
+bool setup(const uint8_t* p_server_ip, uint16_t server_port, OnTopic callback, void* callback_arg);
 bool createParticipant(Participant_t* participant);
 bool registerTopic(Participant_t* participant, char* topic_profile);
 bool createPublisher(Participant_t* participant, Publisher_t* publisher, char* publisher_profile, char* writer_profile);
@@ -47,7 +47,6 @@ bool createSubscriber(Participant_t* participant, Subscriber_t* subscriber, uint
 void subscribe(Subscriber_t* subscriber, uint8_t StreamId);
 void runCommunication(void);
 uint8_t getLastStatus(void);
-
 
 
 } /* namespace micrortps */

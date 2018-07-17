@@ -55,8 +55,8 @@ public:
     uint32_t size_key = 0;
     uint32_t size_value = 0;
 
-    deserialize_sequence_char(reader, topic->key, &size_key);
-    deserialize_sequence_char(reader, topic->value, &size_value);
+    deserialize_sequence_char(reader, &topic->key, &size_key);
+    deserialize_sequence_char(reader, &topic->value, &size_value);
     
     return reader->error == BUFFER_OK;
   }
