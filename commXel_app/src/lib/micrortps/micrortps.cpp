@@ -169,4 +169,10 @@ uint8_t micrortps::getLastStatus()
 }
 
 
+uint64_t micrortps::getNanoTime(void)
+{
+  return get_nano_time();
+}
+
+
 

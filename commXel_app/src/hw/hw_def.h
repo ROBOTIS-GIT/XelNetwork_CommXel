@@ -53,19 +53,19 @@
 #define _USE_HW_DXLPORT
 #define _USE_HW_DXLCMD
 
+#define _USE_HW_CTABLE
+
 #define _USE_HW_TIMER
 #define _USE_HW_SW_TIMER
 
-
-#define _USE_HW_CMDIF_GPIO
+//#define _USE_HW_CMDIF_GPIO
 //#define _USE_HW_CMDIF_EXTI
-#define _USE_HW_CMDIF_LED
-#define _USE_HW_CMDIF_BUTTON
+//#define _USE_HW_CMDIF_LED
+//#define _USE_HW_CMDIF_BUTTON
 //#define _USE_HW_CMDIF_EEPROM
 //#define _USE_HW_CMDIF_FLASH
 //#define _USE_HW_CMDIF_RESET
-#define _USE_HW_CMDIF_DXLCMD
-
+//#define _USE_HW_CMDIF_DXLCMD
 
 #define _HW_DEF_CMDIF_LIST_MAX                32
 #define _HW_DEF_LED_CH_MAX                    1

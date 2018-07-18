@@ -162,9 +162,10 @@ class Node
 };
 
 
-bool init();
+bool init(void);
 bool init(uint8_t* p_server_ip, uint16_t server_port);
 void spin(Node *node);
+uint64_t getNanoTime(void);
 
 
 } /* namespace ros2 */

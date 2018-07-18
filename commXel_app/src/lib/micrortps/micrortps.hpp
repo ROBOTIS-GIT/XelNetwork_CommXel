@@ -47,6 +47,7 @@ bool createSubscriber(Participant_t* participant, Subscriber_t* subscriber, uint
 void subscribe(Subscriber_t* subscriber, uint8_t StreamId);
 void runCommunication(void);
 uint8_t getLastStatus(void);
+uint64_t getNanoTime(void);
 
 
 } /* namespace micrortps */
