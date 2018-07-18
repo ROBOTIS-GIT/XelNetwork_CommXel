@@ -31,7 +31,7 @@ public:
 
   Int64():
     Topic("std_msgs::msg::dds_::Int64_", STD_MSGS_INT64_TOPIC),
-    data(false)
+    data(0)
   { 
   }
 
