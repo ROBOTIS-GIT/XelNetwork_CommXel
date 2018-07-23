@@ -22,31 +22,33 @@ namespace ros2
 class Node;
 
 template <typename MsgT>
-class Subscriber:public NodeHandle
+class Subscriber:public SubscriberHandle
 {
 
   public:
-    Subscriber(micrortps::Participant_t* node, const char* name)
-      : NodeHandle(), is_registered_(false)
+    Subscriber(micrortps::Participant_t* node, const char* name, void (*callback)(void* topic_msg))
+      : SubscriberHandle()
     {
       MsgT topic;
 
       node_ = node;
       name_ = name;
       topic_id_ = topic.id_;
+      stream_id_ = STREAMID_BUILTIN_RELIABLE;
+      this->callback = callback;
       this->recreate();
     }
 
     virtual ~Subscriber(){};
 
-    void subscribe(StreamId stream_id)
+    void subscribe(void)
     {
       if(subscriber_.is_init ==  false)
       {
         return;
       }
 
-      micrortps::subscribe(&subscriber_, stream_id);
+      micrortps::subscribe(&subscriber_, stream_id_);
     }
 
     void recreate()
@@ -60,14 +62,12 @@ class Subscriber:public NodeHandle
 
       char reader_profile[512] = {0, };
       sprintf(reader_profile, DEFAULT_READER_XML, name_, topic.type_);
-      is_registered_ = micrortps::createSubscriber(node_, &subscriber_, topic_id_, subscriber_profile, reader_profile);
+      is_registered_ = micrortps::createSubscriber(node_, &subscriber_, topic.id_, subscriber_profile, reader_profile);
     };  
-
-    bool is_registered_;
-    uint8_t topic_id_;
 
   private:
     const char* name_;
+    StreamId stream_id_;
     micrortps::Participant_t* node_;
     micrortps::Subscriber_t subscriber_;
 };

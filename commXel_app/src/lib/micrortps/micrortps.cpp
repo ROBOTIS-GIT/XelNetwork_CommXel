@@ -59,9 +59,10 @@ bool micrortps::createParticipant(micrortps::Participant_t* participant)
     return false;
   }
 
-  participant->id.data[0] = 0x00;
-  participant->id.data[1] = OBJK_PARTICIPANT;
-  participant->session = &g_rtps_session;
+  static uint8_t object_id = 0x00;
+  participant->id.data[0]  = object_id++;
+  participant->id.data[1]  = OBJK_PARTICIPANT;
+  participant->session     = &g_rtps_session;
 
   participant->is_init = create_participant_sync_by_ref(participant->session, participant->id, "opencr_participant", false, false);
   
@@ -70,18 +71,19 @@ bool micrortps::createParticipant(micrortps::Participant_t* participant)
 }
 
 
-bool micrortps::registerTopic(micrortps::Participant_t* participant, char* topic_profile)
+bool micrortps::registerTopic(micrortps::Participant_t* participant, char* topic_profile, uint8_t topic_id)
 {
   if(participant->is_init == false)
   {
     return false;
   }
 
-  bool ret = false;
   uint8_t status;
-  ObjectId topic_id = {0x00, OBJK_TOPIC};
+  bool ret = false;
 
-  create_topic_sync_by_xml(participant->session, topic_id, topic_profile, participant->id, true, false);
+  ObjectId object_id = {topic_id, OBJK_TOPIC};
+
+  create_topic_sync_by_xml(participant->session, object_id, topic_profile, participant->id, true, false);
   status = micrortps::getLastStatus();
 
   if(status == STATUS_OK || status == STATUS_ERR_ALREADY_EXISTS)
@@ -93,27 +95,30 @@ bool micrortps::registerTopic(micrortps::Participant_t* participant, char* topic
 }
 
 
-bool micrortps::createPublisher(micrortps::Participant_t* participant, micrortps::Publisher_t* publisher, char* publisher_profile, char* writer_profile)
+bool micrortps::createPublisher(micrortps::Participant_t* participant, micrortps::Publisher_t* publisher, uint8_t topic_id, char* publisher_profile, char* writer_profile)
 {
   if(participant->is_init == false)
   {
     return false;
   }
 
-  bool ret = false;
-  publisher->is_init = false;
-  publisher->id.data[0] = 0x00;
-  publisher->id.data[1] = OBJK_PUBLISHER;
+  (void)(topic_id);
+  bool ret                 = false;
+  static uint8_t pub_id    = 0x00;
+  publisher->is_init       = false;
+  publisher->id.data[0]    = pub_id++; //topic_id
+  publisher->id.data[1]    = OBJK_PUBLISHER;
 
-  ret = create_publisher_sync_by_xml(participant->session, publisher->id, publisher_profile, participant->id, false, true);
+  ret = create_publisher_sync_by_xml(participant->session, publisher->id, publisher_profile, participant->id, false, false);
 
   if (ret == true)
   {
     // Create Writer
-    publisher->writer_id.data[0] = 0x00;
+    static uint8_t writer_id     = 0x00;
+    publisher->writer_id.data[0] = writer_id++; //topic_id
     publisher->writer_id.data[1] = OBJK_DATAWRITER;
 
-    publisher->is_init = create_datawriter_sync_by_xml(participant->session, publisher->writer_id, writer_profile, publisher->id, false, true);
+    publisher->is_init = create_datawriter_sync_by_xml(participant->session, publisher->writer_id, writer_profile, publisher->id, false, false);
   }
 
   return publisher->is_init;
@@ -127,20 +132,23 @@ bool micrortps::createSubscriber(micrortps::Participant_t* participant, micrortp
     return false;
   }
 
-  bool ret = false;
-  subscriber->is_init = false;
-  subscriber->id.data[0] = topic_id;
-  subscriber->id.data[1] = OBJK_SUBSCRIBER;
+  (void)(topic_id);
+  bool ret                 = false;
+  static uint8_t sub_id    = 0x00;
+  subscriber->is_init      = false;
+  subscriber->id.data[0]   = sub_id++; //topic_id
+  subscriber->id.data[1]   = OBJK_SUBSCRIBER;
 
-  ret = create_subscriber_sync_by_xml(participant->session, subscriber->id, subscriber_profile, participant->id, false, true);
+  ret = create_subscriber_sync_by_xml(participant->session, subscriber->id, subscriber_profile, participant->id, false, false);
 
   if (ret == true)
   {
-    // Create Writer
-    subscriber->reader_id.data[0] = topic_id;
+    // Create Reader
+    static uint8_t reader_id     = 0x00;
+    subscriber->reader_id.data[0] = reader_id++; //topic_id
     subscriber->reader_id.data[1] = OBJK_DATAREADER;
 
-    subscriber->is_init = create_datareader_sync_by_xml(participant->session, subscriber->reader_id, reader_profile, subscriber->id, false, true);
+    subscriber->is_init = create_datareader_sync_by_xml(participant->session, subscriber->reader_id, reader_profile, subscriber->id, false, false);
   }
 
   return subscriber->is_init;
@@ -173,6 +181,4 @@ uint64_t micrortps::getNanoTime(void)
 {
   return get_nano_time();
 }
-
-
 
