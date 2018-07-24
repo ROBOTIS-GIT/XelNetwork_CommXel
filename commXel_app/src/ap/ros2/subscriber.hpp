@@ -43,7 +43,7 @@ class Subscriber:public SubscriberHandle
 
     void subscribe(void)
     {
-      if(subscriber_.is_init ==  false)
+      if(is_registered_ ==  false)
       {
         return;
       }
@@ -54,8 +54,6 @@ class Subscriber:public SubscriberHandle
     void recreate()
     {
       MsgT topic;
-
-      subscriber_.is_init = false;
 
       char subscriber_profile[100] = {0, };
       sprintf(subscriber_profile, "<subscriber name=\"%s\"", name_);

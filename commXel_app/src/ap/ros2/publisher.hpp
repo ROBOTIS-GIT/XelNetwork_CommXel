@@ -39,7 +39,7 @@ public:
 
   void publish(void)
   {
-    if(publisher_.is_init ==  false)
+    if(is_registered_ ==  false)
     {
       return;
     }
@@ -54,8 +54,6 @@ public:
 
   void recreate()
   {
-    publisher_.is_init = false;
-
     char publisher_profile[100] = {0, };
     sprintf(publisher_profile, "<publisher name=\"%s\"", name_);
 

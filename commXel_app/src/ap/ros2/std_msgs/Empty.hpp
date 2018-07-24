@@ -27,35 +27,36 @@ namespace std_msgs {
 class Empty : public ros2::Topic<Empty>
 {
 public:
+  bool _dummy;
 
-  Empty():
-    Topic("std_msgs::msg::dds_::Empty_", STD_MSGS_EMPTY_TOPIC)
-  { 
+  Empty()
+    : Topic("std_msgs::msg::dds_::Empty_", STD_MSGS_EMPTY_TOPIC), _dummy(0)
+  {
   }
 
   virtual bool serialize(MicroBuffer* writer, const Empty* topic)
   {
-      (void)(writer);
-      (void)(topic);
+    serialize_bool(writer, topic->_dummy);
 
-      return true;
+    return writer->error == BUFFER_OK;
   }
 
   virtual bool deserialize(MicroBuffer* reader, Empty* topic)
   {
-      (void)(reader);
-      (void)(topic);
+    deserialize_bool(reader, &topic->_dummy);
 
-      return true;
+    return reader->error == BUFFER_OK;
   }
 
   virtual uint32_t size_of_topic(const Empty* topic)
   {
-      (void)(topic);
+    (void) (topic);
+    uint32_t size = 0;
 
-      return 0;
+    size += 1 + get_alignment(size, 1);
+
+    return size;
   }
-
 };
 
 } // namespace std_msgs

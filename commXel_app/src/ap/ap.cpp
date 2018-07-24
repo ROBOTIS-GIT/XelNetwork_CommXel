@@ -105,11 +105,11 @@ static void threadROS2(void const * argument)
   uint16_t server_port = 2020;              //FIXME
   ros2::init(server_ip, server_port);
 
-  BatteryStatePubSub BatteryStateNode;
+  XelNetworkNode XelNetNode;
 
   for( ;; )
   {
-    ros2::spin(&BatteryStateNode);
+    ros2::spin(&XelNetNode);
   }
 
   for( ;; )
