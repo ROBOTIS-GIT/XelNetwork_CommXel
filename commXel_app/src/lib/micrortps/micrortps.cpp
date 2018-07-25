@@ -106,7 +106,7 @@ bool micrortps::createPublisher(micrortps::Participant_t* participant, micrortps
   bool ret                 = false;
   static uint8_t pub_id    = 0x00;
   publisher->is_init       = false;
-  publisher->id.data[0]    = pub_id++; //topic_id
+  publisher->id.data[0]    = pub_id++; //topic_id;
   publisher->id.data[1]    = OBJK_PUBLISHER;
 
   ret = create_publisher_sync_by_xml(participant->session, publisher->id, publisher_profile, participant->id, false, false);
@@ -136,7 +136,7 @@ bool micrortps::createSubscriber(micrortps::Participant_t* participant, micrortp
   bool ret                 = false;
   static uint8_t sub_id    = 0x00;
   subscriber->is_init      = false;
-  subscriber->id.data[0]   = sub_id++; //topic_id
+  subscriber->id.data[0]   = sub_id++; //topic_id;
   subscriber->id.data[1]   = OBJK_SUBSCRIBER;
 
   ret = create_subscriber_sync_by_xml(participant->session, subscriber->id, subscriber_profile, participant->id, false, false);
