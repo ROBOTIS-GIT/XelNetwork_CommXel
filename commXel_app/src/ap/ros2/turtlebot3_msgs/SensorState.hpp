@@ -58,45 +58,43 @@ public:
   { 
   }
 
-  virtual bool serialize(MicroBuffer* writer, const SensorState* topic)
+  bool serialize(struct MicroBuffer* writer, const SensorState* topic)
   {
-    header.serialize(writer, &topic->header);
-    serialize_uint8_t(writer, topic->bumper);
-    serialize_float(writer, topic->cliff);
-    serialize_float(writer, topic->sonar);
-    serialize_float(writer, topic->illumination);
-    serialize_uint8_t(writer, topic->led);
-    serialize_uint8_t(writer, topic->button);
-    serialize_bool(writer, topic->torque);
-    serialize_int32_t(writer, topic->left_encoder);
-    serialize_int32_t(writer, topic->right_encoder);
-    serialize_float(writer, topic->battery);
+    (void) header.serialize(writer, &topic->header);
+    (void) serialize_uint8_t(writer, topic->bumper);
+    (void) serialize_float(writer, topic->cliff);
+    (void) serialize_float(writer, topic->sonar);
+    (void) serialize_float(writer, topic->illumination);
+    (void) serialize_uint8_t(writer, topic->led);
+    (void) serialize_uint8_t(writer, topic->button);
+    (void) serialize_bool(writer, topic->torque);
+    (void) serialize_int32_t(writer, topic->left_encoder);
+    (void) serialize_int32_t(writer, topic->right_encoder);
+    (void) serialize_float(writer, topic->battery);
 
     return writer->error == BUFFER_OK;
   }
 
-  virtual bool deserialize(MicroBuffer* reader, SensorState* topic)
+  bool deserialize(struct MicroBuffer* reader, SensorState* topic)
   {
-    header.deserialize(reader, &topic->header);
-    deserialize_uint8_t(reader, &topic->bumper);
-    deserialize_float(reader, &topic->cliff);
-    deserialize_float(reader, &topic->sonar);
-    deserialize_float(reader, &topic->illumination);
-    deserialize_uint8_t(reader, &topic->led);
-    deserialize_uint8_t(reader, &topic->button);
-    deserialize_bool(reader, &topic->torque);
-    deserialize_int32_t(reader, &topic->left_encoder);
-    deserialize_int32_t(reader, &topic->right_encoder);
-    deserialize_float(reader, &topic->battery);
+    (void) header.deserialize(reader, &topic->header);
+    (void) deserialize_uint8_t(reader, &topic->bumper);
+    (void) deserialize_float(reader, &topic->cliff);
+    (void) deserialize_float(reader, &topic->sonar);
+    (void) deserialize_float(reader, &topic->illumination);
+    (void) deserialize_uint8_t(reader, &topic->led);
+    (void) deserialize_uint8_t(reader, &topic->button);
+    (void) deserialize_bool(reader, &topic->torque);
+    (void) deserialize_int32_t(reader, &topic->left_encoder);
+    (void) deserialize_int32_t(reader, &topic->right_encoder);
+    (void) deserialize_float(reader, &topic->battery);
 
     return reader->error == BUFFER_OK;
   }
 
-  virtual uint32_t size_of_topic(const SensorState* topic)
+  virtual uint32_t size_of_topic(const SensorState* topic, uint32_t size)
   {
-    uint32_t size = 0;
-
-    header.size_of_topic(&topic->header);
+    size  = header.size_of_topic(&topic->header, size);
     size += 1 + get_alignment(size, 1);
     size += 4 + get_alignment(size, 4);
     size += 4 + get_alignment(size, 4);

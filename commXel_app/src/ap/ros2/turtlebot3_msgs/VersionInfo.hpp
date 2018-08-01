@@ -44,29 +44,27 @@ public:
   { 
   }
 
-  virtual bool serialize(MicroBuffer* writer, const VersionInfo* topic)
+  bool serialize(struct MicroBuffer* writer, const VersionInfo* topic)
   {
-    serialize_sequence_char(writer, topic->hardware, (uint32_t)(strlen(topic->hardware) + 1));
-    serialize_sequence_char(writer, topic->firmware, (uint32_t)(strlen(topic->firmware) + 1));
-    serialize_sequence_char(writer, topic->software, (uint32_t)(strlen(topic->software) + 1));
+    (void) serialize_sequence_char(writer, topic->hardware, (uint32_t)(strlen(topic->hardware) + 1));
+    (void) serialize_sequence_char(writer, topic->firmware, (uint32_t)(strlen(topic->firmware) + 1));
+    (void) serialize_sequence_char(writer, topic->software, (uint32_t)(strlen(topic->software) + 1));
     return writer->error == BUFFER_OK;
   }
 
-  virtual bool deserialize(MicroBuffer* reader, VersionInfo* topic)
+  bool deserialize(struct MicroBuffer* reader, VersionInfo* topic)
   {
     uint32_t size_hardware = 0;
     uint32_t size_firmware = 0;
     uint32_t size_software = 0;
-    deserialize_sequence_char(reader, &topic->hardware, &size_hardware);
-    deserialize_sequence_char(reader, &topic->firmware, &size_firmware);
-    deserialize_sequence_char(reader, &topic->software, &size_software);
+    (void) deserialize_sequence_char(reader, topic->hardware, &size_hardware);
+    (void) deserialize_sequence_char(reader, topic->firmware, &size_firmware);
+    (void) deserialize_sequence_char(reader, topic->software, &size_software);
     return reader->error == BUFFER_OK;
   }
 
-  virtual uint32_t size_of_topic(const VersionInfo* topic)
+  uint32_t size_of_topic(const VersionInfo* topic, uint32_t size)
   {
-    uint32_t size = 0;
-
     size += 4 + get_alignment(size, 4) + (uint32_t)(strlen(topic->hardware) + 1);
     size += 4 + get_alignment(size, 4) + (uint32_t)(strlen(topic->firmware) + 1);
     size += 4 + get_alignment(size, 4) + (uint32_t)(strlen(topic->software) + 1);

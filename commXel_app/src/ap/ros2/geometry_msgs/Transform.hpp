@@ -47,28 +47,26 @@ public:
   }
 
 
-  virtual bool serialize(MicroBuffer* writer, const Transform* topic)
+  bool serialize(struct MicroBuffer* writer, const Transform* topic)
   {
-    translation.serialize(writer, &topic->translation);
-    rotation.serialize(writer, &topic->rotation);
+    (void) translation.serialize(writer, &topic->translation);
+    (void) rotation.serialize(writer, &topic->rotation);
 
     return writer->error == BUFFER_OK;
   }
 
-  virtual bool deserialize(MicroBuffer* reader, Transform* topic)
+  bool deserialize(struct MicroBuffer* reader, Transform* topic)
   {
-    translation.deserialize(reader, &topic->translation);
-    rotation.deserialize(reader, &topic->rotation);
+    (void) translation.deserialize(reader, &topic->translation);
+    (void) rotation.deserialize(reader, &topic->rotation);
 
     return reader->error == BUFFER_OK;
   }
 
-  virtual uint32_t size_of_topic(const Transform* topic)
+  uint32_t size_of_topic(const Transform* topic, uint32_t size)
   {
-    uint32_t size = 0;
-
-    size += translation.size_of_topic(&topic->translation);
-    size += rotation.size_of_topic(&topic->rotation);
+    size = translation.size_of_topic(&topic->translation, size);
+    size = rotation.size_of_topic(&topic->rotation, size);
     
     return size;
   }

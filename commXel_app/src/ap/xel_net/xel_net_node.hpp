@@ -31,6 +31,8 @@ void publishImu(sensor_msgs::Imu* msg);
 void subscribeImu(sensor_msgs::Imu* msg);
 
 
+namespace XelNetwork {
+
 class XelNetworkNode : public ros2::Node
 {
 public:
@@ -62,7 +64,7 @@ private:
   ros2::Subscriber<sensor_msgs::Imu>*          imu_sub_;
 };
 
-
+} // namespace XelNetwork
 
 
 void publishBatteryState(sensor_msgs::BatteryState* msg)

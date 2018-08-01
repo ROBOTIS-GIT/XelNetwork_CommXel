@@ -59,43 +59,41 @@ public:
   { 
   }
 
-  virtual bool serialize(MicroBuffer* writer, const LaserScan* topic)
+  bool serialize(struct MicroBuffer* writer, const LaserScan* topic)
   {
-    header.serialize(writer, &topic->header);
-    serialize_float(writer, topic->angle_min);
-    serialize_float(writer, topic->angle_max);
-    serialize_float(writer, topic->angle_increment);
-    serialize_float(writer, topic->time_increment);
-    serialize_float(writer, topic->scan_time);
-    serialize_float(writer, topic->range_min);
-    serialize_float(writer, topic->range_max);
-    serialize_sequence_float(writer, topic->ranges, topic->ranges_size); 
-    serialize_sequence_float(writer, topic->intensities, topic->intensities_size); 
+    (void) header.serialize(writer, &topic->header);
+    (void) serialize_float(writer, topic->angle_min);
+    (void) serialize_float(writer, topic->angle_max);
+    (void) serialize_float(writer, topic->angle_increment);
+    (void) serialize_float(writer, topic->time_increment);
+    (void) serialize_float(writer, topic->scan_time);
+    (void) serialize_float(writer, topic->range_min);
+    (void) serialize_float(writer, topic->range_max);
+    (void) serialize_sequence_float(writer, topic->ranges, topic->ranges_size);
+    (void) serialize_sequence_float(writer, topic->intensities, topic->intensities_size);
 
     return writer->error == BUFFER_OK;
   }
 
-  virtual bool deserialize(MicroBuffer* reader, LaserScan* topic)
+  bool deserialize(struct MicroBuffer* reader, LaserScan* topic)
   {
-    header.deserialize(reader, &topic->header);
-    deserialize_float(reader, &topic->angle_min);
-    deserialize_float(reader, &topic->angle_max);
-    deserialize_float(reader, &topic->angle_increment);
-    deserialize_float(reader, &topic->time_increment);
-    deserialize_float(reader, &topic->scan_time);
-    deserialize_float(reader, &topic->range_min);
-    deserialize_float(reader, &topic->range_max);
-    deserialize_sequence_float(reader, &topic->ranges, &topic->ranges_size); 
-    deserialize_sequence_float(reader, &topic->intensities, &topic->intensities_size); 
+    (void) header.deserialize(reader, &topic->header);
+    (void) deserialize_float(reader, &topic->angle_min);
+    (void) deserialize_float(reader, &topic->angle_max);
+    (void) deserialize_float(reader, &topic->angle_increment);
+    (void) deserialize_float(reader, &topic->time_increment);
+    (void) deserialize_float(reader, &topic->scan_time);
+    (void) deserialize_float(reader, &topic->range_min);
+    (void) deserialize_float(reader, &topic->range_max);
+    (void) deserialize_sequence_float(reader, topic->ranges, &topic->ranges_size);
+    (void) deserialize_sequence_float(reader, topic->intensities, &topic->intensities_size);
 
     return reader->error == BUFFER_OK;
   }
 
-  virtual uint32_t size_of_topic(const LaserScan* topic)
+  uint32_t size_of_topic(const LaserScan* topic, uint32_t size)
   {
-    uint32_t size = 0;
-
-    size += header.size_of_topic(&topic->header);
+    size  = header.size_of_topic(&topic->header, size);
     size += 4 + get_alignment(size, 4);
     size += 4 + get_alignment(size, 4);
     size += 4 + get_alignment(size, 4);

@@ -46,31 +46,29 @@ public:
   }
 
 
-  virtual bool serialize(MicroBuffer* writer, const Header* topic)
+  bool serialize(struct MicroBuffer* writer, const Header* topic)
   {
-    stamp.serialize(writer, &topic->stamp);
-    serialize_sequence_char(writer, topic->frame_id, (uint32_t)(strlen(topic->frame_id) + 1));
+    (void) stamp.serialize(writer, &topic->stamp);
+    (void) serialize_sequence_char(writer, topic->frame_id, (uint32_t)(strlen(topic->frame_id) + 1));
 
     return writer->error == BUFFER_OK;
   }
 
-  virtual bool deserialize(MicroBuffer* reader, Header* topic)
+  bool deserialize(struct MicroBuffer* reader, Header* topic)
   {
     uint32_t size_frame_id = 0;
 
-    stamp.deserialize(reader, &topic->stamp);
-    deserialize_sequence_char(reader, &topic->frame_id, &size_frame_id);
+    (void) stamp.deserialize(reader, &topic->stamp);
+    (void) deserialize_sequence_char(reader, topic->frame_id, &size_frame_id);
 
     return reader->error == BUFFER_OK;
   }
 
-  virtual uint32_t size_of_topic(const Header* topic)
+  uint32_t size_of_topic(const Header* topic, uint32_t size)
   {
-      uint32_t size = 0;
-
-      size += stamp.size_of_topic(&topic->stamp);
-      size += 4 + get_alignment(size, 4) + (uint32_t)(strlen(topic->frame_id) + 1);
-      return size;
+    size  = stamp.size_of_topic(&topic->stamp, size);
+    size += 4 + get_alignment(size, 4) + (uint32_t)(strlen(topic->frame_id) + 1);
+    return size;
   }
 
 

@@ -34,7 +34,6 @@ class Subscriber:public SubscriberHandle
       node_ = node;
       name_ = name;
       topic_id_ = topic.id_;
-      stream_id_ = STREAMID_BUILTIN_RELIABLE;
       this->callback = callback;
       this->recreate();
     }
@@ -48,7 +47,7 @@ class Subscriber:public SubscriberHandle
         return;
       }
 
-      micrortps::subscribe(&subscriber_, stream_id_);
+      micrortps::subscribe(&subscriber_);
     }
 
     void recreate()
@@ -65,7 +64,6 @@ class Subscriber:public SubscriberHandle
 
   private:
     const char* name_;
-    StreamId stream_id_;
     micrortps::Participant_t* node_;
     micrortps::Subscriber_t subscriber_;
 };

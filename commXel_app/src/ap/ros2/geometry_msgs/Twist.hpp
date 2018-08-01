@@ -46,28 +46,26 @@ public:
   }
 
 
-  virtual bool serialize(MicroBuffer* writer, const Twist* topic)
+  bool serialize(struct MicroBuffer* writer, const Twist* topic)
   {
-    linear.serialize(writer, &topic->linear);
-    angular.serialize(writer, &topic->angular);
+    (void) linear.serialize(writer, &topic->linear);
+    (void) angular.serialize(writer, &topic->angular);
 
     return writer->error == BUFFER_OK;
   }
 
-  virtual bool deserialize(MicroBuffer* reader, Twist* topic)
+  bool deserialize(struct MicroBuffer* reader, Twist* topic)
   {
-    linear.deserialize(reader, &topic->linear);
-    angular.deserialize(reader, &topic->angular);
+    (void) linear.deserialize(reader, &topic->linear);
+    (void) angular.deserialize(reader, &topic->angular);
 
     return reader->error == BUFFER_OK;
   }
 
-  virtual uint32_t size_of_topic(const Twist* topic)
+  uint32_t size_of_topic(const Twist* topic, uint32_t size)
   {
-    uint32_t size = 0;
-
-    size += linear.size_of_topic(&topic->linear);
-    size += angular.size_of_topic(&topic->angular);
+    size = linear.size_of_topic(&topic->linear, size);
+    size = angular.size_of_topic(&topic->angular, size);
     
     return size;
   }

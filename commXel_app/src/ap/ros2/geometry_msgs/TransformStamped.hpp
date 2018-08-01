@@ -47,33 +47,31 @@ public:
   { 
   }
 
-  virtual bool serialize(MicroBuffer* writer, const TransformStamped* topic)
+  bool serialize(struct MicroBuffer* writer, const TransformStamped* topic)
   {
-    header.serialize(writer, &topic->header);
-    serialize_sequence_char(writer, topic->child_frame_id, (uint32_t)(strlen(topic->child_frame_id) + 1));
-    transform.serialize(writer, &topic->transform);
+    (void) header.serialize(writer, &topic->header);
+    (void) serialize_sequence_char(writer, topic->child_frame_id, (uint32_t)(strlen(topic->child_frame_id) + 1));
+    (void) transform.serialize(writer, &topic->transform);
 
     return writer->error == BUFFER_OK;
   }
 
-  virtual bool deserialize(MicroBuffer* reader, TransformStamped* topic)
+  bool deserialize(struct MicroBuffer* reader, TransformStamped* topic)
   {
     uint32_t size_child_frame_id = 0;
 
-    header.deserialize(reader, &topic->header);
-    deserialize_sequence_char(reader, &topic->child_frame_id, &size_child_frame_id);
-    transform.deserialize(reader, &topic->transform);
+    (void) header.deserialize(reader, &topic->header);
+    (void) deserialize_sequence_char(reader, topic->child_frame_id, &size_child_frame_id);
+    (void) transform.deserialize(reader, &topic->transform);
     
     return reader->error == BUFFER_OK;
   }
 
-  virtual uint32_t size_of_topic(const TransformStamped* topic)
+  uint32_t size_of_topic(const TransformStamped* topic, uint32_t size)
   {
-    uint32_t size = 0;
-
-    size += header.size_of_topic(&topic->header);
+    size  = header.size_of_topic(&topic->header, size);
     size += 4 + get_alignment(size, 4) + (uint32_t)(strlen(topic->child_frame_id) + 1);
-    size += transform.size_of_topic(&topic->transform);
+    size  = transform.size_of_topic(&topic->transform, size);
 
     return size;
   }

@@ -44,29 +44,27 @@ public:
   }
 
 
-  virtual bool serialize(MicroBuffer* writer, const MultiArrayDimension* topic)
+  bool serialize(struct MicroBuffer* writer, const MultiArrayDimension* topic)
   {
-    serialize_sequence_char(writer, topic->label, (uint32_t)(strlen(topic->label) + 1));
-    serialize_uint32_t(writer, topic->size);
-    serialize_uint32_t(writer, topic->stride);
+    (void) serialize_sequence_char(writer, topic->label, (uint32_t)(strlen(topic->label) + 1));
+    (void) serialize_uint32_t(writer, topic->size);
+    (void) serialize_uint32_t(writer, topic->stride);
 
     return writer->error == BUFFER_OK;
   }
 
-  virtual bool deserialize(MicroBuffer* reader, MultiArrayDimension* topic)
+  bool deserialize(struct MicroBuffer* reader, MultiArrayDimension* topic)
   {
     uint32_t size_label = 0;
-    deserialize_sequence_char(reader, &topic->label, &size_label);
-    deserialize_uint32_t(reader, &topic->size);
-    deserialize_uint32_t(reader, &topic->stride);
+    (void) deserialize_sequence_char(reader, topic->label, &size_label);
+    (void) deserialize_uint32_t(reader, &topic->size);
+    (void) deserialize_uint32_t(reader, &topic->stride);
 
     return reader->error == BUFFER_OK;
   }
 
-  virtual uint32_t size_of_topic(const MultiArrayDimension* topic)
+  uint32_t size_of_topic(const MultiArrayDimension* topic, uint32_t size)
   {
-    uint32_t size = 0;
-
     size += 4 + get_alignment(size, 4) + (uint32_t)(strlen(topic->label) + 1);
     size += 4 + get_alignment(size, 4);
     size += 4 + get_alignment(size, 4);

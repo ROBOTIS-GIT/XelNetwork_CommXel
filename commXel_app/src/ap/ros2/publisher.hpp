@@ -32,7 +32,6 @@ public:
   {
     node_ = node;
     name_ = name;
-    stream_id_ = STREAMID_BUILTIN_RELIABLE;
     this->recreate();
   }
   virtual ~Publisher(){};
@@ -49,7 +48,7 @@ public:
       callback((void*)&topic_);
     }
 
-    topic_.writeTopic(node_->session, publisher_.writer_id, stream_id_, &topic_);
+    topic_.writeTopic(node_->session, publisher_.writer_id, node_->reliable_out, &topic_);
   }
 
   void recreate()
@@ -65,7 +64,6 @@ public:
 private:
   MsgT topic_;
   const char* name_;
-  StreamId stream_id_;
   micrortps::Participant_t* node_;
   micrortps::Publisher_t publisher_;
 };

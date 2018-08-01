@@ -11,43 +11,48 @@
 
 #include "microcdr/microcdr.h"
 #include "micrortps/client/client.h"
-#include "micrortps/client/xrce_protocol_spec.h"
-
+#include <micrortps/client/core/serialization/xrce_protocol.h>
+#include <micrortps/client/core/session/submessage.h>
 
 
 namespace micrortps {
 
-
+typedef struct Participant{
+  bool is_init;
+  mrObjectId id;
+  mrSession *session;
+  mrStreamId reliable_out;
+  mrStreamId reliable_in;
+} Participant_t;
 
 typedef struct Subscriber{
   bool is_init;
-  ObjectId id;
-  ObjectId reader_id;
+  mrObjectId id;
+  mrObjectId reader_id;
+  uint16_t read_req;
+  mrDeliveryControl delivery_control;
+  Participant_t *participant;
 } Subscriber_t;
 
 typedef struct Publisher{
   bool is_init;
-  ObjectId id;
-  ObjectId writer_id;
+  mrObjectId id;
+  mrObjectId writer_id;
+  Participant_t *participant;
 } Publisher_t;
 
-typedef struct Participant{
-  bool is_init;
-  ObjectId id;
-  Session *session;
-} Participant_t;
 
 
-bool setup(OnTopic callback, void* callback_arg);
-bool setup(const uint8_t* p_server_ip, uint16_t server_port, OnTopic callback, void* callback_arg);
+
+bool setup(mrOnTopicFunc callback, void* callback_arg);
+bool setup(const char* p_server_ip, uint16_t server_port, mrOnTopicFunc callback, void* callback_arg);
 bool createParticipant(Participant_t* participant);
 bool registerTopic(Participant_t* participant, char* topic_profile, uint8_t topic_id);
 bool createPublisher(Participant_t* participant, Publisher_t* publisher, uint8_t topic_id, char* publisher_profile, char* writer_profile);
 bool createSubscriber(Participant_t* participant, Subscriber_t* subscriber, uint8_t topic_id, char* subscriber_profile, char* reader_profile);
-void subscribe(Subscriber_t* subscriber, uint8_t StreamId);
-void runCommunication(void);
-uint8_t getLastStatus(void);
-uint64_t getNanoTime(void);
+void subscribe(Subscriber_t* subscriber);
+bool runCommunication(uint32_t timeout_ms);
+int64_t getMillisTime(void);
 
 
 } /* namespace micrortps */

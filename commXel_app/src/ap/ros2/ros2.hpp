@@ -8,19 +8,20 @@
 #ifndef ROS2_HPP_
 #define ROS2_HPP_
 
+#include <string.h>
 #include "publisher.hpp"
 #include "subscriber.hpp"
 #include "topic.hpp"
 #include "builtin_interfaces/Time.hpp"
 
 
-void onTopicCallback(ObjectId id, MicroBuffer* serialized_topic, void* args);
+void onTopicCallback(mrSession* session, mrObjectId object_id, uint16_t request_id, mrStreamId stream_id, struct MicroBuffer* mb, void* args);
 
 
 namespace ros2 {
 
 extern char* client_communication_method;
-extern uint8_t* server_ip;
+extern char* server_ip;
 extern uint16_t server_port;
 
 class Node
@@ -237,9 +238,9 @@ class Node
 
 
 bool init(void);
-bool init(uint8_t* p_server_ip, uint16_t server_port);
+bool init(const char* p_server_ip, uint16_t server_port);
 void spin(Node *node);
-uint64_t getNanoTime(void);
+int64_t getMillisTime(void);
 builtin_interfaces::Time now();
 
 

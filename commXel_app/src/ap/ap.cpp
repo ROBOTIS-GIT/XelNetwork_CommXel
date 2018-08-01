@@ -101,11 +101,9 @@ static void threadROS2(void const * argument)
     }
   }
 
-  uint8_t server_ip[4] = {192,168,60,136};  //FIXME
-  uint16_t server_port = 2020;              //FIXME
-  ros2::init(server_ip, server_port);
+  ros2::init("192.168.60.88", 2018);
 
-  XelNetworkNode XelNetNode;
+  XelNetwork::XelNetworkNode XelNetNode;
 
   for( ;; )
   {

@@ -45,31 +45,29 @@ public:
   }
 
 
-  virtual bool serialize(MicroBuffer* writer, const Quaternion* topic)
+  bool serialize(struct MicroBuffer* writer, const Quaternion* topic)
   {
-    serialize_double(writer, topic->x);
-    serialize_double(writer, topic->y);
-    serialize_double(writer, topic->z);
-    serialize_double(writer, topic->w);
+    (void) serialize_double(writer, topic->x);
+    (void) serialize_double(writer, topic->y);
+    (void) serialize_double(writer, topic->z);
+    (void) serialize_double(writer, topic->w);
 
     return writer->error == BUFFER_OK;
   }
 
-  virtual bool deserialize(MicroBuffer* reader, Quaternion* topic)
+  bool deserialize(struct MicroBuffer* reader, Quaternion* topic)
   {
-    deserialize_double(reader, &topic->x);
-    deserialize_double(reader, &topic->y);
-    deserialize_double(reader, &topic->z);
-    deserialize_double(reader, &topic->w);
+    (void) deserialize_double(reader, &topic->x);
+    (void) deserialize_double(reader, &topic->y);
+    (void) deserialize_double(reader, &topic->z);
+    (void) deserialize_double(reader, &topic->w);
 
     return reader->error == BUFFER_OK;
   }
 
-  virtual uint32_t size_of_topic(const Quaternion* topic)
+  uint32_t size_of_topic(const Quaternion* topic, uint32_t size)
   {
     (void)(topic);
-
-    uint32_t size = 0;
 
     size += 8 + get_alignment(size, 8);
     size += 8 + get_alignment(size, 8);

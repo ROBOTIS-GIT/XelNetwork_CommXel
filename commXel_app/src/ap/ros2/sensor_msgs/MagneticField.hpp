@@ -48,30 +48,28 @@ public:
     memset(magnetic_field_covariance, 0, sizeof(magnetic_field_covariance));
   }
 
-  virtual bool serialize(MicroBuffer* writer, const MagneticField* topic)
+  bool serialize(struct MicroBuffer* writer, const MagneticField* topic)
   {
-    header.serialize(writer, &topic->header);
-    magnetic_field.serialize(writer, &topic->magnetic_field);
-    serialize_array_double(writer, topic->magnetic_field_covariance, 9);
+    (void) header.serialize(writer, &topic->header);
+    (void) magnetic_field.serialize(writer, &topic->magnetic_field);
+    (void) serialize_array_double(writer, topic->magnetic_field_covariance, 9);
 
     return writer->error == BUFFER_OK;
   }
 
-  virtual bool deserialize(MicroBuffer* reader, MagneticField* topic)
+  bool deserialize(struct MicroBuffer* reader, MagneticField* topic)
   {
-    header.deserialize(reader, &topic->header);
-    magnetic_field.deserialize(reader, &topic->magnetic_field);
-    deserialize_array_double(reader, topic->magnetic_field_covariance, 9);
+    (void) header.deserialize(reader, &topic->header);
+    (void) magnetic_field.deserialize(reader, &topic->magnetic_field);
+    (void) deserialize_array_double(reader, topic->magnetic_field_covariance, 9);
 
     return reader->error == BUFFER_OK;
   }
 
-  virtual uint32_t size_of_topic(const MagneticField* topic)
+  virtual uint32_t size_of_topic(const MagneticField* topic, uint32_t size)
   {
-    uint32_t size = 0;
-
-    size += header.size_of_topic(&topic->header);
-    size += magnetic_field.size_of_topic(&topic->magnetic_field);
+    size  = header.size_of_topic(&topic->header, size);
+    size  = magnetic_field.size_of_topic(&topic->magnetic_field, size);
     size += ((9) * 8) + get_alignment(size, 8);
 
     return size;

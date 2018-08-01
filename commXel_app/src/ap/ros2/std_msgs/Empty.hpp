@@ -29,34 +29,35 @@ class Empty : public ros2::Topic<Empty>
 public:
   bool _dummy;
 
-  Empty()
-    : Topic("std_msgs::msg::dds_::Empty_", STD_MSGS_EMPTY_TOPIC), _dummy(0)
-  {
+  Empty():
+    Topic("std_msgs::msg::dds_::Empty_", STD_MSGS_EMPTY_TOPIC),
+    _dummy(0)
+  { 
   }
 
-  virtual bool serialize(MicroBuffer* writer, const Empty* topic)
+  bool serialize(struct MicroBuffer* writer, const Empty* topic)
   {
-    serialize_bool(writer, topic->_dummy);
+      serialize_bool(writer, topic->_dummy);
 
-    return writer->error == BUFFER_OK;
+      return writer->error == BUFFER_OK;
   }
 
-  virtual bool deserialize(MicroBuffer* reader, Empty* topic)
+  bool deserialize(struct MicroBuffer* reader, Empty* topic)
   {
-    deserialize_bool(reader, &topic->_dummy);
+      deserialize_bool(reader, &topic->_dummy);
 
-    return reader->error == BUFFER_OK;
+      return reader->error == BUFFER_OK;
   }
 
-  virtual uint32_t size_of_topic(const Empty* topic)
+  uint32_t size_of_topic(const Empty* topic, uint32_t size)
   {
-    (void) (topic);
-    uint32_t size = 0;
+      (void)(topic);
 
-    size += 1 + get_alignment(size, 1);
+      size += 1 + get_alignment(size, 1);
 
-    return size;
+      return size;
   }
+
 };
 
 } // namespace std_msgs

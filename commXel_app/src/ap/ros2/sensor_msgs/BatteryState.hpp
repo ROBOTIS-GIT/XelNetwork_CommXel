@@ -95,54 +95,53 @@ public:
   { 
   }
 
-  virtual bool serialize(MicroBuffer* writer, const BatteryState* topic)
+  bool serialize(struct MicroBuffer* writer, const BatteryState* topic)
   {
-    header.serialize(writer, &topic->header);
-    serialize_float(writer, topic->voltage);
-    serialize_float(writer, topic->current);
-    serialize_float(writer, topic->charge);
-    serialize_float(writer, topic->capacity);
-    serialize_float(writer, topic->design_capacity);
-    serialize_float(writer, topic->percentage);
-    serialize_uint8_t(writer, topic->power_supply_status);
-    serialize_uint8_t(writer, topic->power_supply_health);
-    serialize_uint8_t(writer, topic->power_supply_technology);
-    serialize_bool(writer, topic->present);
-    serialize_sequence_float(writer, topic->cell_voltage, topic->cell_voltage_size); 
-    serialize_sequence_char(writer, topic->location, (uint32_t)(strlen(topic->location) + 1));
-    serialize_sequence_char(writer, topic->serial_number, (uint32_t)(strlen(topic->serial_number) + 1));
+    (void) header.serialize(writer, &topic->header);
+    (void) serialize_float(writer, topic->voltage);
+    (void) serialize_float(writer, topic->current);
+    (void) serialize_float(writer, topic->charge);
+    (void) serialize_float(writer, topic->capacity);
+    (void) serialize_float(writer, topic->design_capacity);
+    (void) serialize_float(writer, topic->percentage);
+    (void) serialize_uint8_t(writer, topic->power_supply_status);
+    (void) serialize_uint8_t(writer, topic->power_supply_health);
+    (void) serialize_uint8_t(writer, topic->power_supply_technology);
+    (void) serialize_bool(writer, topic->present);
+    (void) serialize_sequence_float(writer, topic->cell_voltage, topic->cell_voltage_size);
+    (void) serialize_sequence_char(writer, topic->location, (uint32_t)(strlen(topic->location) + 1));
+    (void) serialize_sequence_char(writer, topic->serial_number, (uint32_t)(strlen(topic->serial_number) + 1));
 
     return writer->error == BUFFER_OK;
   }
 
-  virtual bool deserialize(MicroBuffer* reader, BatteryState* topic)
+  bool deserialize(struct MicroBuffer* reader, BatteryState* topic)
   {
     uint32_t size_location = 0;
     uint32_t size_serial_number = 0;
 
-    header.deserialize(reader, &topic->header);
-    deserialize_float(reader, &topic->voltage);
-    deserialize_float(reader, &topic->current);
-    deserialize_float(reader, &topic->charge);
-    deserialize_float(reader, &topic->capacity);
-    deserialize_float(reader, &topic->design_capacity);
-    deserialize_float(reader, &topic->percentage);
-    deserialize_uint8_t(reader, &topic->power_supply_status);
-    deserialize_uint8_t(reader, &topic->power_supply_health);
-    deserialize_uint8_t(reader, &topic->power_supply_technology);
-    deserialize_bool(reader, &topic->present);
-    deserialize_sequence_float(reader, &topic->cell_voltage, &topic->cell_voltage_size); 
-    deserialize_sequence_char(reader, &topic->location, &size_location);
-    deserialize_sequence_char(reader, &topic->serial_number, &size_serial_number);
+    (void) header.deserialize(reader, &topic->header);
+    (void) deserialize_float(reader, &topic->voltage);
+    (void) deserialize_float(reader, &topic->current);
+    (void) deserialize_float(reader, &topic->charge);
+    (void) deserialize_float(reader, &topic->capacity);
+    (void) deserialize_float(reader, &topic->design_capacity);
+    (void) deserialize_float(reader, &topic->percentage);
+    (void) deserialize_uint8_t(reader, &topic->power_supply_status);
+    (void) deserialize_uint8_t(reader, &topic->power_supply_health);
+    (void) deserialize_uint8_t(reader, &topic->power_supply_technology);
+    (void) deserialize_bool(reader, &topic->present);
+    (void) deserialize_sequence_float(reader, topic->cell_voltage, &topic->cell_voltage_size);
+    (void) deserialize_sequence_char(reader, topic->location, &size_location);
+    (void) deserialize_sequence_char(reader, topic->serial_number, &size_serial_number);
 
     return reader->error == BUFFER_OK;
   }
 
-  virtual uint32_t size_of_topic(const BatteryState* topic)
+  uint32_t size_of_topic(const BatteryState* topic, uint32_t size)
   {
-    uint32_t size = 0;
+    size  = header.size_of_topic(&topic->header, size);
 
-    size += header.size_of_topic(&topic->header);
     size += 4 + get_alignment(size, 4);
     size += 4 + get_alignment(size, 4);
     size += 4 + get_alignment(size, 4);

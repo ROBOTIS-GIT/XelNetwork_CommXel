@@ -42,25 +42,23 @@ public:
   }
 
 
-  virtual bool serialize(MicroBuffer* writer, const String* topic)
+  bool serialize(struct MicroBuffer* writer, const String* topic)
   {
-      serialize_sequence_char(writer, topic->data, (uint32_t)(strlen(topic->data) + 1));
-      return writer->error == BUFFER_OK;
+    (void) serialize_sequence_char(writer, topic->data, (uint32_t)(strlen(topic->data) + 1));
+    return writer->error == BUFFER_OK;
   }
 
-  virtual bool deserialize(MicroBuffer* reader, String* topic)
+  bool deserialize(struct MicroBuffer* reader, String* topic)
   {
-      uint32_t size_data = 0;
-      deserialize_sequence_char(reader, &topic->data, &size_data);
-      return reader->error == BUFFER_OK;
+    uint32_t size_data = 0;
+    (void) deserialize_sequence_char(reader, topic->data, &size_data);
+    return reader->error == BUFFER_OK;
   }
 
-  virtual uint32_t size_of_topic(const String* topic)
+  uint32_t size_of_topic(const String* topic, uint32_t size)
   {
-      uint32_t size = 0;
-
-      size += 4 + get_alignment(size, 4) + (uint32_t)(strlen(topic->data) + 1);
-      return size;
+    size += 4 + get_alignment(size, 4) + (uint32_t)(strlen(topic->data) + 1);
+    return size;
   }
 
 

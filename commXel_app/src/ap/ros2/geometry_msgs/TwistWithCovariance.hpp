@@ -45,27 +45,25 @@ public:
     memset(covariance, 0, sizeof(covariance));
   }
 
-  virtual bool serialize(MicroBuffer* writer, const TwistWithCovariance* topic)
+  bool serialize(struct MicroBuffer* writer, const TwistWithCovariance* topic)
   {
-    twist.serialize(writer, &topic->twist);
-    serialize_array_double(writer, topic->covariance, 36);
+    (void) twist.serialize(writer, &topic->twist);
+    (void) serialize_array_double(writer, topic->covariance, 36);
 
     return writer->error == BUFFER_OK;
   }
 
-  virtual bool deserialize(MicroBuffer* reader, TwistWithCovariance* topic)
+  bool deserialize(struct MicroBuffer* reader, TwistWithCovariance* topic)
   {
-    twist.deserialize(reader, &topic->twist);
-    deserialize_array_double(reader, topic->covariance, 36);
+    (void) twist.deserialize(reader, &topic->twist);
+    (void) deserialize_array_double(reader, topic->covariance, 36);
 
     return reader->error == BUFFER_OK;
   }
 
-  virtual uint32_t size_of_topic(const TwistWithCovariance* topic)
+  uint32_t size_of_topic(const TwistWithCovariance* topic, uint32_t size)
   {
-    uint32_t size = 0;
-
-    size += twist.size_of_topic(&topic->twist);
+    size  = twist.size_of_topic(&topic->twist, size);
     size += ((36) * 8) + get_alignment(size, 8);
     
     return size;

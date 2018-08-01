@@ -43,26 +43,25 @@ public:
   { 
   }
 
-  virtual bool serialize(MicroBuffer* writer, const Time* topic)
+  bool serialize(struct MicroBuffer* writer, const Time* topic)
   {
-    serialize_int32_t(writer, topic->sec);
-    serialize_uint32_t(writer, topic->nanosec);
+    (void) serialize_int32_t(writer, topic->sec);
+    (void) serialize_uint32_t(writer, topic->nanosec);
 
     return writer->error == BUFFER_OK;
   }
 
-  virtual bool deserialize(MicroBuffer* reader, Time* topic)
+  bool deserialize(struct MicroBuffer* reader, Time* topic)
   {
-    deserialize_int32_t(reader, &topic->sec);
-    deserialize_uint32_t(reader, &topic->nanosec);
+    (void) deserialize_int32_t(reader, &topic->sec);
+    (void) deserialize_uint32_t(reader, &topic->nanosec);
 
     return reader->error == BUFFER_OK;
   }
 
-  virtual uint32_t size_of_topic(const Time* topic)
+  uint32_t size_of_topic(const Time* topic, uint32_t size)
   {
     (void)(topic);
-    uint32_t size = 0;
 
     size += 4 + get_alignment(size, 4);
     size += 4 + get_alignment(size, 4);

@@ -55,42 +55,40 @@ public:
     memset(linear_acceleration_covariance, 0, sizeof(linear_acceleration_covariance));
   }
 
-  virtual bool serialize(MicroBuffer* writer, const Imu* topic)
+  bool serialize(struct MicroBuffer* writer, const Imu* topic)
   {
-    header.serialize(writer, &topic->header);
-    orientation.serialize(writer, &topic->orientation);
-    serialize_array_double(writer, topic->orientation_covariance, 9);
-    angular_velocity.serialize(writer, &topic->angular_velocity);
-    serialize_array_double(writer, topic->angular_velocity_covariance, 9);
-    linear_acceleration.serialize(writer, &topic->linear_acceleration);
-    serialize_array_double(writer, topic->linear_acceleration_covariance, 9);
+    (void)  header.serialize(writer, &topic->header);
+    (void) orientation.serialize(writer, &topic->orientation);
+    (void) serialize_array_double(writer, topic->orientation_covariance, 9);
+    (void) angular_velocity.serialize(writer, &topic->angular_velocity);
+    (void) serialize_array_double(writer, topic->angular_velocity_covariance, 9);
+    (void) linear_acceleration.serialize(writer, &topic->linear_acceleration);
+    (void) serialize_array_double(writer, topic->linear_acceleration_covariance, 9);
 
     return writer->error == BUFFER_OK;
   }
 
-  virtual bool deserialize(MicroBuffer* reader, Imu* topic)
+  bool deserialize(struct MicroBuffer* reader, Imu* topic)
   {
-    header.deserialize(reader, &topic->header);
-    orientation.deserialize(reader, &topic->orientation);
-    deserialize_array_double(reader, topic->orientation_covariance, 9);
-    angular_velocity.deserialize(reader, &topic->angular_velocity);
-    deserialize_array_double(reader, topic->angular_velocity_covariance, 9);
-    linear_acceleration.deserialize(reader, &topic->linear_acceleration);
-    deserialize_array_double(reader, topic->linear_acceleration_covariance, 9);
+    (void) header.deserialize(reader, &topic->header);
+    (void) orientation.deserialize(reader, &topic->orientation);
+    (void) deserialize_array_double(reader, topic->orientation_covariance, 9);
+    (void) angular_velocity.deserialize(reader, &topic->angular_velocity);
+    (void) deserialize_array_double(reader, topic->angular_velocity_covariance, 9);
+    (void) linear_acceleration.deserialize(reader, &topic->linear_acceleration);
+    (void) deserialize_array_double(reader, topic->linear_acceleration_covariance, 9);
 
     return reader->error == BUFFER_OK;
   }
 
-  virtual uint32_t size_of_topic(const Imu* topic)
+  uint32_t size_of_topic(const Imu* topic, uint32_t size)
   {
-    uint32_t size = 0;
-
-    size += header.size_of_topic(&topic->header);
-    size += orientation.size_of_topic(&topic->orientation);
+    size  = header.size_of_topic(&topic->header, size);
+    size  = orientation.size_of_topic(&topic->orientation, size);
     size += ((9) * 8) + get_alignment(size, 8);
-    size += angular_velocity.size_of_topic(&topic->angular_velocity);
+    size  = angular_velocity.size_of_topic(&topic->angular_velocity, size);
     size += ((9) * 8) + get_alignment(size, 8);
-    size += linear_acceleration.size_of_topic(&topic->linear_acceleration);
+    size  = linear_acceleration.size_of_topic(&topic->linear_acceleration, size);
     size += ((9) * 8) + get_alignment(size, 8);
 
     return size;

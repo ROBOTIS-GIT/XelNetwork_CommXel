@@ -53,38 +53,37 @@ public:
     name = NULL, position = NULL, velocity = NULL, effort = NULL;
   }
 
-  virtual bool serialize(MicroBuffer* writer, const JointState* topic)
+  bool serialize(struct MicroBuffer* writer, const JointState* topic)
   {
-    header.serialize(writer, &topic->header);
-    //serialize_sequence_char(writer, topic->name, topic->name_size); 
-    serialize_sequence_double(writer, topic->position, topic->position_size); 
-    serialize_sequence_double(writer, topic->velocity, topic->velocity_size); 
-    serialize_sequence_double(writer, topic->effort, topic->effort_size); 
+    (void) header.serialize(writer, &topic->header);
+    //(void) serialize_sequence_char(writer, topic->name, topic->name_size);
+    (void) serialize_sequence_double(writer, topic->position, topic->position_size);
+    (void) serialize_sequence_double(writer, topic->velocity, topic->velocity_size);
+    (void) serialize_sequence_double(writer, topic->effort, topic->effort_size);
 
     return writer->error == BUFFER_OK;
   }
 
-  virtual bool deserialize(MicroBuffer* reader, JointState* topic)
+  bool deserialize(struct MicroBuffer* reader, JointState* topic)
   {
-    header.deserialize(reader, &topic->header);
-    //deserialize_sequence_char(reader, &topic->name_data, &topic->name_size); 
-    deserialize_sequence_double(reader, &topic->position, &topic->position_size); 
-    deserialize_sequence_double(reader, &topic->velocity, &topic->velocity_size); 
-    deserialize_sequence_double(reader, &topic->effort, &topic->effort_size); 
+    (void) header.deserialize(reader, &topic->header);
+    //(void) deserialize_sequence_char(reader, topic->name, &topic->name_size);
+    (void) deserialize_sequence_double(reader, topic->position, &topic->position_size);
+    (void) deserialize_sequence_double(reader, topic->velocity, &topic->velocity_size);
+    (void) deserialize_sequence_double(reader, topic->effort, &topic->effort_size);
 
     return reader->error == BUFFER_OK;
   }
 
-  virtual uint32_t size_of_topic(const JointState* topic)
+  virtual uint32_t size_of_topic(const JointState* topic, uint32_t size)
   {
-    uint32_t size = 0;
-
-    size += header.size_of_topic(&topic->header);
+    size  = header.size_of_topic(&topic->header, size);
     // size += 4 + get_alignment(size, 4);
     // for(size_t a = 0; a < topic->name.size(); ++a)
     // {
     //     size += 4 + eprosima::fastcdr::Cdr::alignment(size, 4) + topic->name.at(a).size() + 1;
-    // }size += 4 + get_alignment(size, 4);
+    // }
+    size += 4 + get_alignment(size, 4);
     size += (topic->position_size * 8) + get_alignment(size, 8);
 
     size += 4 + get_alignment(size, 4);

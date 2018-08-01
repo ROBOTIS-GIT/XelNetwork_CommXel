@@ -43,30 +43,29 @@ public:
 
   Duration():
     Topic("builtin_interfaces::msg::dds_::Duration_", BUILTIN_INTERFACES_DURATION_TOPIC),
-    data(false)
-  { 
+    sec_(0), nanosec_(0)
+  {
   }
 
-  virtual bool serialize(MicroBuffer* writer, const Duration* topic)
+  bool serialize(struct MicroBuffer* writer, const Duration* topic)
   {
-    serialize_int32_t(writer, topic->sec_);
-    serialize_uint32_t(writer, topic->nanosec_);
+    (void) serialize_int32_t(writer, topic->sec_);
+    (void) serialize_uint32_t(writer, topic->nanosec_);
 
     return writer->error == BUFFER_OK;
   }
 
-  virtual bool deserialize(MicroBuffer* reader, Duration* topic)
+  bool deserialize(struct MicroBuffer* reader, Duration* topic)
   {
-    deserialize_int32_t(reader, &topic->sec_);
-    deserialize_uint32_t(reader, &topic->nanosec_);
+    (void) deserialize_int32_t(reader, &topic->sec_);
+    (void) deserialize_uint32_t(reader, &topic->nanosec_);
 
     return reader->error == BUFFER_OK;
   }
 
-  virtual uint32_t size_of_topic(const Duration* topic)
+  uint32_t size_of_topic(const Duration* topic, uint32_t size)
   {
     (void)(topic);
-    uint32_t size = 0;
 
     size += 4 + get_alignment(size, 4);
     size += 4 + get_alignment(size, 4);

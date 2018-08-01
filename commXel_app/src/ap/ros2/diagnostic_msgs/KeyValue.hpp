@@ -42,29 +42,27 @@ public:
   { 
   }
 
-  virtual bool serialize(MicroBuffer* writer, const KeyValue* topic)
+  bool serialize(struct MicroBuffer* writer, const KeyValue* topic)
   {
-    serialize_sequence_char(writer, topic->key, (uint32_t)(strlen(topic->key) + 1));
-    serialize_sequence_char(writer, topic->value, (uint32_t)(strlen(topic->value) + 1));
+    (void) serialize_sequence_char(writer, topic->key, (uint32_t)(strlen(topic->key) + 1));
+    (void) serialize_sequence_char(writer, topic->value, (uint32_t)(strlen(topic->value) + 1));
    
     return writer->error == BUFFER_OK;
   }
 
-  virtual bool deserialize(MicroBuffer* reader, KeyValue* topic)
+  bool deserialize(struct MicroBuffer* reader, KeyValue* topic)
   {
     uint32_t size_key = 0;
     uint32_t size_value = 0;
 
-    deserialize_sequence_char(reader, &topic->key, &size_key);
-    deserialize_sequence_char(reader, &topic->value, &size_value);
+    (void) deserialize_sequence_char(reader, topic->key, &size_key);
+    (void) deserialize_sequence_char(reader, topic->value, &size_value);
     
     return reader->error == BUFFER_OK;
   }
 
-  virtual uint32_t size_of_topic(const KeyValue* topic)
+  uint32_t size_of_topic(const KeyValue* topic, uint32_t size)
   {
-    uint32_t size = 0;
-
     size += 4 + get_alignment(size, 4) + (uint32_t)(strlen(topic->key) + 1);
     size += 4 + get_alignment(size, 4) + (uint32_t)(strlen(topic->value) + 1);
 

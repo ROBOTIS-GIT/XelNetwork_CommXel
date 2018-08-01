@@ -47,28 +47,26 @@ public:
   }
 
 
-  virtual bool serialize(MicroBuffer* writer, const Pose* topic)
+  bool serialize(struct MicroBuffer* writer, const Pose* topic)
   {
-    position.serialize(writer, &topic->position);
-    orientation.serialize(writer, &topic->orientation);
+    (void) position.serialize(writer, &topic->position);
+    (void) orientation.serialize(writer, &topic->orientation);
 
     return writer->error == BUFFER_OK;
   }
 
-  virtual bool deserialize(MicroBuffer* reader, Pose* topic)
+  bool deserialize(struct MicroBuffer* reader, Pose* topic)
   {
-    position.deserialize(reader, &topic->position);
-    orientation.deserialize(reader, &topic->orientation);
+    (void) position.deserialize(reader, &topic->position);
+    (void) orientation.deserialize(reader, &topic->orientation);
 
     return reader->error == BUFFER_OK;
   }
 
-  virtual uint32_t size_of_topic(const Pose* topic)
+  uint32_t size_of_topic(const Pose* topic, uint32_t size)
   {
-    uint32_t size = 0;
-
-    size += position.size_of_topic(&topic->position);
-    size += orientation.size_of_topic(&topic->orientation);
+    size = position.size_of_topic(&topic->position, size);
+    size = orientation.size_of_topic(&topic->orientation, size);
     
     return size;
   }
