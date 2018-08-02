@@ -19,7 +19,7 @@
 #define BUFFER_SIZE     MR_CONFIG_UDP_TRANSPORT_MTU * STREAM_HISTORY
 
 bool         g_is_rtps_init_done = false;
-uint32_t     g_session_key = 0xCCCCDDDD;
+uint32_t     g_session_key = 0xAABBCCDD;
 mrSession    g_rtps_session;
 
 
@@ -34,7 +34,7 @@ bool micrortps::setup(mrOnTopicFunc callback, void* callback_arg)
 {
   // Transport
   static mrUARTTransport transport;
-  if(!mr_init_uart_transport(&transport, "usb", 0, 0))
+  if(mr_init_uart_transport(&transport, "usb", 0, 0) == false)
   {
     return false;
   }
@@ -43,7 +43,7 @@ bool micrortps::setup(mrOnTopicFunc callback, void* callback_arg)
   mr_init_session(&g_rtps_session, &transport.comm, g_session_key);
   mr_set_topic_callback(&g_rtps_session, callback, callback_arg);
 
-  g_is_rtps_init_done = !mr_create_session(&g_rtps_session);
+  g_is_rtps_init_done = mr_create_session(&g_rtps_session);
 
   return g_is_rtps_init_done;
 }
@@ -51,9 +51,10 @@ bool micrortps::setup(mrOnTopicFunc callback, void* callback_arg)
 
 bool micrortps::setup(const char* p_server_ip, uint16_t server_port, mrOnTopicFunc callback, void* callback_arg)
 {
+#if defined(PROFILE_UDP_TRANSPORT)  
   // Transport
   static mrUDPTransport transport;
-  if(!mr_init_udp_transport(&transport, p_server_ip, server_port))
+  if(mr_init_udp_transport(&transport, p_server_ip, server_port) == false)
   {
     return false;
   }
@@ -62,8 +63,10 @@ bool micrortps::setup(const char* p_server_ip, uint16_t server_port, mrOnTopicFu
   mr_init_session(&g_rtps_session, &transport.comm, g_session_key);
   mr_set_topic_callback(&g_rtps_session, callback, callback_arg);
 
-  g_is_rtps_init_done = !mr_create_session(&g_rtps_session);
-
+  g_is_rtps_init_done = mr_create_session(&g_rtps_session);
+#else
+  (void)(p_server_ip); (void)(server_port); (void)(callback); (void)(callback_arg);
+#endif
   return g_is_rtps_init_done;
 }
 
@@ -75,16 +78,14 @@ bool micrortps::createParticipant(micrortps::Participant_t* participant)
     return false;
   }
 
+  participant->reliable_out = mr_create_output_reliable_stream(&g_rtps_session, output_reliable_stream_buffer, BUFFER_SIZE, STREAM_HISTORY);
+  participant->reliable_in  = mr_create_input_reliable_stream(&g_rtps_session, input_reliable_stream_buffer, BUFFER_SIZE, STREAM_HISTORY);
   participant->session = &g_rtps_session;
-  participant->reliable_out = mr_create_output_reliable_stream(participant->session, output_reliable_stream_buffer, BUFFER_SIZE, STREAM_HISTORY);
-  participant->reliable_in  = mr_create_input_reliable_stream(participant->session, input_reliable_stream_buffer, BUFFER_SIZE, STREAM_HISTORY);
 
-  uint16_t participant_req;
   static uint8_t object_id = 0x00;
-  const char* participant_ref = "default participant";
-
   participant->id = mr_object_id(object_id++, MR_PARTICIPANT_ID);
-  participant_req = mr_write_create_participant_ref(&g_rtps_session, participant->reliable_out, participant->id, participant_ref, MR_REPLACE);
+  const char* participant_ref = "default participant";
+  uint16_t participant_req = mr_write_create_participant_ref(&g_rtps_session, participant->reliable_out, participant->id, participant_ref, MR_REPLACE);
 
   uint8_t status;
   participant->is_init = mr_run_session_until_status(participant->session, 1000, &participant_req, &status, 1);
@@ -105,7 +106,7 @@ bool micrortps::registerTopic(micrortps::Participant_t* participant, char* topic
 
   mrObjectId object_id = mr_object_id(topic_id, MR_TOPIC_ID);
 
-  uint16_t topic_req = mr_write_configure_topic_xml(participant->session, participant->reliable_out, object_id, participant->id, topic_profile, MR_REPLACE);
+  uint16_t topic_req = mr_write_configure_topic_xml(participant->session, participant->reliable_out, object_id, participant->id, topic_profile, MR_REUSE);
   ret = mr_run_session_until_status(participant->session, 1000, &topic_req, &status, 1);
 
   return ret;
@@ -165,7 +166,7 @@ bool micrortps::createSubscriber(micrortps::Participant_t* participant, micrortp
   {
     // Create Writer
     //static uint8_t writer_id     = 0x00;
-    subscriber->reader_id = mr_object_id(topic_id, MR_DATAWRITER_ID);
+    subscriber->reader_id = mr_object_id(topic_id, MR_DATAREADER_ID);
     uint16_t datareader_req = mr_write_configure_datareader_xml(participant->session, participant->reliable_out, subscriber->reader_id, subscriber->id, reader_profile, MR_REPLACE);
 
     subscriber->is_init = mr_run_session_until_status(participant->session, 1000, &datareader_req, &status, 1);
