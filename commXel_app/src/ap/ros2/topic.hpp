@@ -63,7 +63,7 @@ public:
       init_micro_buffer(&mb_topic, mb.iterator, topic_length);
       (void) serialize(&mb_topic, topic);
 
-      written = true;
+      written = mr_run_session_until_confirm_delivery(session, 100);
     }
 
     return written;

@@ -64,7 +64,7 @@ class SubscriberHandle
 
 public:
   SubscriberHandle()
-    : is_registered_(false), topic_id_(0)
+    : is_registered_(false), topic_id_(0), request_id_(0)
   {
     callback = NULL;
     sub_msg_cnt_ = 0;
@@ -78,6 +78,7 @@ public:
   bool is_registered_;
   uint8_t topic_id_;
   uint32_t sub_msg_cnt_;
+  uint16_t request_id_;
 };
 
 } // namespace ros2

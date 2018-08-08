@@ -191,8 +191,9 @@ void micrortps::subscribe(micrortps::Subscriber_t* subscriber)
 
 bool micrortps::runCommunication(uint32_t timeout_ms)
 {
-  bool is_connected;
-  is_connected = mr_run_session_until_timeout(&g_rtps_session, timeout_ms);
+  (void)(timeout_ms);
+  bool is_connected = true;
+
   return is_connected;
 }
 

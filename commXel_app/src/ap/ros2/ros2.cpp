@@ -35,10 +35,12 @@ void ros2::spin(ros2::Node *node)
 {
   node->runPubCallback();
 
-  if(micrortps::runCommunication(1000) == false)
-  {
-    node->recreate();
-  }
+  node->runSession(1000);
+
+//  if(micrortps::runCommunication(1000) == false)
+//  {
+//    node->recreate();
+//  }
 }
 
 int64_t ros2::getMillisTime(void)
@@ -52,7 +54,7 @@ builtin_interfaces::Time ros2::now()
   int64_t msec = ros2::getMillisTime();
 
   time.sec = (int32_t)(msec/(int64_t)1000);
-  time.nanosec = (uint32_t)(msec%(int64_t)1000);
+  time.nanosec = (uint32_t)((msec%(int64_t)1000)*1000000);
 
   return time;
 }
@@ -94,6 +96,7 @@ builtin_interfaces::Time ros2::now()
 
 void onTopicCallback(mrSession* session, mrObjectId object_id, uint16_t request_id, mrStreamId stream_id, struct MicroBuffer* mb, void* args)
 {
+  (void)(session); (void)(request_id); (void)(stream_id);
   ros2::Node* node = (ros2::Node*) args;
   uint8_t topic_id = object_id.type;
 

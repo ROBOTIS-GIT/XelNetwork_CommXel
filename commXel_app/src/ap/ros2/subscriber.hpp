@@ -48,6 +48,7 @@ class Subscriber:public SubscriberHandle
       }
 
       micrortps::subscribe(&subscriber_);
+      request_id_ = subscriber_.read_req;
     }
 
     void recreate()

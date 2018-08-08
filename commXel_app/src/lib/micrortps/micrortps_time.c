@@ -9,7 +9,19 @@
 #include <time.h>
 #include "hw.h"
 
+#if 1
+int64_t clockGetTime(void)
+{
+  static uint32_t pre_msec = 0, now_msec;
+  static uint64_t msec = 0;
 
+  now_msec = millis();
+  msec += (uint64_t) (now_msec - pre_msec);
+  pre_msec = now_msec;
+
+  return msec;
+}
+#else
 int clock_gettime(clockid_t clk_id, struct timespec *tp)
 {
   (void)(clk_id);
@@ -27,3 +39,6 @@ int clock_gettime(clockid_t clk_id, struct timespec *tp)
 
   return 0;
 }
+#endif
+
+
