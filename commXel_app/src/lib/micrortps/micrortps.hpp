@@ -15,6 +15,27 @@
 #include <micrortps/client/core/session/submessage.h>
 
 
+#ifdef PROFILE_UDP_TRANSPORT
+#if defined(PLATFORM_NAME_COMMXEL)
+#include <transport/udp_transport_commxel.h>
+#endif
+#endif //PROFILE_UDP_TRANSPORT
+
+#ifdef PROFILE_TCP_TRANSPORT
+#if defined(PLATFORM_NAME_OPENCR)
+#include <transport/tcp_transport_commxel.h>
+#endif
+#endif //PROFILE_TCP_TRANSPORT
+
+#ifdef PROFILE_SERIAL_TRANSPORT
+#if defined(PLATFORM_NAME_LINUX)
+#include <transport/serial_transport_opencr.h>
+#elif defined(PLATFORM_NAME_COMMXEL)
+#include <transport/serial_transport_commxel.h>
+#endif
+#endif //PROFILE_SERIAL_TRANSPORT
+
+
 namespace micrortps {
 
 typedef struct Participant{
