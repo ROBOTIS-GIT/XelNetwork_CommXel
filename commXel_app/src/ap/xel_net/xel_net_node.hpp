@@ -69,32 +69,32 @@ private:
 
 void publishBatteryState(sensor_msgs::BatteryState* msg)
 {
-      static float cell_voltage_data_[3];
+  static float cell_voltage_data_[3];
 
-      msg->header.frame_id          = (char*) "CommXel BatteryState";
-      msg->header.stamp             = ros2::now();
+  msg->header.frame_id          = (char*) "CommXel BatteryState";
+  msg->header.stamp             = ros2::now();
 
-      msg->voltage                  = 1;
-      msg->current                  = 2;
-      msg->charge                   = 3;
-      msg->capacity                 = 4;
-      msg->design_capacity          = 5;
-      msg->percentage               = 6;
+  msg->voltage                  = 1;
+  msg->current                  = 2;
+  msg->charge                   = 3;
+  msg->capacity                 = 4;
+  msg->design_capacity          = 5;
+  msg->percentage               = 6;
 
-      msg->power_supply_status      = 0;
-      msg->power_supply_health      = 1;
-      msg->power_supply_technology  = 2;
+  msg->power_supply_status      = 0;
+  msg->power_supply_health      = 1;
+  msg->power_supply_technology  = 2;
 
-      msg->present                  = true;
-      msg->cell_voltage             = cell_voltage_data_;
-      msg->cell_voltage_size        = sizeof(cell_voltage_data_)/sizeof(float);
-      for(uint32_t i = 0; i < msg->cell_voltage_size; i++)
-      {
-        msg->cell_voltage[i]        = 3.7;
-      }
+  msg->present                  = true;
+  msg->cell_voltage             = cell_voltage_data_;
+  msg->cell_voltage_size        = sizeof(cell_voltage_data_)/sizeof(float);
+  for(uint32_t i = 0; i < msg->cell_voltage_size; i++)
+  {
+    msg->cell_voltage[i]        = 3.7;
+  }
 
-      msg->location                 = (char*)"PowerXel";
-      msg->serial_number            = (char*)"123-456-789";
+  msg->location                 = (char*)"PowerXel";
+  msg->serial_number            = (char*)"123-456-789";
 }
 
 void subscribeBatteryState(sensor_msgs::BatteryState* msg)
@@ -145,19 +145,19 @@ void subscribeLaserScan(sensor_msgs::LaserScan* msg)
 
 void publishImu(sensor_msgs::Imu* msg)
 {
-    msg->header.frame_id       = (char*) "CommXel IMU";
-    msg->header.stamp          = ros2::now();
+  msg->header.frame_id       = (char*) "CommXel IMU";
+  msg->header.stamp          = ros2::now();
 
-    msg->orientation.x         = 1;
-    msg->orientation.y         = 2;
-    msg->orientation.z         = 3;
-    msg->orientation.w         = 4;
-    msg->angular_velocity.x    = 5;
-    msg->angular_velocity.y    = 6;
-    msg->angular_velocity.z    = 7;
-    msg->linear_acceleration.x = 8;
-    msg->linear_acceleration.y = 9;
-    msg->linear_acceleration.z = 10;
+  msg->orientation.x         = 1;
+  msg->orientation.y         = 2;
+  msg->orientation.z         = 3;
+  msg->orientation.w         = 4;
+  msg->angular_velocity.x    = 5;
+  msg->angular_velocity.y    = 6;
+  msg->angular_velocity.z    = 7;
+  msg->linear_acceleration.x = 8;
+  msg->linear_acceleration.y = 9;
+  msg->linear_acceleration.z = 10;
 }
 
 

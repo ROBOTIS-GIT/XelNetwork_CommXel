@@ -142,5 +142,6 @@ bool mr_init_uart_transport_fd(mrSerialTransport* transport, int fd, uint8_t rem
 
 bool mr_close_uart_transport(mrSerialTransport* transport)
 {
+    (void)(transport);
     return true;
 }

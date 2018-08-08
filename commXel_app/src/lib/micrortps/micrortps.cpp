@@ -64,6 +64,9 @@ bool micrortps::setup(const char* p_server_ip, uint16_t server_port, mrOnTopicFu
   mr_set_topic_callback(&g_rtps_session, callback, callback_arg);
 
   g_is_rtps_init_done = mr_create_session(&g_rtps_session);
+
+#elif defined(PROFILE_TCP_TRANSPORT)
+  (void)(p_server_ip); (void)(server_port); (void)(callback); (void)(callback_arg);
 #else
   (void)(p_server_ip); (void)(server_port); (void)(callback); (void)(callback_arg);
 #endif
