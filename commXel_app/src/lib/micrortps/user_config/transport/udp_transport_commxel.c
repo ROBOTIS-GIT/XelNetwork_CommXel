@@ -61,13 +61,13 @@ bool mr_init_udp_transport(mrUDPTransport* transport, const char* ip, uint16_t p
     bool rv = false;
 
     /* Socket initialization */
-    transport->socket_fd = socket(AF_INET, SOCK_DGRAM, 0);
+    transport->socket_fd = socket(PF_INET, SOCK_DGRAM, 0);
     if (-1 != transport->socket_fd)
     {
         /* timeout socket option */
         struct timeval tv;
         tv.tv_sec = 0;
-        tv.tv_usec = 50000; //50ms
+        tv.tv_usec = 100000; //100ms
         setsockopt(transport->socket_fd, SOL_SOCKET, SO_RCVTIMEO,(struct timeval *)&tv,sizeof(struct timeval));
 
         /* Remote IP setup. */

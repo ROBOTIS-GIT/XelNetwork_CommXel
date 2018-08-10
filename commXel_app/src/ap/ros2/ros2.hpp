@@ -182,7 +182,7 @@ class Node
       for(i = 0; i < pub_cnt_; i++)
       {
         p_pub = pub_list_[i];
-        if(p_pub != NULL && p_pub->is_registered_ && p_pub->isTimeToPublish())
+        if(p_pub->is_registered_ && p_pub->isTimeToPublish())
         {
           p_pub->publish();
         }
@@ -202,7 +202,7 @@ class Node
           {
             p_sub->callback(topic_msg);
           }
-          p_sub->subscribe();
+          //p_sub->subscribe();
         }
       }
     }

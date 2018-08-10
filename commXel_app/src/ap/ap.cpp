@@ -69,7 +69,7 @@ void apInit(void)
     cmdifPrintf("osThreadCreate : threadButtonLed fail\n");
   }
 
-  osThreadDef(threadROS2, threadROS2, osPriorityNormal, 0, 16*1024/4);
+  osThreadDef(threadROS2, threadROS2, osPriorityNormal, 0, 32*1024/4);
   ret = osThreadCreate (osThread(threadROS2), NULL);
   if (ret == NULL)
   {
@@ -102,13 +102,13 @@ static void threadROS2(void const * argument)
   }
 
   ros2::init("192.168.60.136", 2018);
-
   XelNetwork::XelNetworkNode XelNetNode;
 
   for( ;; )
   {
     ros2::spin(&XelNetNode);
   }
+
 
   for( ;; )
   {

@@ -42,8 +42,8 @@ typedef struct Participant{
   bool is_init;
   mrObjectId id;
   mrSession *session;
-  mrStreamId reliable_out;
-  mrStreamId reliable_in;
+  mrStreamId output_stream_id;
+  mrStreamId input_stream_id;
 } Participant_t;
 
 typedef struct Subscriber{
@@ -67,6 +67,7 @@ typedef struct Publisher{
 
 bool setup(mrOnTopicFunc callback, void* callback_arg);
 bool setup(const char* p_server_ip, uint16_t server_port, mrOnTopicFunc callback, void* callback_arg);
+bool createSession(mrCommunication* comm, mrOnTopicFunc callback, void* callback_arg);
 bool createParticipant(Participant_t* participant);
 bool registerTopic(Participant_t* participant, char* topic_profile, uint8_t topic_id);
 bool createPublisher(Participant_t* participant, Publisher_t* publisher, uint8_t topic_id, char* publisher_profile, char* writer_profile);

@@ -36,7 +36,7 @@ public:
   virtual bool serialize(struct MicroBuffer* writer, const MsgT* topic) = 0;
   virtual bool deserialize(struct MicroBuffer* reader, MsgT* topic) = 0;
 
-  virtual bool writeTopic(mrSession* session, mrObjectId datawriter_id, mrStreamId stream_id, MsgT* topic)
+  virtual bool writeTopic(mrSession* session, mrStreamId stream_id, mrObjectId datawriter_id, MsgT* topic)
   {
     if (session == NULL)
     {
@@ -47,7 +47,7 @@ public:
     uint32_t topic_length = size_of_topic(topic, 0);
     uint32_t payload_length = 0;
     payload_length += 4; //request_id + object_id
-    payload_length += topic_length; //topic_length (remove in future version to be compliant)
+    payload_length += 4; //topic_length (remove in future version to be compliant)
 
     MicroBuffer mb;
     if(prepare_stream_to_write(&session->streams, stream_id, payload_length + topic_length + SUBHEADER_SIZE, &mb))

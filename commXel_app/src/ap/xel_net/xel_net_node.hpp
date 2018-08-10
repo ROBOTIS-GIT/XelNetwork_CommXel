@@ -12,6 +12,8 @@
 #include <sensor_msgs/Imu.hpp>
 #include <sensor_msgs/BatteryState.hpp>
 #include <sensor_msgs/LaserScan.hpp>
+#include <std_msgs/Empty.hpp>
+#include <std_msgs/Bool.hpp>
 
 
 #define BATTERY_STATE_PUBLISH_FREQUENCY     200    //hz
@@ -30,6 +32,8 @@ void subscribeLaserScan(sensor_msgs::LaserScan* msg);
 void publishImu(sensor_msgs::Imu* msg);
 void subscribeImu(sensor_msgs::Imu* msg);
 
+void subscribeReset(std_msgs::Empty* msg);
+void subscribeLed(std_msgs::Bool* msg);
 
 namespace XelNetwork {
 
@@ -50,6 +54,9 @@ public:
     imu_pub_ = this->createPublisher<sensor_msgs::Imu>("commXel_imu");
     this->createWallFreq(IMU_PUBLISH_FREQUENCY, (ros2::CallbackFunc)publishImu, imu_pub_);
     imu_sub_ = this->createSubscriber<sensor_msgs::Imu>("commXel_imu", (ros2::CallbackFunc)subscribeImu);
+
+    reset_sub_ = this->createSubscriber<std_msgs::Empty>("commXel_reset", (ros2::CallbackFunc)subscribeReset);
+    led_sub    = this->createSubscriber<std_msgs::Bool>("commXel_led", (ros2::CallbackFunc)subscribeLed);
   }
 
 
@@ -62,6 +69,9 @@ private:
 
   ros2::Publisher<sensor_msgs::Imu>*           imu_pub_;
   ros2::Subscriber<sensor_msgs::Imu>*          imu_sub_;
+
+  ros2::Subscriber<std_msgs::Empty>*           reset_sub_;
+  ros2::Subscriber<std_msgs::Bool>*            led_sub;
 };
 
 } // namespace XelNetwork
@@ -166,6 +176,23 @@ void subscribeImu(sensor_msgs::Imu* msg)
 
 }
 
+
+void subscribeReset(std_msgs::Empty* msg)
+{
+
+}
+
+void subscribeLed(std_msgs::Bool* msg)
+{
+  if(msg->data == true)
+  {
+    ledOn(_DEF_LED1);
+  }
+  else
+  {
+    ledOff(_DEF_LED1);
+  }
+}
 
 
 #endif /* XEL_NET_NODE_HPP_ */

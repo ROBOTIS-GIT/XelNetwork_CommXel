@@ -35,12 +35,10 @@ void ros2::spin(ros2::Node *node)
 {
   node->runPubCallback();
 
-  node->runSession(1000);
-
-//  if(micrortps::runCommunication(1000) == false)
-//  {
-//    node->recreate();
-//  }
+  if(micrortps::runCommunication(100) == false)
+  {
+    node->recreate();
+  }
 }
 
 int64_t ros2::getMillisTime(void)

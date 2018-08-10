@@ -48,7 +48,7 @@ public:
       callback((void*)&topic_);
     }
 
-    topic_.writeTopic(node_->session, publisher_.writer_id, node_->reliable_out, &topic_);
+    topic_.writeTopic(node_->session, publisher_.participant->output_stream_id, publisher_.writer_id, &topic_);
   }
 
   void recreate()
