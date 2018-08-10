@@ -32,19 +32,23 @@ uint8_t      input_reliable_stream_buffer[BUFFER_SIZE];
 
 bool micrortps::setup(mrOnTopicFunc callback, void* callback_arg)
 {
+#if defined(PROFILE_SERIAL_TRANSPORT)
+  bool ret = false;
   // Transport
   static mrSerialTransport transport;
   if(mr_init_uart_transport(&transport, "usb", 0, 0) == false)
   {
     return false;
   }
-
-  return micrortps::createSession(&transport.comm, callback, callback_arg);
+  ret = micrortps::createSession(&transport.comm, callback, callback_arg);
+#endif
+  return ret;
 }
 
 
 bool micrortps::setup(const char* p_server_ip, uint16_t server_port, mrOnTopicFunc callback, void* callback_arg)
 {
+  bool ret = false;
 #if defined(PROFILE_UDP_TRANSPORT)  
   // Transport
   static mrUDPTransport transport;
@@ -52,14 +56,16 @@ bool micrortps::setup(const char* p_server_ip, uint16_t server_port, mrOnTopicFu
   {
     return false;
   }
+  ret = micrortps::createSession(&transport.comm, callback, callback_arg);
 
 #elif defined(PROFILE_TCP_TRANSPORT)
   (void)(p_server_ip); (void)(server_port); (void)(callback); (void)(callback_arg);
 #else
   (void)(p_server_ip); (void)(server_port); (void)(callback); (void)(callback_arg);
 #endif
-  return micrortps::createSession(&transport.comm, callback, callback_arg);
+  return ret;
 }
+
 
 bool micrortps::createSession(mrCommunication* comm, mrOnTopicFunc callback, void* callback_arg)
 {
