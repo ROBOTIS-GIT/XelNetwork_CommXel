@@ -98,7 +98,7 @@ bool micrortps::createParticipant(micrortps::Participant_t* participant)
   uint16_t participant_req = mr_write_create_participant_ref(&g_rtps_session, participant->output_stream_id, participant->id, 0, participant_ref, MR_REPLACE);
 
   uint8_t status;
-  participant->is_init = mr_run_session_until_status(participant->session, 20, &participant_req, &status, 1);
+  participant->is_init = mr_run_session_until_status(participant->session, 1000, &participant_req, &status, 1);
 
   return participant->is_init;
 }
@@ -117,7 +117,11 @@ bool micrortps::registerTopic(micrortps::Participant_t* participant, char* topic
   mrObjectId object_id = mr_object_id(topic_id, MR_TOPIC_ID);
 
   uint16_t topic_req = mr_write_configure_topic_xml(participant->session, participant->output_stream_id, object_id, participant->id, topic_profile, MR_REUSE);
-  ret = mr_run_session_until_status(participant->session, 20, &topic_req, &status, 1);
+  ret = mr_run_session_until_status(participant->session, 1000, &topic_req, &status, 1);
+  if(status == MR_STATUS_ERR_ALREADY_EXISTS)
+  {
+    ret = true;
+  }
 
   return ret;
 }
@@ -139,7 +143,7 @@ bool micrortps::createPublisher(micrortps::Participant_t* participant, micrortps
   uint8_t status;
 
   uint16_t publisher_req = mr_write_configure_publisher_xml(participant->session, participant->output_stream_id, publisher->id, participant->id, publisher_profile, MR_REPLACE);
-  ret = mr_run_session_until_status(participant->session, 20, &publisher_req, &status, 1);
+  ret = mr_run_session_until_status(participant->session, 1000, &publisher_req, &status, 1);
 
   if (ret == true)
   {
@@ -147,7 +151,7 @@ bool micrortps::createPublisher(micrortps::Participant_t* participant, micrortps
     publisher->writer_id = mr_object_id(topic_id, MR_DATAWRITER_ID);
     uint16_t datawriter_req = mr_write_configure_datawriter_xml(participant->session, participant->output_stream_id, publisher->writer_id, publisher->id, writer_profile, MR_REPLACE);
 
-    publisher->is_init = mr_run_session_until_status(participant->session, 20, &datawriter_req, &status, 1);
+    publisher->is_init = mr_run_session_until_status(participant->session, 1000, &datawriter_req, &status, 1);
   }
 
   return publisher->is_init;
@@ -169,7 +173,7 @@ bool micrortps::createSubscriber(micrortps::Participant_t* participant, micrortp
 
   uint8_t status;
   uint16_t subscriber_req = mr_write_configure_subscriber_xml(participant->session, participant->output_stream_id, subscriber->id, participant->id, subscriber_profile, MR_REPLACE);
-  ret = mr_run_session_until_status(participant->session, 20, &subscriber_req, &status, 1);
+  ret = mr_run_session_until_status(participant->session, 1000, &subscriber_req, &status, 1);
 
   if (ret == true)
   {
@@ -177,7 +181,7 @@ bool micrortps::createSubscriber(micrortps::Participant_t* participant, micrortp
     subscriber->reader_id = mr_object_id(topic_id, MR_DATAREADER_ID);
     uint16_t datareader_req = mr_write_configure_datareader_xml(participant->session, participant->output_stream_id, subscriber->reader_id, subscriber->id, reader_profile, MR_REPLACE);
 
-    subscriber->is_init = mr_run_session_until_status(participant->session, 20, &datareader_req, &status, 1);
+    subscriber->is_init = mr_run_session_until_status(participant->session, 1000, &datareader_req, &status, 1);
   }
 
   return subscriber->is_init;
