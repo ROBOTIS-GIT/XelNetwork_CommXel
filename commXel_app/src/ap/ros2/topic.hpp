@@ -12,7 +12,7 @@
 #include "micrortps.hpp"
 #include "topic_config.h"
 
-#define DEFAULT_TOPIC_XML ("<dds><topic><name>rt/%s</name><dataType>%s</dataType></topic></dds>")
+#define DEFAULT_TOPIC_XML ("<dds><topic><kind>NO_KEY</kind><name>rt/%s</name><dataType>%s</dataType></topic></dds>")
 
 namespace ros2 {
 
@@ -63,7 +63,7 @@ public:
       init_micro_buffer(&mb_topic, mb.iterator, topic_length);
       (void) serialize(&mb_topic, topic);
 
-      written = mr_run_session_until_confirm_delivery(session, 100);
+      written = true;
     }
 
     return written;

@@ -33,11 +33,13 @@ bool ros2::init(const char* p_server_ip, uint16_t server_port)
 
 void ros2::spin(ros2::Node *node)
 {
-  node->runPubCallback();
-
   if(micrortps::runCommunication(100) == false)
   {
-    node->recreate();
+    //node->recreate();
+  }
+  else
+  {
+    node->runPubCallback();
   }
 }
 
@@ -96,7 +98,7 @@ void onTopicCallback(mrSession* session, mrObjectId object_id, uint16_t request_
 {
   (void)(session); (void)(request_id); (void)(stream_id);
   ros2::Node* node = (ros2::Node*) args;
-  uint8_t topic_id = object_id.type;
+  uint8_t topic_id = object_id.id;
 
   switch(topic_id)
   {

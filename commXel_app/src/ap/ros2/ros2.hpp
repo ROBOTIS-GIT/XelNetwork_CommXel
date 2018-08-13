@@ -185,6 +185,7 @@ class Node
         if(p_pub->is_registered_ && p_pub->isTimeToPublish())
         {
           p_pub->publish();
+          break;
         }
       }
     }
