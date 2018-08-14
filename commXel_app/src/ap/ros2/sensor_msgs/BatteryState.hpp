@@ -82,16 +82,15 @@ public:
     bool present;
     float* cell_voltage;
     uint32_t cell_voltage_size;
-    char* location;
-    char* serial_number;
+    char location[255];
+    char serial_number[255];
 
   BatteryState():
     Topic("sensor_msgs::msg::dds_::BatteryState_", SENSOR_MSGS_BATTERY_STATE_TOPIC),
     header(),
     voltage(0), current(0), charge(0), capacity(0), design_capacity(0), percentage(0),
     power_supply_status(0), power_supply_health(0), power_supply_technology(0),
-    present(0), cell_voltage(NULL), cell_voltage_size(0),
-    location(NULL), serial_number(NULL)
+    present(0), cell_voltage(NULL), cell_voltage_size(0)
   { 
   }
 

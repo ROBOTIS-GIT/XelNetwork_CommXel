@@ -57,7 +57,7 @@ public:
 
   bool serialize(struct MicroBuffer* writer, const Imu* topic)
   {
-    (void) header.serialize(writer, &topic->header);
+    (void)  header.serialize(writer, &topic->header);
     (void) orientation.serialize(writer, &topic->orientation);
     (void) serialize_array_double(writer, topic->orientation_covariance, 9);
     (void) angular_velocity.serialize(writer, &topic->angular_velocity);

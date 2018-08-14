@@ -33,12 +33,11 @@ namespace diagnostic_msgs {
 class KeyValue : public ros2::Topic<KeyValue>
 {
 public: 
-    char* key;
-    char* value;
+    char key[255];
+    char value[255];
 
   KeyValue():
-    Topic("diagnostic_msgs::msg::dds_::KeyValue_", DIAGNOSTIC_MSGS_KEY_VALUE_TOPIC),
-    key(NULL), value(NULL)
+    Topic("diagnostic_msgs::msg::dds_::KeyValue_", DIAGNOSTIC_MSGS_KEY_VALUE_TOPIC)
   { 
   }
 

@@ -39,13 +39,13 @@ class Odometry : public ros2::Topic<Odometry>
 {
 public: 
     std_msgs::Header header;
-    char* child_frame_id;
+    char child_frame_id[255];
     geometry_msgs::PoseWithCovariance pose;
     geometry_msgs::TwistWithCovariance twist;
 
   Odometry():
     Topic("nav_msgs::msg::dds_::Odometry_", NAV_MSGS_ODOMETRY_TOPIC),
-    header(), child_frame_id(NULL), pose(), twist()
+    header(), pose(), twist()
   { 
   }
 

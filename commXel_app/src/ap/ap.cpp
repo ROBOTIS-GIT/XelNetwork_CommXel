@@ -101,7 +101,7 @@ static void threadROS2(void const * argument)
     }
   }
 
-  ros2::init("192.168.60.136", 2018);
+  ros2::init("192.168.60.88", 2018);
   XelNetwork::XelNetworkNode XelNetNode;
 
   for( ;; )

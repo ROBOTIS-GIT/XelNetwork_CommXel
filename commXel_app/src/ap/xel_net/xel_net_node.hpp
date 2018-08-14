@@ -45,7 +45,7 @@ public:
   {
     commxel_battery_pub_ = this->createPublisher<sensor_msgs::BatteryState>("commXel_battery");
     this->createWallFreq(BATTERY_STATE_PUBLISH_FREQUENCY, (ros2::CallbackFunc)publishBatteryState, commxel_battery_pub_);
-    commxel_battery_sub_= this->createSubscriber<sensor_msgs::BatteryState>("BatteryState", (ros2::CallbackFunc)subscribeBatteryState);
+    commxel_battery_sub_= this->createSubscriber<sensor_msgs::BatteryState>("commXel_battery", (ros2::CallbackFunc)subscribeBatteryState);
 
     laser_scan_pub_ = this->createPublisher<sensor_msgs::LaserScan>("commXel_laser");
     this->createWallFreq(LASER_SCAN_PUBLISH_FREQUENCY, (ros2::CallbackFunc)publishLaserScan, laser_scan_pub_);
@@ -81,7 +81,7 @@ void publishBatteryState(sensor_msgs::BatteryState* msg)
 {
   static float cell_voltage_data_[3];
 
-  msg->header.frame_id          = (char*) "CommXel BatteryState";
+  strcpy(msg->header.frame_id, "CommXel BatteryState");
   msg->header.stamp             = ros2::now();
 
   msg->voltage                  = 1;
@@ -103,8 +103,8 @@ void publishBatteryState(sensor_msgs::BatteryState* msg)
     msg->cell_voltage[i]        = 3.7;
   }
 
-  msg->location                 = (char*)"PowerXel";
-  msg->serial_number            = (char*)"123-456-789";
+  strcpy(msg->location, "PowerXel");
+  strcpy(msg->serial_number, "123-456-789");
 }
 
 void subscribeBatteryState(sensor_msgs::BatteryState* msg)
@@ -116,10 +116,10 @@ void subscribeBatteryState(sensor_msgs::BatteryState* msg)
 
 void publishLaserScan(sensor_msgs::LaserScan* msg)
 {
-  float ranges_data_[8];
-  float intensities_data_[8];
+  static float ranges_data_[8];
+  static float intensities_data_[8];
 
-  msg->header.frame_id  = (char*) "CommXel LaserScan";
+  strcpy(msg->header.frame_id, "CommXel LaserScan");
   msg->header.stamp     = ros2::now();
 
   msg->angle_min        = 1;
@@ -155,7 +155,7 @@ void subscribeLaserScan(sensor_msgs::LaserScan* msg)
 
 void publishImu(sensor_msgs::Imu* msg)
 {
-  msg->header.frame_id       = (char*) "CommXel IMU";
+  strcpy(msg->header.frame_id, "CommXel IMU");
   msg->header.stamp          = ros2::now();
 
   msg->orientation.x         = 1;
