@@ -74,7 +74,7 @@ class Node
       typename MsgT>
     Publisher<MsgT>* createPublisher(const char* name)
     {
-      bool ret;
+      bool ret = false;
       ros2::Publisher<MsgT> *p_pub = NULL;
 
       if(this->node_register_state_ == false)
@@ -115,7 +115,7 @@ class Node
       typename MsgT>
     Subscriber<MsgT>* createSubscriber(const char* name, CallbackFunc callback)
     {
-      bool ret;
+      bool ret = false;
       ros2::Subscriber<MsgT> *p_sub = NULL;
       
       if(this->node_register_state_ == false)

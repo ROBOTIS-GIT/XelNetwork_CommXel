@@ -56,7 +56,13 @@ public:
   bool serialize(struct MicroBuffer* writer, const JointState* topic)
   {
     (void) header.serialize(writer, &topic->header);
-    //(void) serialize_sequence_char(writer, topic->name, topic->name_size);
+    
+    (void) serialize_uint32_t(writer, topic->name_size);
+    for(uint32_t i = 0; i < topic->name_size; i++)
+    {
+      (void) serialize_sequence_char(writer, topic->name[i], (uint32_t)(strlen(topic->name[i])+1));
+    } 
+
     (void) serialize_sequence_double(writer, topic->position, topic->position_size);
     (void) serialize_sequence_double(writer, topic->velocity, topic->velocity_size);
     (void) serialize_sequence_double(writer, topic->effort, topic->effort_size);
@@ -67,7 +73,14 @@ public:
   bool deserialize(struct MicroBuffer* reader, JointState* topic)
   {
     (void) header.deserialize(reader, &topic->header);
-    //(void) deserialize_sequence_char(reader, topic->name, &topic->name_size);
+    
+    // uint32_t size_string = 0, size_data;
+    // (void) deserialize_uint32_t(reader, &size_string);
+    // for(uint32_t i = 0; i < size_string; i++)
+    // {
+    //   (void) deserialize_sequence_char(reader, topic->name[i], &size_data);
+    // }
+
     (void) deserialize_sequence_double(reader, topic->position, &topic->position_size);
     (void) deserialize_sequence_double(reader, topic->velocity, &topic->velocity_size);
     (void) deserialize_sequence_double(reader, topic->effort, &topic->effort_size);
@@ -78,11 +91,13 @@ public:
   virtual uint32_t size_of_topic(const JointState* topic, uint32_t size)
   {
     size  = header.size_of_topic(&topic->header, size);
-    // size += 4 + get_alignment(size, 4);
-    // for(size_t a = 0; a < topic->name.size(); ++a)
-    // {
-    //     size += 4 + eprosima::fastcdr::Cdr::alignment(size, 4) + topic->name.at(a).size() + 1;
-    // }
+
+    size += 4 + get_alignment(size, 4);
+    for(uint32_t i = 0; i < name_size; i++)
+    {
+      size += 4 + get_alignment(size, 4) + (uint32_t)(strlen(name[i]) + 1);
+    }
+
     size += 4 + get_alignment(size, 4);
     size += (topic->position_size * 8) + get_alignment(size, 8);
 
