@@ -65,7 +65,7 @@
 //#define _USE_HW_CMDIF_EEPROM
 //#define _USE_HW_CMDIF_FLASH
 //#define _USE_HW_CMDIF_RESET
-//#define _USE_HW_CMDIF_DXLCMD
+#define _USE_HW_CMDIF_DXLCMD
 
 #define _HW_DEF_CMDIF_LIST_MAX                32
 #define _HW_DEF_LED_CH_MAX                    1
