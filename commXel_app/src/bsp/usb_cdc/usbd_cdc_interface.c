@@ -203,7 +203,7 @@ static int8_t CDC_Itf_Control (uint8_t cmd, uint8_t* pbuf, uint16_t length)
     LineCoding.paritytype = pbuf[5];
     LineCoding.datatype   = pbuf[6];
 
-    if( LineCoding.bitrate == 1200 )
+    if( LineCoding.bitrate == 2400 )
     {
       CDC_Reset_Status = 1;
     }
