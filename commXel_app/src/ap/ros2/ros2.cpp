@@ -33,13 +33,11 @@ bool ros2::init(const char* p_server_ip, uint16_t server_port)
 
 void ros2::spin(ros2::Node *node)
 {
-  if(micrortps::runCommunication(100) == false)
+  node->runPubCallback();
+
+  if(micrortps::runCommunication(1) == false)
   {
     //node->recreate();
-  }
-  else
-  {
-    node->runPubCallback();
   }
 }
 
