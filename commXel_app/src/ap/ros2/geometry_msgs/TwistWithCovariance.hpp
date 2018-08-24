@@ -39,7 +39,7 @@ public:
   double covariance[36];
 
   TwistWithCovariance():
-    Topic("geometry_msgs::msg::dds_::TwistWithCovariance_", GEOMETRY_MSGS_TWIST_WITH_CONVARIANCE_TOPIC),
+    Topic("geometry_msgs::msg::dds_::TwistWithCovariance_", GEOMETRY_MSGS_TWIST_WITH_COVARIANCE_TOPIC),
     twist()
   { 
     memset(covariance, 0, sizeof(covariance));

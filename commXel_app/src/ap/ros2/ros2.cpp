@@ -190,7 +190,7 @@ void ros2::onTopicCallback(mrSession* session, mrObjectId object_id, uint16_t re
       break;
     }
 
-    case GEOMETRY_MSGS_POSE_WITH_CONVARIANCE_TOPIC:
+    case GEOMETRY_MSGS_POSE_WITH_COVARIANCE_TOPIC:
     {
       geometry_msgs::PoseWithCovariance topic;
       topic.deserialize(mb, &topic);
@@ -198,7 +198,7 @@ void ros2::onTopicCallback(mrSession* session, mrObjectId object_id, uint16_t re
       break;
     }
 
-    case GEOMETRY_MSGS_TWIST_WITH_CONVARIANCE_TOPIC:
+    case GEOMETRY_MSGS_TWIST_WITH_COVARIANCE_TOPIC:
     {
       geometry_msgs::TwistWithCovariance topic;
       topic.deserialize(mb, &topic);

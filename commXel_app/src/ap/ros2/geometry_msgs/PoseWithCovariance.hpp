@@ -39,7 +39,7 @@ public:
   double covariance[36];
 
   PoseWithCovariance():
-    Topic("geometry_msgs::msg::dds_::PoseWithCovariance_", GEOMETRY_MSGS_POSE_WITH_CONVARIANCE_TOPIC),
+    Topic("geometry_msgs::msg::dds_::PoseWithCovariance_", GEOMETRY_MSGS_POSE_WITH_COVARIANCE_TOPIC),
     pose()
   { 
     memset(covariance, 0, sizeof(covariance));
