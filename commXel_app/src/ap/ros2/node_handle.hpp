@@ -15,7 +15,7 @@
 
 namespace ros2 {
 
-typedef void(*CallbackFunc)(void* topic_msg);
+typedef void(*CallbackFunc)(void* msg, void* arg);
 
 class PublisherHandle
 {
@@ -25,6 +25,7 @@ public:
     : is_registered_(false)
   {
     callback = NULL;
+    callback_arg = NULL;
     pub_msg_cnt_ = 0;
     callback_interval_ms_ = 0;
     last_call_time_ms_ = 0;
@@ -32,6 +33,7 @@ public:
   virtual ~PublisherHandle(){}
 
   CallbackFunc callback;
+  void*        callback_arg;
   virtual void recreate(void) = 0;
   virtual void publish(void) = 0;
 
@@ -67,13 +69,17 @@ public:
     : is_registered_(false), topic_id_(0), request_id_(0)
   {
     callback = NULL;
+    callback_arg = NULL;
     sub_msg_cnt_ = 0;
   }
   virtual ~SubscriberHandle(){}
 
   CallbackFunc callback;
+  void*        callback_arg;
   virtual void recreate(void) = 0;
   virtual void subscribe(void) = 0;
+
+  virtual void runCallback(void* msg);
 
   bool is_registered_;
   uint8_t topic_id_;

@@ -8,6 +8,7 @@
 #ifndef ROS2_TOPIC_CONFIG_H_
 #define ROS2_TOPIC_CONFIG_H_
 
+
 enum TopicIdNumbering 
 {
   /* builtin_interfaces */

@@ -8,7 +8,6 @@
 
 #include "ros2.hpp"
 
-
 namespace ros2 {
   char* client_communication_method;
   char* server_ip;
@@ -57,42 +56,36 @@ builtin_interfaces::Time ros2::now()
   return time;
 }
 
+const char* ros2::getPrefixString(MessagePrefix prefix)
+{
+  switch(prefix)
+  {
+    case ros2::TOPICS_PUBLISH:
+      return "rt/";
 
+    case ros2::TOPICS_SUBSCRIBE:
+      return "rt/";
 
+    case ros2::SERVICE_REQUEST:
+      return "rq/";
 
-#include "std_msgs/Bool.hpp"
-#include "std_msgs/Empty.hpp"
-#include "std_msgs/Header.hpp"
-#include "std_msgs/Int32.hpp"
-#include "std_msgs/Int64.hpp"
-#include "std_msgs/MultiArrayDimension.hpp"
-#include "std_msgs/String.hpp"
+    case ros2::SERVICE_RESPONSE:
+      return "rr/";
 
-#include "sensor_msgs/BatteryState.hpp"
-#include "sensor_msgs/Imu.hpp"
-#include "sensor_msgs/LaserScan.hpp"
-#include "sensor_msgs/MagneticField.hpp"
-#include "sensor_msgs/JointState.hpp"
+    case ros2::SERVICE:
+      return "rs/";
 
-#include "nav_msgs/Odometry.hpp"
+    case ros2::PARAMETER:
+      return "rp/";
 
-#include "geometry_msgs/Point.hpp"
-#include "geometry_msgs/Pose.hpp"
-#include "geometry_msgs/PoseWithCovariance.hpp"
-#include "geometry_msgs/Quaternion.hpp"
-#include "geometry_msgs/Transform.hpp"
-#include "geometry_msgs/TransformStamped.hpp"
-#include "geometry_msgs/Twist.hpp"
-#include "geometry_msgs/TwistWithCovariance.hpp"
-#include "geometry_msgs/Vector3.hpp"
+    case ros2::ACTION:
+      return "ra/";
+  }
 
-#include "diagnostic_msgs/KeyValue.hpp"
+  return "";
+}
 
-#include "turtlebot3_msgs/SensorState.hpp"
-#include "turtlebot3_msgs/Sound.hpp"
-#include "turtlebot3_msgs/VersionInfo.hpp"
-
-void onTopicCallback(mrSession* session, mrObjectId object_id, uint16_t request_id, mrStreamId stream_id, struct MicroBuffer* mb, void* args)
+void ros2::onTopicCallback(mrSession* session, mrObjectId object_id, uint16_t request_id, mrStreamId stream_id, struct MicroBuffer* mb, void* args)
 {
   (void)(session); (void)(request_id); (void)(stream_id);
   ros2::Node* node = (ros2::Node*) args;

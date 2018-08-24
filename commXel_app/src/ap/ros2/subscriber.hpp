@@ -26,7 +26,7 @@ class Subscriber:public SubscriberHandle
 {
 
   public:
-    Subscriber(micrortps::Participant_t* node, const char* name, void (*callback)(void* topic_msg))
+    Subscriber(micrortps::Participant_t* node, const char* name, CallbackFunc callback, void* callback_arg)
       : SubscriberHandle()
     {
       MsgT topic;
@@ -35,6 +35,7 @@ class Subscriber:public SubscriberHandle
       name_ = name;
       topic_id_ = topic.id_;
       this->callback = callback;
+      this->callback_arg = callback_arg;
       this->recreate();
     }
 
@@ -49,6 +50,14 @@ class Subscriber:public SubscriberHandle
 
       micrortps::subscribe(&subscriber_);
       request_id_ = subscriber_.read_req;
+    }
+
+    void runCallback(void* msg)
+    {
+      if(this->callback != NULL)
+      {
+        this->callback(msg, this->callback_arg);
+      }
     }
 
     void recreate()

@@ -12,13 +12,23 @@
 #include "publisher.hpp"
 #include "subscriber.hpp"
 #include "topic.hpp"
-#include "builtin_interfaces/Time.hpp"
-
-
-void onTopicCallback(mrSession* session, mrObjectId object_id, uint16_t request_id, mrStreamId stream_id, struct MicroBuffer* mb, void* args);
+#include "ros2/msg_list.hpp"
 
 
 namespace ros2 {
+
+typedef enum MessagePrefix_{
+  TOPICS_PUBLISH = 0,
+  TOPICS_SUBSCRIBE,
+  SERVICE_REQUEST,
+  SERVICE_RESPONSE,
+  SERVICE,
+  PARAMETER,
+  ACTION
+}MessagePrefix;
+
+void onTopicCallback(mrSession* session, mrObjectId object_id, uint16_t request_id, mrStreamId stream_id, struct MicroBuffer* mb, void* args);
+const char* getPrefixString(MessagePrefix prefix);
 
 extern char* client_communication_method;
 extern char* server_ip;
@@ -89,7 +99,7 @@ class Node
       }
 
       // Register Topic
-      ret = this->registerTopic<MsgT>(name);
+      ret = this->registerTopic<MsgT>(name, TOPICS_PUBLISH);
 
       if (ret == false)
       {
@@ -113,7 +123,7 @@ class Node
 
     template <
       typename MsgT>
-    Subscriber<MsgT>* createSubscriber(const char* name, CallbackFunc callback)
+    Subscriber<MsgT>* createSubscriber(const char* name, CallbackFunc callback, void* callback_arg)
     {
       bool ret = false;
       ros2::Subscriber<MsgT> *p_sub = NULL;
@@ -130,7 +140,7 @@ class Node
       }
 
       // Register Topic
-      ret = this->registerTopic<MsgT>(name);
+      ret = this->registerTopic<MsgT>(name, TOPICS_SUBSCRIBE);
 
       if (ret == false)
       {
@@ -138,7 +148,7 @@ class Node
         return NULL;
       }
 
-      p_sub = new ros2::Subscriber<MsgT>(&this->participant_, name, callback);
+      p_sub = new ros2::Subscriber<MsgT>(&this->participant_, name, callback, callback_arg);
 
       if(p_sub->is_registered_ == false)
       {
@@ -153,7 +163,7 @@ class Node
       return p_sub;
     }
 
-    void createWallTimer(uint32_t msec, CallbackFunc callback, PublisherHandle* pub)
+    void createWallTimer(uint32_t msec, CallbackFunc callback, void* callback_arg, PublisherHandle* pub)
     {
       if(pub == NULL)
       {
@@ -162,9 +172,10 @@ class Node
 
       pub->setInterval(msec);
       pub->callback = callback;
+      pub->callback_arg = callback_arg;
     }
 
-    void createWallFreq(uint32_t hz, CallbackFunc callback, PublisherHandle* pub)
+    void createWallFreq(uint32_t hz, CallbackFunc callback, void* callback_arg, PublisherHandle* pub)
     {
       uint32_t msec;
       if(hz > 1000)
@@ -172,7 +183,7 @@ class Node
         hz = 1000;
       }
       msec = (uint32_t)(1000/hz);
-      this->createWallTimer(msec, callback, pub);
+      this->createWallTimer(msec, callback, callback_arg, pub);
     }
 
     void runPubCallback()
@@ -199,25 +210,8 @@ class Node
         p_sub = sub_list_[i];
         if(p_sub->is_registered_ && p_sub->topic_id_ == topic_id)
         {
-          if(p_sub->callback != NULL)
-          {
-            p_sub->callback(topic_msg);
-          }
+          p_sub->runCallback(topic_msg);
           //p_sub->subscribe();
-        }
-      }
-    }
-
-    void runSession(uint32_t timeout_ms)
-    {
-      uint8_t read_data_status, i;
-      ros2::SubscriberHandle *p_sub;
-      for(i = 0; i < sub_cnt_; i++)
-      {
-        p_sub = sub_list_[i];
-        if(p_sub->is_registered_)
-        {
-          mr_run_session_until_status(participant_.session, timeout_ms, &p_sub->request_id_, &read_data_status, 1);
         }
       }
     }
@@ -234,7 +228,7 @@ class Node
 
     template <
       typename MsgT>
-    bool registerTopic(const char* name)
+    bool registerTopic(const char* name, MessagePrefix prefix)
     {
       bool ret;
       MsgT topic;
@@ -245,7 +239,7 @@ class Node
       }
 
       char topic_profile[256] = {0, };
-      sprintf(topic_profile, DEFAULT_TOPIC_XML, name, topic.type_);
+      sprintf(topic_profile, DEFAULT_TOPIC_XML, getPrefixString(prefix), name, topic.type_);
       ret = micrortps::registerTopic(&this->participant_, topic_profile, topic.id_);
 
       return ret;

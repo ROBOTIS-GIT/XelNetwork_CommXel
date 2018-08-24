@@ -45,7 +45,7 @@ public:
 
     if(callback != NULL)
     {
-      callback((void*)&topic_);
+      callback((void*)&topic_, callback_arg);
     }
 
     topic_.writeTopic(node_->session, publisher_.participant->output_stream_id, publisher_.writer_id, &topic_);

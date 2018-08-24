@@ -29,8 +29,6 @@
 
 
 #include "std_msgs/Header.hpp"
-#include "geometry_msgs/PoseWithCovariance.hpp"
-#include "geometry_msgs/TwistWithCovariance.hpp"
 
 namespace turtlebot3_msgs {
 

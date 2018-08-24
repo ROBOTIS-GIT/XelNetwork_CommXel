@@ -40,7 +40,7 @@ public:
   Time():
     Topic("builtin_interfaces::msg::dds_::Time_", BUILTIN_INTERFACES_TIME_TOPIC),
     sec(0), nanosec(0)
-  { 
+  {
   }
 
   bool serialize(struct MicroBuffer* writer, const Time* topic)
