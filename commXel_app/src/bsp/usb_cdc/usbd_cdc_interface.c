@@ -56,8 +56,9 @@
 #define APP_RX_DATA_SIZE  2048
 #define APP_TX_DATA_SIZE  2048
 
-
+#define RESET_FLAG_BAUDRATE 2400
 const char *JUMP_BOOT_STR = "RESET XELNETWORK";
+
 
 
 /* Private macro -------------------------------------------------------------*/
@@ -203,7 +204,7 @@ static int8_t CDC_Itf_Control (uint8_t cmd, uint8_t* pbuf, uint16_t length)
     LineCoding.paritytype = pbuf[5];
     LineCoding.datatype   = pbuf[6];
 
-    if( LineCoding.bitrate == 2400 )
+    if( LineCoding.bitrate == RESET_FLAG_BAUDRATE )
     {
       CDC_Reset_Status = 1;
     }

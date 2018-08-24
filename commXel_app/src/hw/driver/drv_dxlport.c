@@ -47,7 +47,6 @@ static void  (*txDoneISR[DXLPORT_MAX_CH])(void);
 
 //-- Internal Functions
 //
-static void drvDxlportTxDoneISR1(void);
 
 
 
@@ -215,16 +214,4 @@ uint32_t drvDxlportWrite(uint8_t ch, uint8_t *p_data, uint32_t length)
   }
 
   return ret;
-}
-
-void drvDxlportTxDoneISR1(void)
-{
-  drvDxlportTxDisable(_DEF_DXL1);
-
-  tx_done[_DEF_DXL1] = true;
-
-  if (txDoneISR[_DEF_DXL1] != NULL)
-  {
-    (*txDoneISR[_DEF_DXL1])();
-  }
 }
