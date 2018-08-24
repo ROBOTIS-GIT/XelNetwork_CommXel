@@ -43,6 +43,7 @@ public:
     Topic("std_msgs::msg::dds_::Header_", STD_MSGS_HEADER_TOPIC),
     stamp()
   { 
+    memset(frame_id, 0, sizeof(frame_id));
   }
 
 
