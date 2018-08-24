@@ -34,7 +34,6 @@ public:
     name_ = name;
     this->recreate();
   }
-  virtual ~Publisher(){};
 
   void publish(void)
   {

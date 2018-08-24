@@ -72,14 +72,14 @@ public:
     callback_arg = NULL;
     sub_msg_cnt_ = 0;
   }
-  virtual ~SubscriberHandle(){}
+  virtual ~SubscriberHandle(){};
 
   CallbackFunc callback;
   void*        callback_arg;
   virtual void recreate(void) = 0;
   virtual void subscribe(void) = 0;
 
-  virtual void runCallback(void* msg);
+  virtual void runCallback(void* msg) = 0;
 
   bool is_registered_;
   uint8_t topic_id_;

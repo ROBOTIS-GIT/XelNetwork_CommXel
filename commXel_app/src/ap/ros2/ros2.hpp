@@ -17,7 +17,7 @@
 
 namespace ros2 {
 
-typedef enum MessagePrefix_{
+enum MessagePrefix{
   TOPICS_PUBLISH = 0,
   TOPICS_SUBSCRIBE,
   SERVICE_REQUEST,
@@ -25,7 +25,7 @@ typedef enum MessagePrefix_{
   SERVICE,
   PARAMETER,
   ACTION
-}MessagePrefix;
+};
 
 void onTopicCallback(mrSession* session, mrObjectId object_id, uint16_t request_id, mrStreamId stream_id, struct MicroBuffer* mb, void* args);
 const char* getPrefixString(MessagePrefix prefix);

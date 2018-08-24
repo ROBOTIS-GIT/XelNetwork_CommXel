@@ -39,8 +39,6 @@ class Subscriber:public SubscriberHandle
       this->recreate();
     }
 
-    virtual ~Subscriber(){};
-
     void subscribe(void)
     {
       if(is_registered_ ==  false)
