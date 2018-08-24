@@ -12,7 +12,7 @@
 #include "publisher.hpp"
 #include "subscriber.hpp"
 #include "topic.hpp"
-#include "ros2/msg_list.hpp"
+#include "msg_list.hpp"
 
 
 namespace ros2 {
