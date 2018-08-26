@@ -22,6 +22,8 @@ enum DataDirection
 
 typedef struct XelInfo
 {
+  uint8_t              status;
+  bool                 is_connected;
   uint8_t              xel_id;
   XelNetwork::DataType data_type;
   char                 data_name[32];
