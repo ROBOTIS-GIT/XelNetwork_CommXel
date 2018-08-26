@@ -30,7 +30,7 @@ void sendMsgStdChar(std_msgs::Char* msg, void* arg)
 void sendMsgStdInt8(std_msgs::Int8* msg, void* arg)
 {
   Int8_t *p_data = (Int8_t*)arg;
-  msg->data = p_data->data;
+  msg->data = (uint8_t)p_data->data;
 }
 
 void sendMsgStdInt16(std_msgs::Int16* msg, void* arg)
