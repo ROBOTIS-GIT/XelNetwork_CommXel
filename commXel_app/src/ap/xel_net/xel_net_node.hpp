@@ -23,6 +23,7 @@ typedef struct XelInfo
   uint32_t             pub_interval_hz;
   uint8_t              data[128];
   ros2::CallbackFunc   p_callback_func;
+  bool                 is_registered;
 } XelInfo_t;
 
 

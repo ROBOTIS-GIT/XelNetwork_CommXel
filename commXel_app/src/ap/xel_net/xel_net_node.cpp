@@ -80,7 +80,11 @@ bool XelNetwork::createNewTopicWithXel(XelNetwork::XelNetworkNode* node, XelNetw
       info->p_callback_func = (ros2::CallbackFunc)sendMsgSensorImu;
       ret = node->createNewTopic<sensor_msgs::Imu>(info);
       break;
+
+    default:
+      break;
   }
 
+  info->is_registered = ret;
   return ret;
 }
