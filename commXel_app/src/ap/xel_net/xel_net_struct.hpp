@@ -16,6 +16,21 @@ typedef struct Bool
   bool data;
 }Bool_t;
 
+typedef struct Char
+{
+  char data;
+}Char_t;
+
+typedef struct Int8
+{
+  int8_t data;
+}Int8_t;
+
+typedef struct Int16
+{
+  int16_t data;
+}Int16_t;
+
 typedef struct Int32
 {
   int32_t data;
@@ -26,15 +41,35 @@ typedef struct Int64
   int64_t data;
 }Int64_t;
 
-typedef struct Float
+typedef struct Uint8
+{
+  uint8_t data;
+}Uint8_t;
+
+typedef struct Uint16
+{
+  uint16_t data;
+}Uint16_t;
+
+typedef struct Uint32
+{
+  uint32_t data;
+}Uint32_t;
+
+typedef struct Uint64
+{
+  uint64_t data;
+}Uint64_t;
+
+typedef struct Float32
 {
   float data;
-}Float_t;
+}Float32_t;
 
-typedef struct Double
+typedef struct Float64
 {
   double data;
-}Double_t;
+}Float64_t;
 
 typedef struct Imu
 {

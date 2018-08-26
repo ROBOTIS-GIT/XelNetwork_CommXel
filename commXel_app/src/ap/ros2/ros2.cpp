@@ -101,9 +101,33 @@ void ros2::onTopicCallback(mrSession* session, mrObjectId object_id, uint16_t re
       break;
     }
 
+    case STD_MSGS_CHAR_TOPIC:
+    {
+      std_msgs::Char topic;
+      topic.deserialize(mb, &topic);
+      node->runSubCallback(topic_id, (void*)&topic);
+      break;
+    }
+
     case STD_MSGS_STRING_TOPIC:
     {
       std_msgs::String topic;
+      topic.deserialize(mb, &topic);
+      node->runSubCallback(topic_id, (void*)&topic);
+      break;
+    }
+
+    case STD_MSGS_INT8_TOPIC:
+    {
+      std_msgs::Int8 topic;
+      topic.deserialize(mb, &topic);
+      node->runSubCallback(topic_id, (void*)&topic);
+      break;
+    }
+
+    case STD_MSGS_INT16_TOPIC:
+    {
+      std_msgs::Int16 topic;
       topic.deserialize(mb, &topic);
       node->runSubCallback(topic_id, (void*)&topic);
       break;
@@ -120,6 +144,54 @@ void ros2::onTopicCallback(mrSession* session, mrObjectId object_id, uint16_t re
     case STD_MSGS_INT64_TOPIC:
     {
       std_msgs::Int64 topic;
+      topic.deserialize(mb, &topic);
+      node->runSubCallback(topic_id, (void*)&topic);
+      break;
+    }
+
+    case STD_MSGS_UINT8_TOPIC:
+    {
+      std_msgs::UInt8 topic;
+      topic.deserialize(mb, &topic);
+      node->runSubCallback(topic_id, (void*)&topic);
+      break;
+    }
+
+    case STD_MSGS_UINT16_TOPIC:
+    {
+      std_msgs::UInt16 topic;
+      topic.deserialize(mb, &topic);
+      node->runSubCallback(topic_id, (void*)&topic);
+      break;
+    }
+
+    case STD_MSGS_UINT32_TOPIC:
+    {
+      std_msgs::UInt32 topic;
+      topic.deserialize(mb, &topic);
+      node->runSubCallback(topic_id, (void*)&topic);
+      break;
+    }
+
+    case STD_MSGS_UINT64_TOPIC:
+    {
+      std_msgs::UInt64 topic;
+      topic.deserialize(mb, &topic);
+      node->runSubCallback(topic_id, (void*)&topic);
+      break;
+    }
+
+    case STD_MSGS_FLOAT32_TOPIC:
+    {
+      std_msgs::Float32 topic;
+      topic.deserialize(mb, &topic);
+      node->runSubCallback(topic_id, (void*)&topic);
+      break;
+    }
+
+    case STD_MSGS_FLOAT64_TOPIC:
+    {
+      std_msgs::Float64 topic;
       topic.deserialize(mb, &topic);
       node->runSubCallback(topic_id, (void*)&topic);
       break;

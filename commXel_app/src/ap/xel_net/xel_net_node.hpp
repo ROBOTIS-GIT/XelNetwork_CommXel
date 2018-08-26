@@ -14,6 +14,12 @@
 
 namespace XelNetwork {
 
+enum DataDirection
+{
+  SEND = 0,
+  RECEIVE
+};
+
 typedef struct XelInfo
 {
   uint8_t              xel_id;

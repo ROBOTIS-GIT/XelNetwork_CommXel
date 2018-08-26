@@ -12,8 +12,8 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-#ifndef _STD_MSGS_INT64_HPP_
-#define _STD_MSGS_INT64_HPP_
+#ifndef _STD_MSGS_INT16_HPP_
+#define _STD_MSGS_INT16_HPP_
 
 
 #include "micrortps.hpp"
@@ -24,36 +24,36 @@
 namespace std_msgs {
 
 
-class Int64 : public ros2::Topic<Int64>
+class Int16 : public ros2::Topic<Int16>
 {
 public:
-  int64_t data;
+  int16_t data;
 
-  Int64():
-    Topic("std_msgs::msg::dds_::Int64_", STD_MSGS_INT64_TOPIC),
+  Int16():
+    Topic("std_msgs::msg::dds_::Int16_", STD_MSGS_INT16_TOPIC),
     data(0)
   { 
   }
 
-  bool serialize(struct MicroBuffer* writer, const Int64* topic)
+  bool serialize(struct MicroBuffer* writer, const Int16* topic)
   {
-    (void) serialize_int64_t(writer, topic->data);
+    (void) serialize_int16_t(writer, topic->data);
 
     return writer->error == BUFFER_OK;
   }
 
-  bool deserialize(struct MicroBuffer* reader, Int64* topic)
+  bool deserialize(struct MicroBuffer* reader, Int16* topic)
   {
-    (void) deserialize_int64_t(reader, &topic->data);
+    (void) deserialize_int16_t(reader, &topic->data);
 
     return reader->error == BUFFER_OK;
   }
 
-  uint32_t size_of_topic(const Int64* topic, uint32_t size)
+  uint32_t size_of_topic(const Int16* topic, uint32_t size)
   {
     (void)(topic);
 
-    size += 8 + get_alignment(size, 8);
+    size += 2 + get_alignment(size, 2);
 
     return size;
   }
@@ -63,4 +63,4 @@ public:
 } // namespace std_msgs
 
 
-#endif // _STD_MSGS_INT64_HPP_
+#endif // _STD_MSGS_INT16_HPP_
