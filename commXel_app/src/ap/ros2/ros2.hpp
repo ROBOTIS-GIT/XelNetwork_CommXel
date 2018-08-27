@@ -250,7 +250,7 @@ class Node
 bool init(void);
 bool init(const char* p_server_ip, uint16_t server_port);
 void spin(Node *node);
-int64_t getMillisTime(void);
+void syncTimeFromRemote(builtin_interfaces::Time* time);
 builtin_interfaces::Time now();
 
 

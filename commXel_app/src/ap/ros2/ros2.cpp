@@ -12,6 +12,9 @@ namespace ros2 {
   char* client_communication_method;
   char* server_ip;
   uint16_t server_port;
+
+  static builtin_interfaces::Time synced_time_from_remote;
+  static uint32_t millis_when_synced_time;
 }
 
 bool ros2::init()
@@ -40,20 +43,30 @@ void ros2::spin(ros2::Node *node)
   }
 }
 
-int64_t ros2::getMillisTime(void)
+void ros2::syncTimeFromRemote(builtin_interfaces::Time* msg)
 {
-  return micrortps::getMillisTime();
+  ros2::millis_when_synced_time         = millis();
+  ros2::synced_time_from_remote.sec     = msg->sec;
+  ros2::synced_time_from_remote.nanosec = msg->nanosec;
 }
 
 builtin_interfaces::Time ros2::now()
 {
-  builtin_interfaces::Time time;
-  int64_t msec = ros2::getMillisTime();
+  builtin_interfaces::Time ret_time = synced_time_from_remote;
+  uint32_t msec_offset = millis() - ros2::millis_when_synced_time;
 
-  time.sec = (int32_t)(msec/(int64_t)1000);
-  time.nanosec = (uint32_t)((msec%(int64_t)1000)*1000000);
+  ret_time.sec += (int32_t)(msec_offset/1000);
+  if(ret_time.nanosec/1000000 + msec_offset%1000 < 1000)
+  {
+    ret_time.nanosec += (uint32_t)((msec_offset%1000)*1000000);
+  }
+  else //nanosec + offset >= 1sec
+  {
+    ret_time.sec += (ret_time.nanosec/1000000 + msec_offset)/1000;
+    ret_time.nanosec = (uint32_t)(ret_time.nanosec%1000000000 + (msec_offset%1000)*1000000);
+  }
 
-  return time;
+  return ret_time;
 }
 
 const char* ros2::getPrefixString(MessagePrefix prefix)
@@ -93,6 +106,14 @@ void ros2::onTopicCallback(mrSession* session, mrObjectId object_id, uint16_t re
 
   switch(topic_id)
   {
+    case BUILTIN_INTERFACES_TIME_TOPIC:
+    {
+      builtin_interfaces::Time topic;
+      topic.deserialize(mb, &topic);
+      node->runSubCallback(topic_id, (void*)&topic);
+      break;
+    }
+
     case STD_MSGS_BOOL_TOPIC:
     {
       std_msgs::Bool topic;
