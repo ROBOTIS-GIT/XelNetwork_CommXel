@@ -104,15 +104,6 @@ static void threadROS2(void const * argument)
   ros2::init("192.168.60.88", 2018);
   XelNetwork::XelNetworkNode XelNetNode;
 
-  XelNetwork::XelInfo sensorXel;
-  sensorXel.xel_id = 1;
-  sensorXel.data_type = XelNetwork::IMU;
-  sprintf(sensorXel.data_name, "XelNetwork%d/IMU", (int)sensorXel.xel_id);
-  sensorXel.msg_type = ros2::TOPICS_PUBLISH;
-  sensorXel.pub_interval_hz = 10;
-  memset(sensorXel.data, 0, sizeof(sensorXel.data));
-
-  createNewTopicWithXel(&XelNetNode, &sensorXel);
 
   for( ;; )
   {

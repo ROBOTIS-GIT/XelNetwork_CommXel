@@ -20,18 +20,42 @@ enum DataDirection
   RECEIVE
 };
 
-typedef struct XelInfo
+enum XelStatus
 {
-  uint8_t              status;
-  bool                 is_connected;
+  NOT_CONNECTTED = 0,
+  NEW_CONNECTION,
+  LOST_CONNECTION,
+  RUNNING
+};
+
+struct XelInitData_t
+{
   uint8_t              xel_id;
   XelNetwork::DataType data_type;
-  char                 data_name[32];
-  ros2::MessagePrefix  msg_type;
-  uint32_t             pub_interval_hz;
+  uint32_t             data_get_interval_hz;
+  char                 data_name[32];         //ROS2 topic name
+  ros2::MessagePrefix  msg_type;              //ros2 message type (topic, service, action..)
+};
+
+struct XelStatus_t
+{
+  XelStatus  previous;
+  XelStatus  current;
+  bool       flag_changed;
+  bool       flag_get_data;
+};
+
+struct XelDDS_t
+{
+  ros2::CallbackFunc p_callback_func;
+};
+
+typedef struct XelInfo
+{
+  struct XelStatus_t   status;
+  struct XelInitData_t init_data;
   uint8_t              data[128];
-  ros2::CallbackFunc   p_callback_func;
-  bool                 is_registered;
+  struct XelDDS_t      dds;
 } XelInfo_t;
 
 
@@ -48,20 +72,20 @@ public:
   {
     bool ret = false;
 
-    switch(info->msg_type)
+    switch(info->init_data.msg_type)
     {
       case ros2::TOPICS_PUBLISH:
       {
-        ros2::Publisher<MsgT>* p_pub = this->createPublisher<MsgT>((const char*)info->data_name);
-        this->createWallFreq(info->pub_interval_hz, (ros2::CallbackFunc)info->p_callback_func, info->data, p_pub);
+        ros2::Publisher<MsgT>* p_pub = this->createPublisher<MsgT>((const char*)info->init_data.data_name);
+        this->createWallFreq(info->init_data.data_get_interval_hz, (ros2::CallbackFunc)info->dds.p_callback_func, info->data, p_pub);
         ret = p_pub!=NULL ? true:false;
       }
         break;
 
       case ros2::TOPICS_SUBSCRIBE:
       {
-        ros2::Subscriber<MsgT>* p_sub = this->createSubscriber<MsgT>((const char*)info->data_name,
-            (ros2::CallbackFunc)info->p_callback_func, info->data);
+        ros2::Subscriber<MsgT>* p_sub = this->createSubscriber<MsgT>((const char*)info->init_data.data_name,
+            (ros2::CallbackFunc)info->dds.p_callback_func, info->data);
         ret = p_sub!=NULL ? true:false;
       }
         break;
