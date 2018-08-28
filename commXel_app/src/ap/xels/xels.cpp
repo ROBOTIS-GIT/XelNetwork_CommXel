@@ -81,7 +81,7 @@ uint32_t xelsPings(XelNetwork::XelInfo_t *p_xel_infos, uint32_t max_xels)
 
     for (int i=0; i<xels_count; i++)
     {
-      p_xel_infos[xel_index].init_data.xel_id = resp.ping.p_node[i]->id;
+      p_xel_infos[xel_index].header.xel_id = resp.ping.p_node[i]->id;
 
       if (xelsReadHeader(&p_xel_infos[xel_index]) == true)
       {
@@ -103,7 +103,7 @@ bool xelsPing(XelNetwork::XelInfo_t *p_xel_info)
   p_dxl_node = &dxl_cmd;
 
 
-  dxl_ret = dxlcmdPing(p_dxl_node, p_xel_info->init_data.xel_id, &resp.ping, 100);
+  dxl_ret = dxlcmdPing(p_dxl_node, p_xel_info->header.xel_id, &resp.ping, 100);
   if (dxl_ret == DXL_RET_RX_RESP)
   {
     ret = true;
@@ -126,17 +126,17 @@ bool xelsReadHeader(XelNetwork::XelInfo_t *p_xel_info)
   p_dxl_node = &dxl_cmd;
 
 
-  dxl_ret = dxlcmdRead(p_dxl_node, p_xel_info->init_data.xel_id, 32, sizeof(xels_header_t), &resp_read, 100);
+  dxl_ret = dxlcmdRead(p_dxl_node, p_xel_info->header.xel_id, 32, sizeof(xels_header_t), &resp_read, 100);
   if (dxl_ret == DXL_RET_RX_RESP)
   {
     memcpy(&xel_header, resp_read.p_node[0]->p_data, sizeof(xels_header_t));
 
-    p_xel_info->init_data.data_type = (XelNetwork::DataType)xel_header.data_type;
-    p_xel_info->init_data.data_get_interval_hz = xel_header.data_get_interval_hz;
-    memcpy(p_xel_info->init_data.data_name, xel_header.data_name, 32);
-    p_xel_info->init_data.msg_type = (ros2::MessagePrefix)xel_header.msg_type;
-    p_xel_info->init_data.data_addr = xel_header.data_addr;
-    p_xel_info->init_data.data_lenght = xel_header.data_lenght;
+    p_xel_info->header.data_type = (XelNetwork::DataType)xel_header.data_type;
+    p_xel_info->header.data_get_interval_hz = xel_header.data_get_interval_hz;
+    memcpy(p_xel_info->header.data_name, xel_header.data_name, 32);
+    p_xel_info->header.msg_type = (ros2::MessagePrefix)xel_header.msg_type;
+    p_xel_info->header.data_addr = xel_header.data_addr;
+    p_xel_info->header.data_lenght = xel_header.data_lenght;
   }
   else
   {
@@ -157,10 +157,10 @@ bool xelsReadData(XelNetwork::XelInfo_t *p_xel_info)
 
   p_dxl_node = &dxl_cmd;
 
-  data_addr   = p_xel_info->init_data.data_addr;
-  data_length = p_xel_info->init_data.data_lenght;
+  data_addr   = p_xel_info->header.data_addr;
+  data_length = p_xel_info->header.data_lenght;
 
-  dxl_ret = dxlcmdRead(p_dxl_node, p_xel_info->init_data.xel_id, data_addr, data_length, &resp_read, 100);
+  dxl_ret = dxlcmdRead(p_dxl_node, p_xel_info->header.xel_id, data_addr, data_length, &resp_read, 100);
   if (dxl_ret == DXL_RET_RX_RESP)
   {
     memcpy(p_xel_info->data, resp_read.p_node[0]->p_data, data_length);
@@ -190,16 +190,16 @@ int xelsCmdif(int argc, char **argv)
 
       for (int i=0; i<xelinfo_count; i++)
       {
-        xelinfo_tbl[i].init_data.data_name[31] = 0;
+        xelinfo_tbl[i].header.data_name[31] = 0;
 
         cmdifPrintf("xelinfo     \t: %d\n", i);
-        cmdifPrintf("xel_id      \t: %d\n", xelinfo_tbl[i].init_data.xel_id);
-        cmdifPrintf("data_type   \t: %d\n", xelinfo_tbl[i].init_data.data_type);
-        cmdifPrintf("interval_hz \t: %d\n", xelinfo_tbl[i].init_data.data_get_interval_hz);
-        cmdifPrintf("data_name   \t: %s\n", xelinfo_tbl[i].init_data.data_name);
-        cmdifPrintf("msg_type    \t: %d\n", xelinfo_tbl[i].init_data.msg_type);
-        cmdifPrintf("data_addr   \t: %d\n", xelinfo_tbl[i].init_data.data_addr);
-        cmdifPrintf("data_length \t: %d\n", xelinfo_tbl[i].init_data.data_lenght);
+        cmdifPrintf("xel_id      \t: %d\n", xelinfo_tbl[i].header.xel_id);
+        cmdifPrintf("data_type   \t: %d\n", xelinfo_tbl[i].header.data_type);
+        cmdifPrintf("interval_hz \t: %d\n", xelinfo_tbl[i].header.data_get_interval_hz);
+        cmdifPrintf("data_name   \t: %s\n", xelinfo_tbl[i].header.data_name);
+        cmdifPrintf("msg_type    \t: %d\n", xelinfo_tbl[i].header.msg_type);
+        cmdifPrintf("data_addr   \t: %d\n", xelinfo_tbl[i].header.data_addr);
+        cmdifPrintf("data_length \t: %d\n", xelinfo_tbl[i].header.data_lenght);
         cmdifPrintf("\n");
       }
     }
@@ -208,13 +208,13 @@ int xelsCmdif(int argc, char **argv)
       for (int i=0; i<xelinfo_count; i++)
       {
         cmdifPrintf("xelinfo     \t: %d\n", i);
-        cmdifPrintf("xel_id      \t: %d\n", xelinfo_tbl[i].init_data.xel_id);
-        cmdifPrintf("data_type   \t: %d\n", xelinfo_tbl[i].init_data.data_type);
-        cmdifPrintf("interval_hz \t: %d\n", xelinfo_tbl[i].init_data.data_get_interval_hz);
-        cmdifPrintf("data_name   \t: %s\n", xelinfo_tbl[i].init_data.data_name);
-        cmdifPrintf("msg_type    \t: %d\n", xelinfo_tbl[i].init_data.msg_type);
-        cmdifPrintf("data_addr   \t: %d\n", xelinfo_tbl[i].init_data.data_addr);
-        cmdifPrintf("data_length \t: %d\n", xelinfo_tbl[i].init_data.data_lenght);
+        cmdifPrintf("xel_id      \t: %d\n", xelinfo_tbl[i].header.xel_id);
+        cmdifPrintf("data_type   \t: %d\n", xelinfo_tbl[i].header.data_type);
+        cmdifPrintf("interval_hz \t: %d\n", xelinfo_tbl[i].header.data_get_interval_hz);
+        cmdifPrintf("data_name   \t: %s\n", xelinfo_tbl[i].header.data_name);
+        cmdifPrintf("msg_type    \t: %d\n", xelinfo_tbl[i].header.msg_type);
+        cmdifPrintf("data_addr   \t: %d\n", xelinfo_tbl[i].header.data_addr);
+        cmdifPrintf("data_length \t: %d\n", xelinfo_tbl[i].header.data_lenght);
         cmdifPrintf("\n");
       }
     }
@@ -233,7 +233,7 @@ int xelsCmdif(int argc, char **argv)
         for (int i=0; i<xelinfo_count; i++)
         {
           pre_time[i] = millis();
-          hz_time[i] = 1000/xelinfo_tbl[i].init_data.data_get_interval_hz;
+          hz_time[i] = 1000/xelinfo_tbl[i].header.data_get_interval_hz;
         }
 
         while(cmdifRxAvailable() == 0)
@@ -250,7 +250,7 @@ int xelsCmdif(int argc, char **argv)
                 data.u8Data[2] = xelinfo_tbl[i].data[2];
                 data.u8Data[3] = xelinfo_tbl[i].data[3];
 
-                cmdifPrintf("xel_id %d : %d\n", xelinfo_tbl[i].init_data.xel_id, data.UINT32);
+                cmdifPrintf("xel_id %d : %d\n", xelinfo_tbl[i].header.xel_id, data.UINT32);
               }
             }
           }
@@ -290,7 +290,7 @@ int xelsCmdif(int argc, char **argv)
       }
       else if (xelsPing(&xelinfo_tbl[number]) == true)
       {
-        cmdifPrintf("xel_id %d : OK\n", xelinfo_tbl[number].init_data.xel_id);
+        cmdifPrintf("xel_id %d : OK\n", xelinfo_tbl[number].header.xel_id);
       }
     }
     else if (strcmp("read", argv[1]) == 0 && xelsIsOpen() == true)
@@ -311,7 +311,7 @@ int xelsCmdif(int argc, char **argv)
 
 
         pre_time = millis();
-        hz_time = 1000/xelinfo_tbl[number].init_data.data_get_interval_hz;
+        hz_time = 1000/xelinfo_tbl[number].header.data_get_interval_hz;
 
         while(cmdifRxAvailable() == 0)
         {
@@ -325,7 +325,7 @@ int xelsCmdif(int argc, char **argv)
               data.u8Data[2] = xelinfo_tbl[number].data[2];
               data.u8Data[3] = xelinfo_tbl[number].data[3];
 
-              cmdifPrintf("xel_id %d : %d\n", xelinfo_tbl[number].init_data.xel_id, data.UINT32);
+              cmdifPrintf("xel_id %d : %d\n", xelinfo_tbl[number].header.xel_id, data.UINT32);
             }
           }
         }

@@ -20,9 +20,9 @@ bool XelNetwork::createNewTopicWithXel(XelNetwork::XelNetworkNode* node, XelNetw
     return false;
   }
 
-  if(info->init_data.msg_type == ros2::TOPICS_SUBSCRIBE
-            || info->init_data.msg_type == ros2::SERVICE_RESPONSE
-            || info->init_data.msg_type == ros2::PARAMETER)
+  if(info->header.msg_type == ros2::TOPICS_SUBSCRIBE
+            || info->header.msg_type == ros2::SERVICE_RESPONSE
+            || info->header.msg_type == ros2::PARAMETER)
   {
     direction = XelNetwork::RECEIVE;
   }
@@ -31,7 +31,7 @@ bool XelNetwork::createNewTopicWithXel(XelNetwork::XelNetworkNode* node, XelNetw
     direction = XelNetwork::SEND;
   }
 
-  switch(info->init_data.data_type)
+  switch(info->header.data_type)
   {
     case BOOLEAN:
       if(direction == XelNetwork::SEND){
