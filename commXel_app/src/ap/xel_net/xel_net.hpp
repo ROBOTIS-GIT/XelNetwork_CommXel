@@ -36,7 +36,11 @@ class Core
         switch(p_xel->status.current)
         {
           case NEW_CONNECTION:
-            createNewTopicWithXel(&node_, p_xel);
+            if(createNewTopicWithXel(&node_, p_xel) == true)
+            {
+              p_xel->status.previous = p_xel->status.current;
+              p_xel->status.current = RUNNING;;
+            }
             break;
 
           case LOST_CONNECTION:
@@ -112,7 +116,7 @@ class PlugAndPlay
     {
       //TODO: Broadcast ping
       //if(there is new connected xel)
-      // Store corresponding data(XelInfo_t.init_data).
+      // Store corresponding data(XelInfo_t.header).
     }
 
     void scanOneIdEveryInterval(void)
