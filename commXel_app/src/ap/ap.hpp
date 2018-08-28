@@ -16,7 +16,7 @@
 
 #include "ethernet/ap_ethernet.h"
 #include "ros2/ros2.hpp"
-
+#include "xels/xels.h"
 
 void apInit(void);
 void apMain(void);

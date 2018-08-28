@@ -76,6 +76,7 @@ void apInit(void)
     cmdifPrintf("osThreadCreate : threadROS2 fail\n");
   }
 
+  xelsInit();
 
   osKernelStart();
 }
