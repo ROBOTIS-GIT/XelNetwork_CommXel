@@ -35,6 +35,8 @@ struct XelInitData_t
   uint32_t             data_get_interval_hz;
   char                 data_name[32];         //ROS2 topic name
   ros2::MessagePrefix  msg_type;              //ros2 message type (topic, service, action..)
+  uint16_t             data_addr;
+  uint8_t              data_lenght;
 };
 
 struct XelStatus_t

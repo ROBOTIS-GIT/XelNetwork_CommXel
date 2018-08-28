@@ -9,6 +9,7 @@
 #define XEL_NET_HPP_
 
 #include "xel_net_node.hpp"
+#include "xels/xels.h"
 
 
 #define CONNECTED_XEL_MAX 30
@@ -113,6 +114,8 @@ class PlugAndPlay
       //TODO: Broadcast ping
       //if(there is new connected xel)
       // Store corresponding data(XelInfo_t.init_data).
+
+      xelsInit();
     }
 
     void scanOneIdEveryInterval(void)
