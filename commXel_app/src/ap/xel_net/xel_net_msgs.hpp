@@ -10,32 +10,6 @@
 
 #include "ros2.hpp"
 
-namespace XelNetwork
-{
-
-enum DataType
-{
-  BOOLEAN = 0,
-  CHAR,
-  INT8,
-  UINT8,
-  INT16,
-  UINT16,
-  INT32,
-  UINT32,
-  INT64,
-  UINT64,
-  FLOAT32,
-  FLOAT64,
-  VECTOR3,
-  QUATERNION,
-  POINT,
-  TWIST,
-  IMU
-};
-
-
-} //namespace XelNetwork
 
 //template <typename MsgT>
 //void sendMsgCallback(MsgT* msg, void* arg);

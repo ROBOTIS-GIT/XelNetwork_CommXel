@@ -5,8 +5,9 @@
  *      Author: kei
  */
 
+
 #include "xel_net_msgs.hpp"
-#include "xel_net_struct.hpp"
+#include "xel/xel_struct.hpp"
 
 
 using namespace XelNetwork;
