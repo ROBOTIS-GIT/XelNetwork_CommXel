@@ -13,7 +13,6 @@
 bool XelNetwork::createNewTopicWithXel(XelNetwork::XelNetworkNode* node, XelNetwork::XelInfo_t* info)
 {
   bool ret = false;
-  bool direction;
 
   if(node == NULL || info == NULL)
   {
@@ -24,166 +23,97 @@ bool XelNetwork::createNewTopicWithXel(XelNetwork::XelNetworkNode* node, XelNetw
             || info->header.msg_type == ros2::SERVICE_RESPONSE
             || info->header.msg_type == ros2::PARAMETER)
   {
-    direction = XelNetwork::RECEIVE;
+    info->data_direction = XelNetwork::RECEIVE;
   }
   else
   {
-    direction = XelNetwork::SEND;
+    info->data_direction = XelNetwork::SEND;
   }
 
   switch(info->header.data_type)
   {
     case BOOLEAN:
-      if(direction == XelNetwork::SEND){
-        info->dds.p_callback_func = (ros2::CallbackFunc)sendMsgStdBool;
-      }else{
-        info->dds.p_callback_func = (ros2::CallbackFunc)recvMsgStdBool;
-      }
+      info->dds.p_callback_func = (ros2::CallbackFunc)callbackMsgStdBool;
       ret = node->createNewTopic<std_msgs::Bool>(info);
       break;
 
     case CHAR:
-      if(direction == XelNetwork::SEND){
-        info->dds.p_callback_func = (ros2::CallbackFunc)sendMsgStdChar;
-      }else{
-        info->dds.p_callback_func = (ros2::CallbackFunc)recvMsgStdChar;
-      }
+      info->dds.p_callback_func = (ros2::CallbackFunc)callbackMsgStdChar;
       ret = node->createNewTopic<std_msgs::Char>(info);
       break;
 
     case INT8:
-      if(direction == XelNetwork::SEND){
-        info->dds.p_callback_func = (ros2::CallbackFunc)sendMsgStdInt8;
-      }else{
-        info->dds.p_callback_func = (ros2::CallbackFunc)recvMsgStdInt8;
-      }
+      info->dds.p_callback_func = (ros2::CallbackFunc)callbackMsgStdInt8;
       ret = node->createNewTopic<std_msgs::Int8>(info);
       break;
 
     case INT16:
-      if(direction == XelNetwork::SEND){
-        info->dds.p_callback_func = (ros2::CallbackFunc)sendMsgStdInt16;
-      }else{
-        info->dds.p_callback_func = (ros2::CallbackFunc)recvMsgStdInt16;
-      }
+      info->dds.p_callback_func = (ros2::CallbackFunc)callbackMsgStdInt16;
       ret = node->createNewTopic<std_msgs::Int16>(info);
       break;
 
     case INT32:
-      if(direction == XelNetwork::SEND){
-        info->dds.p_callback_func = (ros2::CallbackFunc)sendMsgStdInt32;
-      }else{
-        info->dds.p_callback_func = (ros2::CallbackFunc)recvMsgStdInt32;
-      }
+      info->dds.p_callback_func = (ros2::CallbackFunc)callbackMsgStdInt32;
       ret = node->createNewTopic<std_msgs::Int32>(info);
       break;
 
     case INT64:
-      if(direction == XelNetwork::SEND){
-        info->dds.p_callback_func = (ros2::CallbackFunc)sendMsgStdInt64;
-      }else{
-        info->dds.p_callback_func = (ros2::CallbackFunc)recvMsgStdInt64;
-      }
+      info->dds.p_callback_func = (ros2::CallbackFunc)callbackMsgStdInt64;
       ret = node->createNewTopic<std_msgs::Int64>(info);
       break;
 
     case UINT8:
-      if(direction == XelNetwork::SEND){
-        info->dds.p_callback_func = (ros2::CallbackFunc)sendMsgStdUint8;
-      }else{
-        info->dds.p_callback_func = (ros2::CallbackFunc)recvMsgStdUint8;
-      }
+      info->dds.p_callback_func = (ros2::CallbackFunc)callbackMsgStdUint8;
       ret = node->createNewTopic<std_msgs::UInt8>(info);
       break;
 
     case UINT16:
-      if(direction == XelNetwork::SEND){
-        info->dds.p_callback_func = (ros2::CallbackFunc)sendMsgStdUint16;
-      }else{
-        info->dds.p_callback_func = (ros2::CallbackFunc)recvMsgStdUint16;
-      }
+      info->dds.p_callback_func = (ros2::CallbackFunc)callbackMsgStdUint16;
       ret = node->createNewTopic<std_msgs::UInt16>(info);
       break;
 
     case UINT32:
-      if(direction == XelNetwork::SEND){
-        info->dds.p_callback_func = (ros2::CallbackFunc)sendMsgStdUint32;
-      }else{
-        info->dds.p_callback_func = (ros2::CallbackFunc)recvMsgStdUint32;
-      }
+      info->dds.p_callback_func = (ros2::CallbackFunc)callbackMsgStdUint32;
       ret = node->createNewTopic<std_msgs::UInt32>(info);
       break;
 
     case UINT64:
-      if(direction == XelNetwork::SEND){
-        info->dds.p_callback_func = (ros2::CallbackFunc)sendMsgStdUint64;
-      }else{
-        info->dds.p_callback_func = (ros2::CallbackFunc)recvMsgStdUint64;
-      }
+      info->dds.p_callback_func = (ros2::CallbackFunc)callbackMsgStdUint64;
       ret = node->createNewTopic<std_msgs::UInt64>(info);
       break;
 
     case FLOAT32:
-      if(direction == XelNetwork::SEND){
-        info->dds.p_callback_func = (ros2::CallbackFunc)sendMsgStdFloat32;
-      }else{
-        info->dds.p_callback_func = (ros2::CallbackFunc)recvMsgStdFloat32;
-      }
+      info->dds.p_callback_func = (ros2::CallbackFunc)callbackMsgStdFloat32;
       ret = node->createNewTopic<std_msgs::Float32>(info);
       break;
 
     case FLOAT64:
-      if(direction == XelNetwork::SEND){
-        info->dds.p_callback_func = (ros2::CallbackFunc)sendMsgStdFloat64;
-      }else{
-        info->dds.p_callback_func = (ros2::CallbackFunc)recvMsgStdFloat64;
-      }
-
+      info->dds.p_callback_func = (ros2::CallbackFunc)callbackMsgStdFloat64;
       ret = node->createNewTopic<std_msgs::Float64>(info);
       break;
 
     case VECTOR3:
-      if(direction == XelNetwork::SEND){
-        info->dds.p_callback_func = (ros2::CallbackFunc)sendMsgGeometryVector3;
-      }else{
-        info->dds.p_callback_func = (ros2::CallbackFunc)recvMsgStdChar;
-      }
+      info->dds.p_callback_func = (ros2::CallbackFunc)callbackMsgGeometryVector3;
       ret = node->createNewTopic<geometry_msgs::Vector3>(info);
       break;
 
     case QUATERNION:
-      if(direction == XelNetwork::SEND){
-        info->dds.p_callback_func = (ros2::CallbackFunc)sendMsgGeometryQauternion;
-      }else{
-        info->dds.p_callback_func = NULL;
-      }
+      info->dds.p_callback_func = (ros2::CallbackFunc)callbackMsgGeometryQauternion;
       ret = node->createNewTopic<geometry_msgs::Quaternion>(info);
       break;
 
     case POINT:
-      if(direction == XelNetwork::SEND){
-        info->dds.p_callback_func = (ros2::CallbackFunc)sendMsgGeometryPoint;
-      }else{
-        info->dds.p_callback_func = NULL;
-      }
+      info->dds.p_callback_func = (ros2::CallbackFunc)callbackMsgGeometryPoint;
       ret = node->createNewTopic<geometry_msgs::Point>(info);
       break;
 
     case TWIST:
-      if(direction == XelNetwork::SEND){
-        info->dds.p_callback_func = (ros2::CallbackFunc)sendMsgGeometryTwist;
-      }else{
-        info->dds.p_callback_func = (ros2::CallbackFunc)recvMsgGeometryTwist;
-      }
+      info->dds.p_callback_func = (ros2::CallbackFunc)callbackMsgGeometryTwist;
       ret = node->createNewTopic<geometry_msgs::Twist>(info);
       break;
 
     case IMU:
-      if(direction == XelNetwork::SEND){
-        info->dds.p_callback_func = (ros2::CallbackFunc)sendMsgSensorImu;
-      }else{
-        info->dds.p_callback_func = NULL;
-      }
+      info->dds.p_callback_func = (ros2::CallbackFunc)callbackMsgSensorImu;
       ret = node->createNewTopic<sensor_msgs::Imu>(info);
       break;
 
@@ -191,10 +121,5 @@ bool XelNetwork::createNewTopicWithXel(XelNetwork::XelNetworkNode* node, XelNetw
       break;
   }
 
-  if(ret == true)
-  {
-    info->status.previous = info->status.current;
-    info->status.current = XelNetwork::RUNNING;
-  }
   return ret;
 }

@@ -16,6 +16,18 @@
 
 namespace ros2 {
 
+enum MessagePrefix{
+  TOPICS_PUBLISH = 0,
+  TOPICS_SUBSCRIBE,
+  SERVICE_REQUEST,
+  SERVICE_RESPONSE,
+  SERVICE,
+  PARAMETER,
+  ACTION
+};
+
+const char* getPrefixString(MessagePrefix prefix);
+
 /* Base Message Type */
 template <typename MsgT>
 class Topic

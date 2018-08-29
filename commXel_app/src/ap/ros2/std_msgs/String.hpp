@@ -37,7 +37,8 @@ public:
 
   String():
     Topic("std_msgs::msg::dds_::String_", STD_MSGS_STRING_TOPIC)
-  { 
+  {
+    memset(data, 0, sizeof(data));
   }
 
 

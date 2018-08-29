@@ -14,7 +14,7 @@
 #include "topic.hpp"
 #include "hw.h"
 
-#define DEFAULT_WRITER_XML ("<profiles><publisher profile_name=\"default_xrce_publisher_profile\"><topic><kind>NO_KEY</kind><name>rt/%s</name><dataType>%s</dataType><historyQos><kind>KEEP_LAST</kind><depth>1</depth></historyQos><durability><kind>TRANSIENT_LOCAL</kind></durability></topic></publisher></profiles>")
+#define DEFAULT_WRITER_XML ("<profiles><publisher profile_name=\"default_xrce_publisher_profile\"><topic><kind>NO_KEY</kind><name>%s%s</name><dataType>%s</dataType><historyQos><kind>KEEP_LAST</kind><depth>1</depth></historyQos><durability><kind>TRANSIENT_LOCAL</kind></durability></topic></publisher></profiles>")
 
 extern uint32_t micros(void);
 
@@ -56,8 +56,9 @@ public:
     sprintf(publisher_profile, "<publisher name=\"%s\"", name_);
 
     char writer_profile[512] = {0, };
-    sprintf(writer_profile, DEFAULT_WRITER_XML, name_, topic_.type_);
-    is_registered_ = micrortps::createPublisher(node_, &publisher_, topic_.id_, publisher_profile, writer_profile);
+    sprintf(writer_profile, DEFAULT_WRITER_XML, getPrefixString(TOPICS_PUBLISH), name_, topic_.type_);
+    is_registered_ = micrortps::createPublisher(node_, &publisher_, publisher_profile, writer_profile);
+    this->writer_id_ = publisher_.writer_id.id;
   }
 
 private:

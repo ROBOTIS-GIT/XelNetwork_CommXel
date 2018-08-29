@@ -32,8 +32,8 @@ uint8_t      input_reliable_stream_buffer[BUFFER_SIZE];
 
 bool micrortps::setup(mrOnTopicFunc callback, void* callback_arg)
 {
-#if defined(PROFILE_SERIAL_TRANSPORT)
   bool ret = false;
+#if defined(PROFILE_SERIAL_TRANSPORT)
   // Transport
   static mrSerialTransport transport;
   if(mr_init_uart_transport(&transport, "usb", 0, 0) == false)
@@ -127,7 +127,7 @@ bool micrortps::registerTopic(micrortps::Participant_t* participant, char* topic
 }
 
 
-bool micrortps::createPublisher(micrortps::Participant_t* participant, micrortps::Publisher_t* publisher, uint8_t topic_id, char* publisher_profile, char* writer_profile)
+bool micrortps::createPublisher(micrortps::Participant_t* participant, micrortps::Publisher_t* publisher, char* publisher_profile, char* writer_profile)
 {
   if(participant->is_init == false)
   {
@@ -148,7 +148,8 @@ bool micrortps::createPublisher(micrortps::Participant_t* participant, micrortps
   if (ret == true)
   {
     // Create Writer
-    publisher->writer_id = mr_object_id(topic_id, MR_DATAWRITER_ID);
+    static uint8_t writer_id = 0x01;
+    publisher->writer_id = mr_object_id(writer_id++, MR_DATAWRITER_ID);
     uint16_t datawriter_req = mr_write_configure_datawriter_xml(participant->session, participant->output_stream_id, publisher->writer_id, publisher->id, writer_profile, MR_REPLACE);
 
     publisher->is_init = mr_run_session_until_status(participant->session, 1000, &datawriter_req, &status, 1);
@@ -158,7 +159,7 @@ bool micrortps::createPublisher(micrortps::Participant_t* participant, micrortps
 }
 
 
-bool micrortps::createSubscriber(micrortps::Participant_t* participant, micrortps::Subscriber_t* subscriber, uint8_t topic_id, char* subscriber_profile, char* reader_profile)
+bool micrortps::createSubscriber(micrortps::Participant_t* participant, micrortps::Subscriber_t* subscriber, char* subscriber_profile, char* reader_profile)
 {
   if(participant->is_init == false)
   {
@@ -178,7 +179,8 @@ bool micrortps::createSubscriber(micrortps::Participant_t* participant, micrortp
   if (ret == true)
   {
     // Create Reader
-    subscriber->reader_id = mr_object_id(topic_id, MR_DATAREADER_ID);
+    static uint8_t reader_id = 0x01;
+    subscriber->reader_id = mr_object_id(reader_id++, MR_DATAREADER_ID);
     uint16_t datareader_req = mr_write_configure_datareader_xml(participant->session, participant->output_stream_id, subscriber->reader_id, subscriber->id, reader_profile, MR_REPLACE);
 
     subscriber->is_init = mr_run_session_until_status(participant->session, 1000, &datareader_req, &status, 1);

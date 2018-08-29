@@ -11,19 +11,10 @@
 
 #include "hw.h"
 #include "ap_def.h"
-#include "xel_net/xel_net_node.hpp"
+#include "xel/xel_struct.hpp"
 
-
-
-typedef struct
-{
-  uint8_t   data_type;
-  uint32_t  data_get_interval_hz;
-  char      data_name[32];
-  uint8_t   msg_type;
-  uint16_t  data_addr;
-  uint8_t   data_lenght;
-} __attribute__((packed)) xels_header_t;
+#define _XELS_START_ID  1
+#define _XELS_END_ID    10
 
 
 typedef union

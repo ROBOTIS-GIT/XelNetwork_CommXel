@@ -70,8 +70,8 @@ bool setup(const char* p_server_ip, uint16_t server_port, mrOnTopicFunc callback
 bool createSession(mrCommunication* comm, mrOnTopicFunc callback, void* callback_arg);
 bool createParticipant(Participant_t* participant);
 bool registerTopic(Participant_t* participant, char* topic_profile, uint8_t topic_id);
-bool createPublisher(Participant_t* participant, Publisher_t* publisher, uint8_t topic_id, char* publisher_profile, char* writer_profile);
-bool createSubscriber(Participant_t* participant, Subscriber_t* subscriber, uint8_t topic_id, char* subscriber_profile, char* reader_profile);
+bool createPublisher(Participant_t* participant, Publisher_t* publisher, char* publisher_profile, char* writer_profile);
+bool createSubscriber(Participant_t* participant, Subscriber_t* subscriber, char* subscriber_profile, char* reader_profile);
 void subscribe(Subscriber_t* subscriber);
 bool runCommunication(uint32_t timeout_ms);
 int64_t getMillisTime(void);

@@ -17,18 +17,8 @@
 
 namespace ros2 {
 
-enum MessagePrefix{
-  TOPICS_PUBLISH = 0,
-  TOPICS_SUBSCRIBE,
-  SERVICE_REQUEST,
-  SERVICE_RESPONSE,
-  SERVICE,
-  PARAMETER,
-  ACTION
-};
 
 void onTopicCallback(mrSession* session, mrObjectId object_id, uint16_t request_id, mrStreamId stream_id, struct MicroBuffer* mb, void* args);
-const char* getPrefixString(MessagePrefix prefix);
 
 extern char* client_communication_method;
 extern char* server_ip;
@@ -201,16 +191,16 @@ class Node
       }
     }
 
-    void runSubCallback(uint8_t topic_id, void* topic_msg)
+    void runSubCallback(uint8_t reader_id, void* serialized_msg)
     {
       uint8_t i;
       ros2::SubscriberHandle *p_sub;
       for(i = 0; i < sub_cnt_; i++)
       {
         p_sub = sub_list_[i];
-        if(p_sub->is_registered_ && p_sub->topic_id_ == topic_id)
+        if(p_sub->is_registered_ && p_sub->reader_id_ == reader_id)
         {
-          p_sub->runCallback(topic_msg);
+          p_sub->runCallback(serialized_msg);
           //p_sub->subscribe();
         }
       }

@@ -2,7 +2,7 @@
  * xels.cpp
  *
  *  Created on: 2018. 8. 24.
- *      Author: HanCheol Cho
+ *      Author: HanCheol Cho, Kei
  */
 
 
@@ -55,9 +55,10 @@ bool xelsIsOpen(void)
 uint32_t xelsPings(XelNetwork::XelInfo_t *p_xel_infos, uint32_t max_xels)
 {
   uint16_t xels_count = 0;
+  uint8_t xel_id;
   dxl_error_t dxl_ret;
   dxl_t    *p_dxl_node;
-  uint16_t xel_index;
+  uint32_t xel_index = 0;
 
   p_dxl_node = &dxl_cmd;
 
@@ -67,50 +68,57 @@ uint32_t xelsPings(XelNetwork::XelInfo_t *p_xel_infos, uint32_t max_xels)
     return 0;
   }
 
-  xel_index = 0;
-
   dxl_ret = dxlcmdPing(p_dxl_node, DXL_GLOBAL_ID, &resp.ping, 128*3);
   if (dxl_ret == DXL_RET_RX_RESP)
   {
     xels_count = resp.ping.id_count;
 
-    if (xels_count > max_xels)
-    {
-      xels_count = max_xels;
-    }
-
     for (int i=0; i<xels_count; i++)
     {
-      p_xel_infos[xel_index].header.xel_id = resp.ping.p_node[i]->id;
+      xel_id = resp.ping.p_node[i]->id;
 
-      if (xelsReadHeader(&p_xel_infos[xel_index]) == true)
+      // Check validation for SensorXel, PowerXel IDs.
+      if(xel_id >= _XELS_START_ID && xel_id <= _XELS_END_ID)
       {
-        xel_index++;
+        p_xel_infos[xel_index].xel_id = xel_id;
+        if(xelsReadHeader(&p_xel_infos[xel_index]) == true)
+        {
+          xel_index++;
+        }
+        else
+        {
+          p_xel_infos[xel_index].xel_id = 0;
+        }
+      }
+
+      if (xel_index == max_xels)
+      {
+        break;
       }
     }
   }
-
 
   return xel_index;
 }
 
 bool xelsPing(XelNetwork::XelInfo_t *p_xel_info)
 {
-  bool ret = true;
+  bool ret = false;
   dxl_error_t dxl_ret;
   dxl_t    *p_dxl_node;
 
+  // Check validation for SensorXel, PowerXel IDs.
+  if(p_xel_info->xel_id < _XELS_START_ID && p_xel_info->xel_id > _XELS_END_ID)
+  {
+    return ret;
+  }
+
   p_dxl_node = &dxl_cmd;
 
-
-  dxl_ret = dxlcmdPing(p_dxl_node, p_xel_info->header.xel_id, &resp.ping, 100);
+  dxl_ret = dxlcmdPing(p_dxl_node, p_xel_info->xel_id, &resp.ping, 100);
   if (dxl_ret == DXL_RET_RX_RESP)
   {
     ret = true;
-  }
-  else
-  {
-    ret = false;
   }
 
   return ret;
@@ -118,31 +126,27 @@ bool xelsPing(XelNetwork::XelInfo_t *p_xel_info)
 
 bool xelsReadHeader(XelNetwork::XelInfo_t *p_xel_info)
 {
-  bool ret = true;
+  bool ret = false;
   dxl_error_t dxl_ret;
   dxl_t    *p_dxl_node;
-  xels_header_t xel_header;
+  XelNetwork::XelHeader_t xel_header;
 
   p_dxl_node = &dxl_cmd;
 
-
-  dxl_ret = dxlcmdRead(p_dxl_node, p_xel_info->header.xel_id, 32, sizeof(xels_header_t), &resp_read, 100);
+  dxl_ret = dxlcmdRead(p_dxl_node, p_xel_info->xel_id, 32, sizeof(XelNetwork::XelHeader_t), &resp_read, 100);
   if (dxl_ret == DXL_RET_RX_RESP)
   {
-    memcpy(&xel_header, resp_read.p_node[0]->p_data, sizeof(xels_header_t));
+    memcpy(&xel_header, resp_read.p_node[0]->p_data, sizeof(XelNetwork::XelHeader_t));
 
     p_xel_info->header.data_type = (XelNetwork::DataType)xel_header.data_type;
     p_xel_info->header.data_get_interval_hz = xel_header.data_get_interval_hz;
     memcpy(p_xel_info->header.data_name, xel_header.data_name, 32);
-    p_xel_info->header.msg_type = (ros2::MessagePrefix)xel_header.msg_type;
+    p_xel_info->header.msg_type = xel_header.msg_type;
     p_xel_info->header.data_addr = xel_header.data_addr;
-    p_xel_info->header.data_lenght = xel_header.data_lenght;
-  }
-  else
-  {
-    ret = false;
-  }
+    p_xel_info->header.data_length = xel_header.data_length;
 
+    ret = true;
+  }
 
   return ret;
 }
@@ -158,9 +162,9 @@ bool xelsReadData(XelNetwork::XelInfo_t *p_xel_info)
   p_dxl_node = &dxl_cmd;
 
   data_addr   = p_xel_info->header.data_addr;
-  data_length = p_xel_info->header.data_lenght;
+  data_length = p_xel_info->header.data_length;
 
-  dxl_ret = dxlcmdRead(p_dxl_node, p_xel_info->header.xel_id, data_addr, data_length, &resp_read, 100);
+  dxl_ret = dxlcmdRead(p_dxl_node, p_xel_info->xel_id, data_addr, data_length, &resp_read, 100);
   if (dxl_ret == DXL_RET_RX_RESP)
   {
     memcpy(p_xel_info->data, resp_read.p_node[0]->p_data, data_length);
@@ -193,13 +197,13 @@ int xelsCmdif(int argc, char **argv)
         xelinfo_tbl[i].header.data_name[31] = 0;
 
         cmdifPrintf("xelinfo     \t: %d\n", i);
-        cmdifPrintf("xel_id      \t: %d\n", xelinfo_tbl[i].header.xel_id);
+        cmdifPrintf("xel_id      \t: %d\n", xelinfo_tbl[i].xel_id);
         cmdifPrintf("data_type   \t: %d\n", xelinfo_tbl[i].header.data_type);
         cmdifPrintf("interval_hz \t: %d\n", xelinfo_tbl[i].header.data_get_interval_hz);
         cmdifPrintf("data_name   \t: %s\n", xelinfo_tbl[i].header.data_name);
         cmdifPrintf("msg_type    \t: %d\n", xelinfo_tbl[i].header.msg_type);
         cmdifPrintf("data_addr   \t: %d\n", xelinfo_tbl[i].header.data_addr);
-        cmdifPrintf("data_length \t: %d\n", xelinfo_tbl[i].header.data_lenght);
+        cmdifPrintf("data_length \t: %d\n", xelinfo_tbl[i].header.data_length);
         cmdifPrintf("\n");
       }
     }
@@ -208,13 +212,13 @@ int xelsCmdif(int argc, char **argv)
       for (int i=0; i<xelinfo_count; i++)
       {
         cmdifPrintf("xelinfo     \t: %d\n", i);
-        cmdifPrintf("xel_id      \t: %d\n", xelinfo_tbl[i].header.xel_id);
+        cmdifPrintf("xel_id      \t: %d\n", xelinfo_tbl[i].xel_id);
         cmdifPrintf("data_type   \t: %d\n", xelinfo_tbl[i].header.data_type);
         cmdifPrintf("interval_hz \t: %d\n", xelinfo_tbl[i].header.data_get_interval_hz);
         cmdifPrintf("data_name   \t: %s\n", xelinfo_tbl[i].header.data_name);
         cmdifPrintf("msg_type    \t: %d\n", xelinfo_tbl[i].header.msg_type);
         cmdifPrintf("data_addr   \t: %d\n", xelinfo_tbl[i].header.data_addr);
-        cmdifPrintf("data_length \t: %d\n", xelinfo_tbl[i].header.data_lenght);
+        cmdifPrintf("data_length \t: %d\n", xelinfo_tbl[i].header.data_length);
         cmdifPrintf("\n");
       }
     }
@@ -250,7 +254,7 @@ int xelsCmdif(int argc, char **argv)
                 data.u8Data[2] = xelinfo_tbl[i].data[2];
                 data.u8Data[3] = xelinfo_tbl[i].data[3];
 
-                cmdifPrintf("xel_id %d : %d\n", xelinfo_tbl[i].header.xel_id, data.UINT32);
+                cmdifPrintf("xel_id %d : %d\n", xelinfo_tbl[i].xel_id, data.UINT32);
               }
             }
           }
@@ -290,7 +294,7 @@ int xelsCmdif(int argc, char **argv)
       }
       else if (xelsPing(&xelinfo_tbl[number]) == true)
       {
-        cmdifPrintf("xel_id %d : OK\n", xelinfo_tbl[number].header.xel_id);
+        cmdifPrintf("xel_id %d : OK\n", xelinfo_tbl[number].xel_id);
       }
     }
     else if (strcmp("read", argv[1]) == 0 && xelsIsOpen() == true)
@@ -325,7 +329,7 @@ int xelsCmdif(int argc, char **argv)
               data.u8Data[2] = xelinfo_tbl[number].data[2];
               data.u8Data[3] = xelinfo_tbl[number].data[3];
 
-              cmdifPrintf("xel_id %d : %d\n", xelinfo_tbl[number].header.xel_id, data.UINT32);
+              cmdifPrintf("xel_id %d : %d\n", xelinfo_tbl[number].xel_id, data.UINT32);
             }
           }
         }

@@ -22,7 +22,7 @@ class PublisherHandle
  
 public:
   PublisherHandle()
-    : is_registered_(false)
+    : is_registered_(false), writer_id_(0)
   {
     callback = NULL;
     callback_arg = NULL;
@@ -54,6 +54,7 @@ public:
 
   bool is_registered_;
   uint32_t pub_msg_cnt_;
+  uint8_t writer_id_;
 
 private:
   uint32_t last_call_time_ms_;
@@ -66,7 +67,7 @@ class SubscriberHandle
 
 public:
   SubscriberHandle()
-    : is_registered_(false), topic_id_(0), request_id_(0)
+    : is_registered_(false), request_id_(0), reader_id_(0)
   {
     callback = NULL;
     callback_arg = NULL;
@@ -79,12 +80,12 @@ public:
   virtual void recreate(void) = 0;
   virtual void subscribe(void) = 0;
 
-  virtual void runCallback(void* msg) = 0;
+  virtual void runCallback(void* serialized_msg) = 0;
 
   bool is_registered_;
-  uint8_t topic_id_;
   uint32_t sub_msg_cnt_;
   uint16_t request_id_;
+  uint8_t reader_id_;
 };
 
 } // namespace ros2

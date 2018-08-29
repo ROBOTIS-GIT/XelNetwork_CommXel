@@ -30,20 +30,20 @@ public:
   {
     bool ret = false;
 
-    switch(info->dds.msg_type)
+    switch(info->header.msg_type)
     {
       case ros2::TOPICS_PUBLISH:
       {
-        ros2::Publisher<MsgT>* p_pub = this->createPublisher<MsgT>((const char*)info->dds.msg_name);
-        this->createWallFreq(info->header.data_get_interval_hz, (ros2::CallbackFunc)info->dds.p_callback_func, info->data, p_pub);
+        ros2::Publisher<MsgT>* p_pub = this->createPublisher<MsgT>((const char*)info->header.data_name);
+        this->createWallFreq(info->header.data_get_interval_hz, (ros2::CallbackFunc)info->dds.p_callback_func, info, p_pub);
         ret = p_pub!=NULL ? true:false;
       }
         break;
 
       case ros2::TOPICS_SUBSCRIBE:
       {
-        ros2::Subscriber<MsgT>* p_sub = this->createSubscriber<MsgT>((const char*)info->dds.msg_name,
-            (ros2::CallbackFunc)info->dds.p_callback_func, info->data);
+        ros2::Subscriber<MsgT>* p_sub = this->createSubscriber<MsgT>((const char*)info->header.data_name,
+            (ros2::CallbackFunc)info->dds.p_callback_func, info);
         ret = p_sub!=NULL ? true:false;
       }
         break;

@@ -17,17 +17,17 @@
 const volatile  __attribute__((section(".version_str"))) uint8_t fw_version_str[256] = _DEF_APP_VER_STR;
 const volatile  __attribute__((section(".version_num"))) uint8_t fw_version_num[256] = _DEF_APP_VER_NUM;
 
-
 //-- External Variables
 //
+osSemaphoreId dxl_semaphore;
 
 //-- Internal Functions
 static void threadCmdIf(void const * argument);
 static void threadButtonLed(void const * argument);
-static void threadROS2(void const * argument);
+static void threadXelNetwork(void const * argument);
+static void threadXelPlugAndPlay(void const * argument);
 
 //-- External Functions
-
 
 void apInit(void)
 {
@@ -39,7 +39,10 @@ void apInit(void)
   timerStart(_DEF_TIMER1);
 
   cmdifBegin(_DEF_UART1, 57600);
-  dxlportOpen(_DEF_DXL1, 1000000);
+  //dxlportOpen(_DEF_DXL1, 1000000);
+
+  osSemaphoreDef(semaphore_dxl);
+  dxl_semaphore = osSemaphoreCreate(osSemaphore(semaphore_dxl) , 1);
 
   /* Begin Ethernet */
 #ifdef _USE_HW_ETH
@@ -69,14 +72,19 @@ void apInit(void)
     cmdifPrintf("osThreadCreate : threadButtonLed fail\n");
   }
 
-  osThreadDef(threadROS2, threadROS2, osPriorityNormal, 0, 32*1024/4);
-  ret = osThreadCreate (osThread(threadROS2), NULL);
+  osThreadDef(threadXelPlugAndPlay, threadXelPlugAndPlay, osPriorityNormal, 0, 8*1024/4);
+  ret = osThreadCreate (osThread(threadXelPlugAndPlay), NULL);
   if (ret == NULL)
   {
-    cmdifPrintf("osThreadCreate : threadROS2 fail\n");
+    cmdifPrintf("osThreadCreate : threadXelPlugAndPlay fail\n");
   }
 
-  xelsInit();
+  osThreadDef(threadXelNetwork, threadXelNetwork, osPriorityNormal, 0, 32*1024/4);
+  ret = osThreadCreate (osThread(threadXelNetwork), NULL);
+  if (ret == NULL)
+  {
+    cmdifPrintf("osThreadCreate : threadXelNetwork fail\n");
+  }
 
   osKernelStart();
 }
@@ -92,7 +100,7 @@ void apMain(void)
 
 #include "xel_net/xel_net.hpp"
 
-static void threadROS2(void const * argument)
+static void threadXelNetwork(void const * argument)
 {
   for(;;)
   {
@@ -103,14 +111,12 @@ static void threadROS2(void const * argument)
   }
 
   ros2::init("192.168.60.88", 2018);
-  XelNetwork::XelNetworkNode XelNetNode;
-
+  XelNetwork::Core XelNetwork;
 
   for( ;; )
   {
-    ros2::spin(&XelNetNode);
+    XelNetwork.run();
   }
-
 
   for( ;; )
   {
@@ -118,6 +124,20 @@ static void threadROS2(void const * argument)
   }
 }
 
+static void threadXelPlugAndPlay(void const * argument)
+{
+  XelNetwork::PlugAndPlay PlugAndPlay(false, 100);
+
+  for( ;; )
+  {
+    PlugAndPlay.run();
+  }
+
+  for( ;; )
+  {
+    osThreadTerminate(NULL);
+  }
+}
 
 
 
