@@ -50,10 +50,9 @@ class Core
           case LOST_CONNECTION:
             if(p_xel->status.previous == RUNNING)
             {
-              //TODO: Delete DDS resource
+              deleteDDSResource(p_xel);
             }
             memset(p_xel, 0, sizeof(XelInfo_t));
-            connected_xel_cnt--;
             p_xel->status.current = NOT_CONNECTTED;
             break;
 
@@ -94,6 +93,18 @@ class Core
     }
 
   private:
+    void deleteDDSResource(XelInfo_t* p_xel)
+    {
+      if(p_xel->data_direction == XelNetwork::SEND)
+      {
+        node_.deleteWriter(p_xel->dds.entity_id);
+      }
+      else
+      {
+        node_.deleteReader(p_xel->dds.entity_id);
+      }
+    }
+
     XelNetworkNode node_;
 };
 
@@ -104,7 +115,6 @@ class PlugAndPlay
       : flag_scan_just_init_time_(scan_just_init_time)
     {
       interval_ms_ = interval_ms;
-      pre_time_ = 0;
 
       xelsInit();
       xelsOpen(_DEF_DXL1, 1000000);
@@ -113,7 +123,11 @@ class PlugAndPlay
 
     void run()
     {
-
+      if(osSemaphoreWait(dxl_semaphore, interval_ms_) == osOK)
+      {
+        scanIdEveryInterval();
+        osSemaphoreRelease(dxl_semaphore);
+      }
     }
 
   private:
@@ -134,73 +148,76 @@ class PlugAndPlay
     void scanIdEveryInterval(void)
     {
       XelInfo_t* p_xel;
+      static uint32_t pre_time = 0;
       static uint8_t checking_tbl_num = 0;
 
-      if (millis() - pre_time_ > interval_ms_)
+      if (millis() - pre_time > interval_ms_)
       {
-        pre_time_ = millis();
-        if (flag_scan_just_init_time_ == false && connected_xel_cnt < CONNECTED_XEL_MAX)
+        pre_time = millis();
+        p_xel = &xel_tbl[checking_tbl_num++];
+
+        if (p_xel->status.current == RUNNING || p_xel->status.current == NEW_CONNECTION)
         {
-          p_xel = &xel_tbl[checking_tbl_num++];
-
-          if(p_xel->status.current != NOT_CONNECTTED)
+          if (xelsPing(p_xel) == false)
           {
-            if(xelsPing(p_xel) == true)
-            {
-
-            }
-          }
-          else
-          {
-            if(xelsPing(p_xel) == true)
-            {
-              xelsReadHeader(p_xel);
-            }
-            else
-            {
-              p_xel->xel_id = 0;
-              p_xel->status.previous = p_xel->status.current;
-              if(p_xel->status.current != XelNetwork::NOT_CONNECTTED)
-              {
-                p_xel->status.current = XelNetwork::LOST_CONNECTION;
-              }
-            }
+            p_xel->status.previous = p_xel->status.current;
+            p_xel->status.current = LOST_CONNECTION;
+            connected_xel_cnt--;
           }
         }
-        else
+        else //new id scan
         {
+          //select id for scan
+          static uint8_t id = _XELS_START_ID;
+          bool ret = true;
 
-
-          while (checking_tbl_num < CONNECTED_XEL_MAX)
+          for(uint8_t i = 0; i < CONNECTED_XEL_MAX; i++)
           {
-            p_xel = &xel_tbl[checking_tbl_num++];
-            if (p_xel->status.current == NEW_CONNECTION
-                || p_xel->status.current == RUNNING)
+            if(xel_tbl[i].xel_id == id && xel_tbl[i].status.current != NOT_CONNECTTED)
             {
-              //TODO: Individual ping
-              // if(no ping)
-              // p_xel->status.previous = p_xel->status.current;
-              // p_xel->status.current = LOST_CONNECTION;
+              ret = false;
               break;
             }
           }
 
-          if (checking_tbl_num > CONNECTED_XEL_MAX)
+          if(ret == true)
           {
-            checking_tbl_num = 0;
+            p_xel->xel_id = id;
+            ret = xelsPing(p_xel);
+
+            if (ret == true)
+            {
+              ret = xelsReadHeader(p_xel);
+            }
+          }
+
+          if(ret == true)
+          {
+            p_xel->status.current = NEW_CONNECTION;
+          }
+          else
+          {
+            p_xel->xel_id = 0;
+          }
+
+          if(id < _XELS_END_ID)
+          {
+            id++;
+          }
+          else
+          {
+            id = _XELS_START_ID;
           }
         }
+
+        if(checking_tbl_num >= CONNECTED_XEL_MAX)
+        {
+          checking_tbl_num = 0;
+        }
       }
-
-    }
-
-    void checkConnectedState(void)
-    {
-
     }
 
     bool flag_scan_just_init_time_;
-    uint32_t pre_time_;
     uint32_t interval_ms_;
 };
 

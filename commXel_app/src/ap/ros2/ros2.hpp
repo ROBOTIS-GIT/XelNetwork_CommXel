@@ -14,6 +14,9 @@
 #include "topic.hpp"
 #include "msg_list.hpp"
 
+#define ROS2_PUBLISHER_MAX  20
+#define ROS2_SUBSCRIBER_MAX 20
+
 
 namespace ros2 {
 
@@ -32,6 +35,8 @@ class Node
     Node()
     {
       err_code = 0, pub_cnt_ = 0, sub_cnt_ = 0, node_register_state_ = false;
+      memset(pub_list_, 0, sizeof(pub_list_));
+      memset(sub_list_, 0, sizeof(sub_list_));
       this->recreate();
     }
 
@@ -53,7 +58,7 @@ class Node
       node_register_state_ = micrortps::createParticipant(&this->participant_);
 
       uint8_t i;
-      for(i = 0; i < pub_cnt_; i++)
+      for(i = 0; i < ROS2_PUBLISHER_MAX; i++)
       {
         if(pub_list_[i] != NULL)
         {
@@ -61,7 +66,7 @@ class Node
         }
       }
 
-      for(i = 0; i < sub_cnt_; i++)
+      for(i = 0; i < ROS2_SUBSCRIBER_MAX; i++)
       {
         if(sub_list_[i] != NULL)
         {
@@ -83,7 +88,7 @@ class Node
         return NULL;
       }
 
-      if(pub_cnt_ >= 20)
+      if(pub_cnt_ >= ROS2_PUBLISHER_MAX)
       {
         return NULL;
       }
@@ -102,10 +107,20 @@ class Node
       if(p_pub->is_registered_ == false)
       {
         err_code = 3;
+        delete(p_pub);
         return NULL;
       }
 
-      pub_list_[pub_cnt_++] = p_pub;
+      for(uint8_t i = 0; i < ROS2_PUBLISHER_MAX; i++)
+      {
+        if(pub_list_[i] == NULL)
+        {
+          pub_list_[i] = p_pub;
+          pub_cnt_++;
+          break;
+        }
+      }
+
       err_code = 0;
 
       return p_pub;
@@ -124,7 +139,7 @@ class Node
         return NULL;
       }
 
-      if(sub_cnt_ >= 20)
+      if(sub_cnt_ >= ROS2_SUBSCRIBER_MAX)
       {
         return NULL;
       }
@@ -143,14 +158,54 @@ class Node
       if(p_sub->is_registered_ == false)
       {
         err_code = 10 + 3;
+        delete(p_sub);
         return NULL;
       }
 
-      sub_list_[sub_cnt_++] = p_sub;
-      p_sub->subscribe();
+      for(uint8_t i = 0; i < ROS2_SUBSCRIBER_MAX; i++)
+      {
+        if(sub_list_[i] == NULL)
+        {
+          sub_list_[i] = p_sub;
+          sub_cnt_++;
+          p_sub->subscribe();
+          break;
+        }
+      }
+
       err_code = 0;
 
       return p_sub;
+    }
+
+    void deleteWriter(uint8_t writer_id)
+    {
+      for(uint8_t i = 0; i < ROS2_PUBLISHER_MAX; i++)
+      {
+        if(pub_list_[i] != NULL && pub_list_[i]->writer_id_ == writer_id)
+        {
+          //TODO: Delete DDS resources
+          delete(pub_list_[i]);
+          pub_list_[i] = NULL;
+          pub_cnt_--;
+          break;
+        }
+      }
+    }
+
+    void deleteReader(uint8_t reader_id)
+    {
+      for(uint8_t i = 0; i < ROS2_SUBSCRIBER_MAX; i++)
+      {
+        if(sub_list_[i] != NULL && sub_list_[i]->reader_id_ == reader_id)
+        {
+          //TODO: Delete DDS resources
+          delete(sub_list_[i]);
+          sub_list_[i] = NULL;
+          sub_cnt_--;
+          break;
+        }
+      }
     }
 
     void createWallTimer(uint32_t msec, CallbackFunc callback, void* callback_arg, PublisherHandle* pub)
@@ -180,10 +235,10 @@ class Node
     {
       uint8_t i;
       ros2::PublisherHandle *p_pub;
-      for(i = 0; i < pub_cnt_; i++)
+      for(i = 0; i < ROS2_PUBLISHER_MAX; i++)
       {
         p_pub = pub_list_[i];
-        if(p_pub->is_registered_ && p_pub->isTimeToPublish())
+        if(p_pub != NULL && p_pub->is_registered_ && p_pub->isTimeToPublish())
         {
           p_pub->publish();
           break;
@@ -195,10 +250,10 @@ class Node
     {
       uint8_t i;
       ros2::SubscriberHandle *p_sub;
-      for(i = 0; i < sub_cnt_; i++)
+      for(i = 0; i < ROS2_SUBSCRIBER_MAX; i++)
       {
         p_sub = sub_list_[i];
-        if(p_sub->is_registered_ && p_sub->reader_id_ == reader_id)
+        if(p_sub != NULL && p_sub->is_registered_ && p_sub->reader_id_ == reader_id)
         {
           p_sub->runCallback(serialized_msg);
           //p_sub->subscribe();
@@ -206,8 +261,8 @@ class Node
       }
     }
 
-    PublisherHandle*  pub_list_[20];
-    SubscriberHandle* sub_list_[20];
+    PublisherHandle*  pub_list_[ROS2_PUBLISHER_MAX];
+    SubscriberHandle* sub_list_[ROS2_SUBSCRIBER_MAX];
 
 
   private:

@@ -36,7 +36,11 @@ public:
       {
         ros2::Publisher<MsgT>* p_pub = this->createPublisher<MsgT>((const char*)info->header.data_name);
         this->createWallFreq(info->header.data_get_interval_hz, (ros2::CallbackFunc)info->dds.p_callback_func, info, p_pub);
-        ret = p_pub!=NULL ? true:false;
+        if(p_pub != NULL)
+        {
+          info->dds.entity_id = p_pub->writer_id_;
+          ret = true;
+        }
       }
         break;
 
@@ -44,7 +48,11 @@ public:
       {
         ros2::Subscriber<MsgT>* p_sub = this->createSubscriber<MsgT>((const char*)info->header.data_name,
             (ros2::CallbackFunc)info->dds.p_callback_func, info);
-        ret = p_sub!=NULL ? true:false;
+        if(p_sub != NULL)
+        {
+          info->dds.entity_id = p_sub->reader_id_;
+          ret = true;
+        }
       }
         break;
 
