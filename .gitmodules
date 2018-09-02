@@ -7,9 +7,5 @@
 [submodule "commXel_app/src/lib/micrortps/client"]
 	path = commXel_app/src/lib/micrortps/client
 	url = https://github.com/ROBOTIS-GIT/micro-RTPS-client.git
-[submodule "commXel_app/src/lib/micrortps/transport"]
-	path = commXel_app/src/lib/micrortps/transport
-	url = https://github.com/ROBOTIS-GIT/micro-RTPS-transport.git
-[submodule "commXel_app/src/lib/micrortps/cdr"]
-	path = commXel_app/src/lib/micrortps/cdr
-	url = https://github.com/ROBOTIS-GIT/micro-CDR.git
+
+
