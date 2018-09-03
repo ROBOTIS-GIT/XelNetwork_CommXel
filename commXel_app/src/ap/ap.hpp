@@ -18,6 +18,7 @@
 #include "ros2/ros2.hpp"
 #include "xels/xels.h"
 #include "xel_net/xel_net.hpp"
+#include "usb_to_dxl/usb_to_dxl.hpp"
 
 void apInit(void);
 void apMain(void);
