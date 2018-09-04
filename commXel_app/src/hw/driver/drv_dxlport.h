@@ -34,6 +34,7 @@ bool drvDxlportGetPower(uint8_t ch);
 void drvDxlportSetTxDoneISR(uint8_t ch, void (*p_txDoneISR)(void));
 bool drvDxlportIsTxDone(uint8_t ch);
 
+uint32_t drvDxlportGetBaud(uint8_t ch);
 
 uint32_t drvDxlportAvailable(uint8_t ch);
 uint8_t  drvDxlportRead(uint8_t ch);

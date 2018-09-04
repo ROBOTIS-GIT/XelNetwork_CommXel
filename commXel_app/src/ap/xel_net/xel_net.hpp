@@ -111,8 +111,7 @@ class Core
 class PlugAndPlay
 {
   public:
-    PlugAndPlay(bool scan_just_init_time, uint32_t interval_ms)
-      : flag_scan_just_init_time_(scan_just_init_time)
+    PlugAndPlay(uint32_t interval_ms)
     {
       interval_ms_ = interval_ms;
 
@@ -123,12 +122,12 @@ class PlugAndPlay
 
     void run()
     {
-      if(uartGetBaud(_DEF_UART2) != 1000000)
+      if(dxlportGetBaud(_DEF_DXL1) != 1000000)
       {
         xelsOpen(_DEF_DXL1, 1000000);
       }
 
-      if(osSemaphoreWait(dxl_semaphore, interval_ms_) == osOK)
+      if(osSemaphoreWait(dxl_semaphore, 1) == osOK)
       {
         scanIdEveryInterval();
         osSemaphoreRelease(dxl_semaphore);
@@ -222,7 +221,6 @@ class PlugAndPlay
       }
     }
 
-    bool flag_scan_just_init_time_;
     uint32_t interval_ms_;
 };
 

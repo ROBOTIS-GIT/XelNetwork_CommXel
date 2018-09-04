@@ -161,7 +161,7 @@ static void threadXelNetwork(void const * argument)
 
 static void threadXelPlugAndPlay(void const * argument)
 {
-  XelNetwork::PlugAndPlay PlugAndPlay(false, 500);
+  XelNetwork::PlugAndPlay PlugAndPlay(500);
 
   for( ;; )
   {

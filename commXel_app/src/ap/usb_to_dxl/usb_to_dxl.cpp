@@ -7,37 +7,39 @@
 
 #include "usb_to_dxl.hpp"
 
+static uint8_t dxl_ch = _DEF_DXL1;
+
 void u2dInit(void)
 {
   dxlportInit();
-  dxlportOpen(_DEF_DXL1, 57600);
+  dxlportOpen(dxl_ch, 57600);
 }
 
 void u2dRun(void)
 {
   uint32_t length, i;
 
-  if(vcpGetBaud() != uartGetBaud(_DEF_UART2))
+  if(vcpGetBaud() != dxlportGetBaud(dxl_ch))
   {
-    dxlportOpen(_DEF_DXL1, vcpGetBaud());
+    dxlportOpen(dxl_ch, vcpGetBaud());
   }
 
   // USB to DXL
   length = vcpAvailable();
   if( length > 0 )
   {
-    uint8_t ch;
-    dxlportTxEnable(_DEF_DXL1);
+    uint8_t data;
+    dxlportTxEnable(dxl_ch);
     for(i=0; i<length; i++ )
     {
-      ch = vcpRead();
-      dxlportWrite(_DEF_DXL1, &ch, 1);
+      data = vcpRead();
+      dxlportWrite(dxl_ch, &data, 1);
     }
-    dxlportTxDisable(_DEF_DXL1);
+    dxlportTxDisable(dxl_ch);
   }
 
   // DXL to USB
-  length = dxlportAvailable(_DEF_DXL1);
+  length = dxlportAvailable(dxl_ch);
   if( length > 0 )
   {
     uint8_t tx_buffer[256];
@@ -48,7 +50,7 @@ void u2dRun(void)
 
     for(i=0; i<length; i++ )
     {
-      tx_buffer[i] = dxlportRead(_DEF_DXL1);
+      tx_buffer[i] = dxlportRead(dxl_ch);
     }
     vcpWrite(tx_buffer, length);
   }

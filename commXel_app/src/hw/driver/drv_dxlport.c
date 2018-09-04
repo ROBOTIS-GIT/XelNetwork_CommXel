@@ -100,6 +100,11 @@ bool drvDxlportOpen(uint8_t ch, uint32_t baud)
   return ret;
 }
 
+uint32_t drvDxlportGetBaud(uint8_t ch)
+{
+  return drvUartGetBaud(dxlport_tbl[ch].ch);
+}
+
 bool drvDxlportClose(uint8_t ch)
 {
   bool ret = true;
