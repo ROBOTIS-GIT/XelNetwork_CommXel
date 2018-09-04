@@ -15,8 +15,12 @@ void u2dInit(void)
 
 void u2dRun(void)
 {
-  int length;
-  int i;
+  uint32_t length, i;
+
+  if(vcpGetBaud() != uartGetBaud(_DEF_UART2))
+  {
+    dxlportOpen(_DEF_DXL1, vcpGetBaud());
+  }
 
   // USB to DXL
   length = vcpAvailable();
@@ -37,9 +41,9 @@ void u2dRun(void)
   if( length > 0 )
   {
     uint8_t tx_buffer[256];
-    if(length > sizeof(tx_buffer))
+    if(length > (uint32_t)256)
     {
-      length = sizeof(tx_buffer);
+      length = 256;
     }
 
     for(i=0; i<length; i++ )

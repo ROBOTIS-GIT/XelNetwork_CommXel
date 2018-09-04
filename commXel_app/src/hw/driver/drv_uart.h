@@ -63,7 +63,6 @@ typedef struct
 } drv_uart_t;
 
 
-
 bool      drvUartInit(void);
 bool      drvUartOpen(uint8_t channel, uint32_t baud, uint32_t option);
 bool      drvUartClose(uint8_t channel);
@@ -77,6 +76,7 @@ uint32_t  drvUartGetTxErrCount(uint8_t channel);
 uint32_t  drvUartGetTxCount(uint8_t channel);
 uint32_t  drvUartGetTxRetryCount(uint8_t channel);
 uint32_t  drvUartGetRxCount(uint8_t channel);
+uint32_t  drvUartGetBaud(uint8_t channel);
 
 #ifdef __cplusplus
 }

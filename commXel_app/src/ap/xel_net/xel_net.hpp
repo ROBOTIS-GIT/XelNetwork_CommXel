@@ -123,6 +123,11 @@ class PlugAndPlay
 
     void run()
     {
+      if(uartGetBaud(_DEF_UART2) != 1000000)
+      {
+        xelsOpen(_DEF_DXL1, 1000000);
+      }
+
       if(osSemaphoreWait(dxl_semaphore, interval_ms_) == osOK)
       {
         scanIdEveryInterval();

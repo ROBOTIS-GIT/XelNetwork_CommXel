@@ -192,6 +192,11 @@ void drvUartSetTxDoneISR(uint8_t channel, void (*func)(void))
   drv_uart_tbl[channel].hw.txDoneISR = func;
 }
 
+uint32_t drvUartGetBaud(uint8_t channel)
+{
+  return drv_uart_tbl[channel].hw.h_uart.Init.BaudRate;
+}
+
 uint8_t drvUartGetIndex(UART_HandleTypeDef *UartHandle)
 {
   uint32_t i;
