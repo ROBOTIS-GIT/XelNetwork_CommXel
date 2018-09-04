@@ -86,6 +86,7 @@
 #define _HW_DEF_DXLCMD_BUFFER_MAX             1024
 #define _HW_DEF_DXL_MAX_BUFFER                (1024+10)
 
+#define _HW_DEF_BUTTON_MODE                   _DEF_BUTTON1
 
 
 

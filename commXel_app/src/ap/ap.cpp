@@ -22,10 +22,10 @@ const volatile  __attribute__((section(".version_num"))) uint8_t fw_version_num[
 osSemaphoreId dxl_semaphore;
 
 //-- Internal Functions
-static void threadCmdIf(void const * argument);
-static void threadButtonLed(void const * argument);
+static void threadApMode(void const * argument);
 static void threadXelNetwork(void const * argument);
 static void threadXelPlugAndPlay(void const * argument);
+static void threadUsbDxlBypass(void const * argument);
 
 //-- External Functions
 
@@ -58,18 +58,11 @@ void apInit(void)
   ethernetIfBegin(IP_DHCP, mac_addr, &ip_addr, &subnet, &gateway, &dns_server);
 #endif /* _USE_HW_ETH */
 
-  osThreadDef(threadCmdIf, threadCmdIf, osPriorityNormal, 0, 8*1024/4);
-  ret = osThreadCreate (osThread(threadCmdIf), NULL);
+  osThreadDef(threadApMode, threadApMode, osPriorityNormal, 0, 1*1024/4);
+  ret = osThreadCreate (osThread(threadApMode), NULL);
   if (ret == NULL)
   {
-    cmdifPrintf("osThreadCreate : threadCmdIf fail\n");
-  }
-
-  osThreadDef(threadButtonLed, threadButtonLed, osPriorityNormal, 0, 1*1024/4);
-  ret = osThreadCreate (osThread(threadButtonLed), NULL);
-  if (ret == NULL)
-  {
-    cmdifPrintf("osThreadCreate : threadButtonLed fail\n");
+    cmdifPrintf("osThreadCreate : threadApMode fail\n");
   }
 
   osThreadDef(threadXelPlugAndPlay, threadXelPlugAndPlay, osPriorityNormal, 0, 8*1024/4);
@@ -86,6 +79,13 @@ void apInit(void)
     cmdifPrintf("osThreadCreate : threadXelNetwork fail\n");
   }
 
+  osThreadDef(threadUsbDxlBypass, threadUsbDxlBypass, osPriorityNormal, 0, 8*1024/4);
+  ret = osThreadCreate (osThread(threadUsbDxlBypass), NULL);
+  if (ret == NULL)
+  {
+    cmdifPrintf("osThreadCreate : threadUsbDxlBypass fail\n");
+  }
+
   osKernelStart();
 }
 
@@ -98,7 +98,39 @@ void apMain(void)
 }
 
 
-#include "xel_net/xel_net.hpp"
+enum OperatingMode
+{
+  OP_USB_DXL_BYPASS = 0,
+  OP_XEL_NETWORK
+};
+
+static OperatingMode operating_mode = OP_XEL_NETWORK;
+
+static void threadApMode(void const * argument)
+{
+  for(;;)
+  {
+    if (buttonGetReleasedEvent(_HW_DEF_BUTTON_MODE) == true)
+    {
+      if (buttonGetReleasedTime(_HW_DEF_BUTTON_MODE) < 1000
+          && buttonGetPressedTime(_HW_DEF_BUTTON_MODE) > 3000)
+      {
+        if(operating_mode == OP_XEL_NETWORK)
+        {
+          operating_mode = OP_USB_DXL_BYPASS;
+          ledOn(_DEF_LED1);
+        }
+        else
+        {
+          operating_mode = OP_XEL_NETWORK;
+          ledOff(_DEF_LED1);
+        }
+
+      }
+    }
+    delay(1);
+  }
+}
 
 static void threadXelNetwork(void const * argument)
 {
@@ -115,7 +147,10 @@ static void threadXelNetwork(void const * argument)
 
   for( ;; )
   {
-    XelNetwork.run();
+    if(operating_mode == OP_XEL_NETWORK)
+    {
+      XelNetwork.run();
+    }
   }
 
   for( ;; )
@@ -130,7 +165,10 @@ static void threadXelPlugAndPlay(void const * argument)
 
   for( ;; )
   {
-    PlugAndPlay.run();
+    if(operating_mode == OP_XEL_NETWORK)
+    {
+      PlugAndPlay.run();
+    }
   }
 
   for( ;; )
@@ -139,33 +177,18 @@ static void threadXelPlugAndPlay(void const * argument)
   }
 }
 
-
-
-static void threadCmdIf(void const * argument)
+static void threadUsbDxlBypass(void const * argument)
 {
-  //cmdifPrintf("CMDEV-FW \n");
+  for( ;; )
+  {
+    if(operating_mode == OP_USB_DXL_BYPASS)
+    {
+      u2dRun();
+    }
+  }
 
   for( ;; )
   {
-    cmdifMain();
-    delay(1);
-  }
-}
-
-static void threadButtonLed(void const * argument)
-{
-  delay(500);
-
-  for(;;)
-  {
-    if (buttonGetPressedEvent(_DEF_BUTTON1))
-    {
-      ledOn(_DEF_LED1);
-    }
-    else if (buttonGetReleasedEvent(_DEF_BUTTON1))
-    {
-      ledOff(_DEF_LED1);
-    }
-    delay(1);
+    osThreadTerminate(NULL);
   }
 }
