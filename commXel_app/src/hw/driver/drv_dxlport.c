@@ -36,6 +36,7 @@ volatile static bool tx_done[DXLPORT_MAX_CH];
 //
 dxlport_t dxlport_tbl[DXLPORT_MAX_CH] = {
   {_DEF_UART2},   // DXL1 -> DXL Port
+  {_DEF_UART1},   // DXL2 -> DXL Port
 };
 
 static void  (*txDoneISR[DXLPORT_MAX_CH])(void);

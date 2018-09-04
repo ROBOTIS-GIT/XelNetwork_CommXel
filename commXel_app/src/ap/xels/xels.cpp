@@ -37,6 +37,7 @@ void xelsInit(void)
 {
   dxlInit(&dxl_cmd, DXL_PACKET_VER_2_0);
 
+
 #ifdef _XELS_DEBUG
   cmdifAdd((char *)"xels", xelsCmdif);
 #endif

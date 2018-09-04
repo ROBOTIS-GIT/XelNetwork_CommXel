@@ -43,7 +43,7 @@ void hwInit(void)
   bspInitUSB();
 
   uartInit();
-//  eepromInit();
+  eepromInit();
 //  flashInit();
   resetInit();
   dxlportInit();
