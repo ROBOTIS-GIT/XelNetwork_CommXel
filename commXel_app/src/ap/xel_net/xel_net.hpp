@@ -116,17 +116,11 @@ class PlugAndPlay
       interval_ms_ = interval_ms;
 
       xelsInit();
-      xelsOpen(_DEF_DXL1, 1000000);
       scanWhenInit();
     }
 
     void run()
     {
-      if(dxlportGetBaud(_DEF_DXL1) != 1000000)
-      {
-        xelsOpen(_DEF_DXL1, 1000000);
-      }
-
       if(osSemaphoreWait(dxl_semaphore, 1) == osOK)
       {
         scanIdEveryInterval();

@@ -17,6 +17,11 @@
 const volatile  __attribute__((section(".version_str"))) uint8_t fw_version_str[256] = _DEF_APP_VER_STR;
 const volatile  __attribute__((section(".version_num"))) uint8_t fw_version_num[256] = _DEF_APP_VER_NUM;
 
+static ap_t ap_log;
+
+ap_t *p_ap = &ap_log;
+
+
 //-- External Variables
 //
 osSemaphoreId dxl_semaphore;
@@ -40,6 +45,23 @@ void apInit(void)
 
   cmdifBegin(_DEF_UART1, 57600);
   //dxlportOpen(_DEF_DXL1, 1000000);
+
+
+  p_ap->model_number = DXL_MODEL_NUMBER;
+  p_ap->firmware_version = 1;
+
+  p_ap->dxl_slave.use  = true;
+  p_ap->dxl_slave.ch   = _DEF_DXL2;
+  p_ap->dxl_slave.id   = DXL_INIT_ID;
+  p_ap->dxl_slave.baud = 1000000;
+
+  p_ap->p_dxl_usb  = &p_ap->dxl_slave;
+
+
+  dxlSlaveInit();
+  dxlCtableInit();
+
+
 
   osSemaphoreDef(semaphore_dxl);
   dxl_semaphore = osSemaphoreCreate(osSemaphore(semaphore_dxl) , 1);
@@ -184,6 +206,11 @@ static void threadUsbDxlBypass(void const * argument)
     if(operating_mode == OP_USB_DXL_BYPASS)
     {
       u2dRun();
+    }
+    else
+    {
+      dxlSlaveLoop();
+      osThreadYield();
     }
   }
 

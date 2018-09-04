@@ -28,6 +28,7 @@
 #include "uart.h"
 #include "dxlport.h"
 #include "dxlcmd.h"
+#include "eeprom.h"
 
 #include "eeprom.h"
 #include "flash.h"

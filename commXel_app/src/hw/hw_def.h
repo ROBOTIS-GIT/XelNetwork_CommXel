@@ -45,7 +45,7 @@
 #define _USE_HW_ETH
 #define _USE_HW_BUTTON
 #define _USE_HW_UART
-//#define _USE_HW_EEPROM
+#define _USE_HW_EEPROM
 #define _USE_HW_FLASH
 #define _USE_HW_RESET
 
@@ -74,7 +74,7 @@
 #define _HW_DEF_UART_CH_MAX                   2
 #define _HW_DEF_TIMER_CH_MAX                  2
 #define _HW_DEF_BUTTON_CH_MAX                 1
-#define _HW_DEF_DXLPORT_CH_MAX                1
+#define _HW_DEF_DXLPORT_CH_MAX                2
 
 #ifdef _USE_HW_ETH
 #define _HW_DEF_DEFAULT_MAC_ADDR              {0x00, 0x08, 0xDC, 0x50, 0xF4, 0xF5}
