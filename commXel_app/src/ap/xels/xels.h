@@ -13,8 +13,9 @@
 #include "ap_def.h"
 #include "xel/xel_struct.hpp"
 
-#define _XELS_START_ID  1
-#define _XELS_END_ID    10
+#define XELS_SENSORXEL_MODEL_ID  460
+#define XELS_POWERXEL_MODEL_ID   462
+#define XELS_COMMXEL_MODEL_ID    464
 
 
 typedef union
@@ -44,7 +45,9 @@ void xelsInit(void);
 bool xelsOpen(uint8_t ch, uint32_t baud);
 uint32_t xelsPings(XelNetwork::XelInfo_t *p_xel_infos, uint32_t max_xels);
 bool xelsPing(XelNetwork::XelInfo_t *p_xel_info);
+bool xelsReadModelId(XelNetwork::XelInfo_t *p_xel_info);
 bool xelsReadHeader(XelNetwork::XelInfo_t *p_xel_info);
 bool xelsReadData(XelNetwork::XelInfo_t *p_xel_info);
+bool xelCheckAndSetDxlInfo(XelNetwork::XelInfo_t *p_xel_info);
 
 #endif /* SRC_AP_XELS_XELS_H_ */

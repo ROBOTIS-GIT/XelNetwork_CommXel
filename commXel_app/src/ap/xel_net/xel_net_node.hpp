@@ -30,9 +30,9 @@ public:
   {
     bool ret = false;
 
-    switch(info->header.msg_type)
+    switch(info->header.data_direction)
     {
-      case ros2::TOPICS_PUBLISH:
+      case XelNetwork::SEND:
       {
         ros2::Publisher<MsgT>* p_pub = this->createPublisher<MsgT>((const char*)info->header.data_name);
         this->createWallFreq(info->header.data_get_interval_hz, (ros2::CallbackFunc)info->dds.p_callback_func, info, p_pub);
@@ -44,7 +44,7 @@ public:
       }
         break;
 
-      case ros2::TOPICS_SUBSCRIBE:
+      case XelNetwork::RECEIVE:
       {
         ros2::Subscriber<MsgT>* p_sub = this->createSubscriber<MsgT>((const char*)info->header.data_name,
             (ros2::CallbackFunc)info->dds.p_callback_func, info);
@@ -56,27 +56,7 @@ public:
       }
         break;
 
-      case ros2::SERVICE_REQUEST:
-      {
-      }
-        break;
-
-      case ros2::SERVICE_RESPONSE:
-      {
-      }
-        break;
-
-      case ros2::SERVICE:
-      {
-      }
-        break;
-
-      case ros2::PARAMETER:
-      {
-      }
-        break;
-
-      case ros2::ACTION:
+      case XelNetwork::SEND_RECV:
       {
       }
         break;

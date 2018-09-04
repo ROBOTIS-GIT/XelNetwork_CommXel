@@ -19,17 +19,6 @@ bool XelNetwork::createNewTopicWithXel(XelNetwork::XelNetworkNode* node, XelNetw
     return false;
   }
 
-  if(info->header.msg_type == ros2::TOPICS_SUBSCRIBE
-            || info->header.msg_type == ros2::SERVICE_RESPONSE
-            || info->header.msg_type == ros2::PARAMETER)
-  {
-    info->data_direction = XelNetwork::RECEIVE;
-  }
-  else
-  {
-    info->data_direction = XelNetwork::SEND;
-  }
-
   switch(info->header.data_type)
   {
     case BOOLEAN:

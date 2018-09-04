@@ -36,13 +36,13 @@ class JointState : public ros2::Topic<JointState>
 {
 public: 
     std_msgs::Header header;
-    char** name;
+    char name[20][10];
     uint32_t name_size;
-    double* position;
+    double position[20];
     uint32_t position_size;
-    double* velocity;
+    double velocity[20];
     uint32_t velocity_size;
-    double* effort;
+    double effort[20];
     uint32_t effort_size;
 
   JointState():
@@ -50,7 +50,10 @@ public:
     header(),
     name_size(0), position_size(0), velocity_size(0), effort_size(0)
   { 
-    name = NULL, position = NULL, velocity = NULL, effort = NULL;
+    memset(name, 0, sizeof(name));
+    memset(position, 0, sizeof(position));
+    memset(velocity, 0, sizeof(velocity));
+    memset(effort, 0, sizeof(effort));
   }
 
   bool serialize(struct MicroBuffer* writer, const JointState* topic)
@@ -74,12 +77,12 @@ public:
   {
     (void) header.deserialize(reader, &topic->header);
     
-    // uint32_t size_string = 0, size_data;
-    // (void) deserialize_uint32_t(reader, &size_string);
-    // for(uint32_t i = 0; i < size_string; i++)
-    // {
-    //   (void) deserialize_sequence_char(reader, topic->name[i], &size_data);
-    // }
+    uint32_t size_string = 0, size_data;
+    (void) deserialize_uint32_t(reader, &size_string);
+    for(uint32_t i = 0; i < size_string; i++)
+    {
+      (void) deserialize_sequence_char(reader, topic->name[i], &size_data);
+    }
 
     (void) deserialize_sequence_double(reader, topic->position, &topic->position_size);
     (void) deserialize_sequence_double(reader, topic->velocity, &topic->velocity_size);

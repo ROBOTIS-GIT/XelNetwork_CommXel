@@ -57,7 +57,7 @@ class Core
             break;
 
           case RUNNING:
-            if(p_xel->data_direction == XelNetwork::SEND)
+            if(p_xel->header.data_direction == XelNetwork::SEND)
             {
               if(osSemaphoreWait(dxl_semaphore, 0) == osOK)
               {
@@ -95,7 +95,7 @@ class Core
   private:
     void deleteDDSResource(XelInfo_t* p_xel)
     {
-      if(p_xel->data_direction == XelNetwork::SEND)
+      if(p_xel->header.data_direction == XelNetwork::SEND)
       {
         node_.deleteWriter(p_xel->dds.entity_id);
       }
@@ -172,7 +172,7 @@ class PlugAndPlay
         else //new id scan
         {
           //select id for scan
-          static uint8_t id = _XELS_START_ID;
+          static uint8_t id = 0;
           bool ret = true;
 
           for(uint8_t i = 0; i < CONNECTED_XEL_MAX; i++)
@@ -204,14 +204,7 @@ class PlugAndPlay
             p_xel->xel_id = 0;
           }
 
-          if(id < _XELS_END_ID)
-          {
-            id++;
-          }
-          else
-          {
-            id = _XELS_START_ID;
-          }
+          id++;
         }
 
         if(checking_tbl_num >= CONNECTED_XEL_MAX)

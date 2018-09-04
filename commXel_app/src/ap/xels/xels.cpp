@@ -54,11 +54,10 @@ bool xelsIsOpen(void)
 
 uint32_t xelsPings(XelNetwork::XelInfo_t *p_xel_infos, uint32_t max_xels)
 {
-  uint16_t xels_count = 0;
-  uint8_t xel_id;
-  dxl_error_t dxl_ret;
-  dxl_t    *p_dxl_node;
-  uint32_t xel_index = 0;
+  dxl_error_t  dxl_ret;
+  dxl_t       *p_dxl_node;
+  uint16_t     xels_count = 0;
+  uint32_t     xel_index = 0;
 
   p_dxl_node = &dxl_cmd;
 
@@ -71,24 +70,40 @@ uint32_t xelsPings(XelNetwork::XelInfo_t *p_xel_infos, uint32_t max_xels)
   dxl_ret = dxlcmdPing(p_dxl_node, DXL_GLOBAL_ID, &resp.ping, 128*3);
   if (dxl_ret == DXL_RET_RX_RESP)
   {
+    XelNetwork::XelInfo_t *p_xel_info;
     xels_count = resp.ping.id_count;
 
     for (int i=0; i<xels_count; i++)
     {
-      xel_id = resp.ping.p_node[i]->id;
+      p_xel_info = &p_xel_infos[xel_index];
+      p_xel_info->xel_id = resp.ping.p_node[i]->id;
 
-      // Check validation for SensorXel, PowerXel IDs.
-      if(xel_id >= _XELS_START_ID && xel_id <= _XELS_END_ID)
+      if(xelsReadModelId(p_xel_info) == true)
       {
-        p_xel_infos[xel_index].xel_id = xel_id;
-        if(xelsReadHeader(&p_xel_infos[xel_index]) == true)
+        if(p_xel_info->model_id == XELS_SENSORXEL_MODEL_ID || p_xel_info->model_id == XELS_POWERXEL_MODEL_ID)
         {
+          if(xelsReadHeader(p_xel_info) == true)
+          {
+            xel_index++;
+          }
+          else
+          {
+            p_xel_info->xel_id = 0;
+          }
+        }
+        else if(p_xel_info->model_id == XELS_COMMXEL_MODEL_ID)
+        {
+          p_xel_info->xel_id = 0;
+        }
+        else //Dynamixel
+        {
+          xelCheckAndSetDxlInfo(p_xel_info);
           xel_index++;
         }
-        else
-        {
-          p_xel_infos[xel_index].xel_id = 0;
-        }
+      }
+      else
+      {
+        p_xel_info->xel_id = 0;
       }
 
       if (xel_index == max_xels)
@@ -107,17 +122,30 @@ bool xelsPing(XelNetwork::XelInfo_t *p_xel_info)
   dxl_error_t dxl_ret;
   dxl_t    *p_dxl_node;
 
-  // Check validation for SensorXel, PowerXel IDs.
-  if(p_xel_info->xel_id < _XELS_START_ID && p_xel_info->xel_id > _XELS_END_ID)
-  {
-    return ret;
-  }
-
   p_dxl_node = &dxl_cmd;
 
   dxl_ret = dxlcmdPing(p_dxl_node, p_xel_info->xel_id, &resp.ping, 100);
   if (dxl_ret == DXL_RET_RX_RESP)
   {
+    ret = true;
+  }
+
+  return ret;
+}
+
+bool xelsReadModelId(XelNetwork::XelInfo_t *p_xel_info)
+{
+  bool ret = false;
+  dxl_error_t dxl_ret;
+  dxl_t    *p_dxl_node;
+
+  p_dxl_node = &dxl_cmd;
+
+  dxl_ret = dxlcmdRead(p_dxl_node, p_xel_info->xel_id, 0, sizeof(p_xel_info->model_id), &resp_read, 100);
+  if (dxl_ret == DXL_RET_RX_RESP)
+  {
+    memcpy(&p_xel_info->model_id, resp_read.p_node[0]->p_data, sizeof(p_xel_info->model_id));
+
     ret = true;
   }
 
@@ -141,7 +169,7 @@ bool xelsReadHeader(XelNetwork::XelInfo_t *p_xel_info)
     p_xel_info->header.data_type = (XelNetwork::DataType)xel_header.data_type;
     p_xel_info->header.data_get_interval_hz = xel_header.data_get_interval_hz;
     memcpy(p_xel_info->header.data_name, xel_header.data_name, 32);
-    p_xel_info->header.msg_type = xel_header.msg_type;
+    p_xel_info->header.data_direction = xel_header.data_direction;
     p_xel_info->header.data_addr = xel_header.data_addr;
     p_xel_info->header.data_length = xel_header.data_length;
 
@@ -177,6 +205,21 @@ bool xelsReadData(XelNetwork::XelInfo_t *p_xel_info)
   return ret;
 }
 
+bool xelCheckAndSetDxlInfo(XelNetwork::XelInfo_t *p_xel_info)
+{
+  bool ret = false;
+
+  //TODO: Address settings per DXL model.
+  p_xel_info->header.data_get_interval_hz = 30;
+  p_xel_info->header.data_direction = XelNetwork::SEND_RECV;
+  p_xel_info->header.data_addr = 116;
+  p_xel_info->header.data_length = 4;
+  p_xel_info->header.data_type = XelNetwork::JOINT_STATE;
+
+  ret = true;
+  return ret;
+}
+
 
 #ifdef _XELS_DEBUG
 int xelsCmdif(int argc, char **argv)
@@ -201,7 +244,7 @@ int xelsCmdif(int argc, char **argv)
         cmdifPrintf("data_type   \t: %d\n", xelinfo_tbl[i].header.data_type);
         cmdifPrintf("interval_hz \t: %d\n", xelinfo_tbl[i].header.data_get_interval_hz);
         cmdifPrintf("data_name   \t: %s\n", xelinfo_tbl[i].header.data_name);
-        cmdifPrintf("msg_type    \t: %d\n", xelinfo_tbl[i].header.msg_type);
+        cmdifPrintf("data_direction    \t: %d\n", xelinfo_tbl[i].header.data_direction);
         cmdifPrintf("data_addr   \t: %d\n", xelinfo_tbl[i].header.data_addr);
         cmdifPrintf("data_length \t: %d\n", xelinfo_tbl[i].header.data_length);
         cmdifPrintf("\n");
@@ -216,7 +259,7 @@ int xelsCmdif(int argc, char **argv)
         cmdifPrintf("data_type   \t: %d\n", xelinfo_tbl[i].header.data_type);
         cmdifPrintf("interval_hz \t: %d\n", xelinfo_tbl[i].header.data_get_interval_hz);
         cmdifPrintf("data_name   \t: %s\n", xelinfo_tbl[i].header.data_name);
-        cmdifPrintf("msg_type    \t: %d\n", xelinfo_tbl[i].header.msg_type);
+        cmdifPrintf("data_direction    \t: %d\n", xelinfo_tbl[i].header.data_direction);
         cmdifPrintf("data_addr   \t: %d\n", xelinfo_tbl[i].header.data_addr);
         cmdifPrintf("data_length \t: %d\n", xelinfo_tbl[i].header.data_length);
         cmdifPrintf("\n");
