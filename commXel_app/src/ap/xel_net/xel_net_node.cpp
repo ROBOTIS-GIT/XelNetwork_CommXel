@@ -82,29 +82,59 @@ bool XelNetwork::createNewTopicWithXel(XelNetwork::XelNetworkNode* node, XelNetw
       ret = node->createNewTopic<std_msgs::Float64>(info);
       break;
 
-    case VECTOR3:
-      info->dds.p_callback_func = (ros2::CallbackFunc)callbackMsgGeometryVector3;
-      ret = node->createNewTopic<geometry_msgs::Vector3>(info);
-      break;
-
-    case QUATERNION:
-      info->dds.p_callback_func = (ros2::CallbackFunc)callbackMsgGeometryQauternion;
-      ret = node->createNewTopic<geometry_msgs::Quaternion>(info);
-      break;
-
-    case POINT:
-      info->dds.p_callback_func = (ros2::CallbackFunc)callbackMsgGeometryPoint;
-      ret = node->createNewTopic<geometry_msgs::Point>(info);
-      break;
-
-    case TWIST:
-      info->dds.p_callback_func = (ros2::CallbackFunc)callbackMsgGeometryTwist;
-      ret = node->createNewTopic<geometry_msgs::Twist>(info);
-      break;
-
     case IMU:
       info->dds.p_callback_func = (ros2::CallbackFunc)callbackMsgSensorImu;
       ret = node->createNewTopic<sensor_msgs::Imu>(info);
+      break;
+
+    case MILLIS:
+      info->dds.p_callback_func = (ros2::CallbackFunc)callbackMsgStdUint32;
+      ret = node->createNewTopic<std_msgs::UInt32>(info);
+      break;
+
+    case LED:
+      info->dds.p_callback_func = (ros2::CallbackFunc)callbackMsgStdBool;
+      ret = node->createNewTopic<std_msgs::Bool>(info);
+      break;
+
+    case ANALOG0:
+      info->dds.p_callback_func = (ros2::CallbackFunc)callbackMsgStdUint16;
+      ret = node->createNewTopic<std_msgs::UInt16>(info);
+      break;
+
+    case ANALOG1:
+      info->dds.p_callback_func = (ros2::CallbackFunc)callbackMsgStdUint16;
+      ret = node->createNewTopic<std_msgs::UInt16>(info);
+      break;
+
+    case ANALOG2:
+      info->dds.p_callback_func = (ros2::CallbackFunc)callbackMsgStdUint16;
+      ret = node->createNewTopic<std_msgs::UInt16>(info);
+      break;
+
+    case ANALOG3:
+      info->dds.p_callback_func = (ros2::CallbackFunc)callbackMsgStdUint16;
+      ret = node->createNewTopic<std_msgs::UInt16>(info);
+      break;
+
+    case GPIO0:
+      info->dds.p_callback_func = (ros2::CallbackFunc)callbackMsgStdBool;
+      ret = node->createNewTopic<std_msgs::Bool>(info);
+      break;
+
+    case GPIO1:
+      info->dds.p_callback_func = (ros2::CallbackFunc)callbackMsgStdBool;
+      ret = node->createNewTopic<std_msgs::Bool>(info);
+      break;
+
+    case GPIO2:
+      info->dds.p_callback_func = (ros2::CallbackFunc)callbackMsgStdBool;
+      ret = node->createNewTopic<std_msgs::Bool>(info);
+      break;
+
+    case GPIO3:
+      info->dds.p_callback_func = (ros2::CallbackFunc)callbackMsgStdBool;
+      ret = node->createNewTopic<std_msgs::Bool>(info);
       break;
 
     default:

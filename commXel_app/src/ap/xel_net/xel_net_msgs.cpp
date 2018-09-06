@@ -239,9 +239,9 @@ void callbackMsgSensorImu(sensor_msgs::Imu* msg, void* arg)
 
   if(p_xel->header.data_direction == XelNetwork::SEND)
   {
-    msg->angular_velocity.x = p_data->ang_x;
-    msg->angular_velocity.y = p_data->ang_y;
-    msg->angular_velocity.z = p_data->ang_z;
+    msg->angular_velocity.x = p_data->gyro_x;
+    msg->angular_velocity.y = p_data->gyro_y;
+    msg->angular_velocity.z = p_data->gyro_z;
 
     msg->linear_acceleration.x = p_data->acc_x;
     msg->linear_acceleration.y = p_data->acc_y;

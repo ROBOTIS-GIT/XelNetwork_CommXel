@@ -238,7 +238,7 @@ bool xelCheckAndSetDxlInfo(XelNetwork::XelInfo_t *p_xel_info)
   p_xel_info->header.data_direction = XelNetwork::SEND_RECV;
   p_xel_info->header.data_addr = 116;
   p_xel_info->header.data_length = 4;
-  p_xel_info->header.data_type = XelNetwork::JOINT_STATE;
+  p_xel_info->header.data_type = XelNetwork::BOOLEAN;
 
   ret = true;
   return ret;
