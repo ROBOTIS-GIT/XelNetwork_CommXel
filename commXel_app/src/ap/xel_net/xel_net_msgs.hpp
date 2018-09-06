@@ -9,12 +9,9 @@
 #define XEL_NET_MSGS_HPP_
 
 #include "ros2.hpp"
+#include "xels/xels_struct.hpp"
+#include "xel_net_config.h"
 
-
-//template <typename MsgT>
-//void callbackMsgCallback(MsgT* msg, void* arg);
-//template <typename MsgT>
-//void recvMsgCallback(MsgT* msg, void* arg);
 
 /* Callback */
 void callbackMsgStdBool(std_msgs::Bool* msg, void* arg);
@@ -37,6 +34,10 @@ void callbackMsgGeometryTwist(geometry_msgs::Twist* msg, void* arg);
 
 void callbackMsgSensorImu(sensor_msgs::Imu* msg, void* arg);
 
+
+/* For XelNetwork DXL */
+void callbackPublishDXL(sensor_msgs::JointState* msg, void* arg);
+void callbackSubscribeDXL(sensor_msgs::JointState* msg, void* arg);
 
 #endif /* XEL_NET_MSGS_HPP_ */
 

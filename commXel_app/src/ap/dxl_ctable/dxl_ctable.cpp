@@ -21,7 +21,7 @@ void updateDxlId(uint32_t addr, uint8_t mode, uint16_t update_addr, uint8_t *p_d
 void updateDxlBaud(uint32_t addr, uint8_t mode, uint16_t update_addr, uint8_t *p_data, uint16_t update_length);
 
 
-ctable_attribute_t ctable_sensor[] =
+ctable_attribute_t ctable_commxel[] =
 {
 //addr                            len  count
   { P_CONST_MODEL_NUMBER,           2,     1, _ATTR_RD           ,  DXL_MODEL_NUMBER, _UPDATE_NONE    , _DEF_TYPE_U16,    NULL },
@@ -29,8 +29,11 @@ ctable_attribute_t ctable_sensor[] =
   { P_CONST_FW_VERSION,             1,     1, _ATTR_RD           ,                 1, _UPDATE_NONE    , _DEF_TYPE_U08,    updateVersion },
   { P_EEP_ID,                       1,     1, _ATTR_RD | _ATTR_WR,       DXL_INIT_ID, _UPDATE_SETUP   , _DEF_TYPE_U08,    updateDxlId },
   { P_EEP_DXL_BAUDRATE,             1,     1, _ATTR_RD | _ATTR_WR,     DXL_INIT_BAUD, _UPDATE_SETUP   , _DEF_TYPE_U08,    updateDxlBaud },
-
-
+  //{ P_EEP_STATIC_LOCAL_IP,          1,     1, _ATTR_RD | _ATTR_WR,                 0, _UPDATE_SETUP   , _DEF_TYPE_U08,    updateDxlBaud },
+  { P_ASSIGNED_IP,                  1,     1, _ATTR_RD           ,                 0, _UPDATE_SETUP   , _DEF_TYPE_U08,    updateDxlBaud },
+  { P_EEP_REMOTE_IP,                1,     1, _ATTR_RD | _ATTR_WR,                 0, _UPDATE_SETUP   , _DEF_TYPE_U08,    updateDxlBaud },
+  { P_EEP_REMOTE_PORT,              1,     1, _ATTR_RD | _ATTR_WR,                 0, _UPDATE_SETUP   , _DEF_TYPE_U08,    updateDxlBaud },
+  { P_EEP_NODE_NAME,                1,     1, _ATTR_RD | _ATTR_WR,                 0, _UPDATE_SETUP   , _DEF_TYPE_U08,    updateDxlBaud },
 
   { 0xFFFF,  1, 0, 0, 0, 0, 0, NULL }
 };
@@ -53,7 +56,7 @@ void dxlCtableInit(void)
     eepromWriteByte(EEP_ADDR_BAUD, DXL_INIT_BAUD);
   }
 
-  ctableInit(&p_ap->ctable, NULL, 1024, ctable_sensor);
+  ctableInit(&p_ap->ctable, NULL, 1024, ctable_commxel);
 }
 
 void updateVersion(uint32_t addr, uint8_t mode, uint16_t update_addr, uint8_t *p_data, uint16_t update_length)
@@ -170,14 +173,10 @@ void updateDxlBaud(uint32_t addr, uint8_t mode, uint16_t update_addr, uint8_t *p
     p_data[0] = eepromReadByte(EEP_ADDR_BAUD);
     baud = getDxlBaud(p_data[0]);
 
-    if (baud > 0)
-    {
-      eepromWriteByte(EEP_ADDR_BAUD, p_data[0]);
-
-      p_ap->p_dxl_usb->baud = baud;
-      dxlOpenPort(&p_ap->p_dxl_usb->node, _DEF_DXL1, p_ap->p_dxl_usb->baud);
-      dxlOpenPort(&p_ap->p_dxl_usb->node, _DEF_DXL2, p_ap->p_dxl_usb->baud);
-    }
+    p_ap->p_dxl_usb->baud = baud;
+    dxlOpenPort(&p_ap->p_dxl_usb->node, _DEF_DXL1, p_ap->p_dxl_usb->baud);
+    dxlOpenPort(&p_ap->p_dxl_usb->node, _DEF_DXL2, p_ap->p_dxl_usb->baud);
+    xelsOpen(_DEF_DXL1, baud);
   }
 
   if (mode == _UPDATE_RD)
@@ -196,7 +195,77 @@ void updateDxlBaud(uint32_t addr, uint8_t mode, uint16_t update_addr, uint8_t *p
       p_ap->p_dxl_usb->baud = baud;
       dxlOpenPort(&p_ap->p_dxl_usb->node, _DEF_DXL1, p_ap->p_dxl_usb->baud);
       dxlOpenPort(&p_ap->p_dxl_usb->node, _DEF_DXL2, p_ap->p_dxl_usb->baud);
+      xelsOpen(_DEF_DXL1, baud);
     }
   }
 }
+
+
+
+void updateNetworkInfo(uint32_t addr, uint8_t mode, uint16_t update_addr, uint8_t *p_data, uint16_t update_length)
+{
+  uint8_t *p_value;
+
+  if (mode == _UPDATE_SETUP)
+  {
+    switch(addr)
+    {
+      case P_ASSIGNED_IP:
+        break;
+
+      case P_EEP_REMOTE_IP:
+        break;
+
+      case P_EEP_REMOTE_PORT:
+        break;
+    }
+  }
+
+  if (mode == _UPDATE_RD)
+  {
+    switch(addr)
+    {
+      case P_ASSIGNED_IP:
+        p_value = (uint8_t *)p_ap->assigned_ip;
+        memcpy(p_data, &p_value[update_addr], update_length);
+        break;
+
+      case P_EEP_REMOTE_IP:
+        p_value = (uint8_t *)p_ap->remote_ip;
+        memcpy(p_data, &p_value[update_addr], update_length);
+        break;
+
+      case P_EEP_REMOTE_PORT:
+        p_value = (uint8_t *)&p_ap->remote_port;
+        memcpy(p_data, &p_value[update_addr], update_length);
+        break;
+    }
+  }
+
+  if (mode == _UPDATE_WR)
+  {
+    switch(addr)
+    {
+      case P_EEP_REMOTE_IP:
+        p_value = (uint8_t *)p_ap->remote_ip;
+        memcpy(&p_value[update_addr], p_data, update_length);
+        break;
+
+      case P_EEP_REMOTE_PORT:
+        p_value = (uint8_t *)&p_ap->remote_port;
+        memcpy(&p_value[update_addr], p_data, update_length);
+        break;
+
+      default:
+        p_value = NULL;
+        return;
+    }
+
+    for (uint32_t i=0; i<update_length; i++)
+    {
+      eepromWriteByte(addr + update_addr + i, p_value[i]);
+    }
+  }
+}
+
 

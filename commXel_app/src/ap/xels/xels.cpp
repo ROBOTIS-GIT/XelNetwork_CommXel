@@ -22,6 +22,7 @@ int xelsCmdif(int argc, char **argv);
 #endif
 
 
+static bool xelsGetModelHeaderInfo(XelNetwork::XelInfo_t *p_xel_info);
 static dxl_t dxl_cmd;
 
 
@@ -30,6 +31,7 @@ err_code_t err_code = OK;
 dxlcmd_param_t        param;
 dxlcmd_resp_t         resp;
 dxlcmd_resp_read_t    resp_read;
+dxlcmd_resp_write_t   resp_write;
 
 
 
@@ -74,42 +76,14 @@ uint32_t xelsPings(XelNetwork::XelInfo_t *p_xel_infos, uint32_t max_xels)
     XelNetwork::XelInfo_t *p_xel_info;
     xels_count = resp.ping.id_count;
 
-    for (int i=0; i<xels_count; i++)
+    for (int i=0; i<xels_count && xel_index < max_xels; i++)
     {
       p_xel_info = &p_xel_infos[xel_index];
       p_xel_info->xel_id = resp.ping.p_node[i]->id;
 
-      if(xelsReadModelId(p_xel_info) == true)
+      if(xelsGetModelHeaderInfo(p_xel_info) == true)
       {
-        if(p_xel_info->model_id == XELS_SENSORXEL_MODEL_ID || p_xel_info->model_id == XELS_POWERXEL_MODEL_ID)
-        {
-          if(xelsReadHeader(p_xel_info) == true)
-          {
-            xel_index++;
-          }
-          else
-          {
-            p_xel_info->xel_id = 0;
-          }
-        }
-        else if(p_xel_info->model_id == XELS_COMMXEL_MODEL_ID)
-        {
-          p_xel_info->xel_id = 0;
-        }
-        else //Dynamixel
-        {
-          xelCheckAndSetDxlInfo(p_xel_info);
-          xel_index++;
-        }
-      }
-      else
-      {
-        p_xel_info->xel_id = 0;
-      }
-
-      if (xel_index == max_xels)
-      {
-        break;
+        xel_index++;
       }
     }
   }
@@ -128,7 +102,37 @@ bool xelsPing(XelNetwork::XelInfo_t *p_xel_info)
   dxl_ret = dxlcmdPing(p_dxl_node, p_xel_info->xel_id, &resp.ping, 100);
   if (dxl_ret == DXL_RET_RX_RESP)
   {
-    ret = true;
+    ret = xelsGetModelHeaderInfo(p_xel_info);
+  }
+
+  return ret;
+}
+
+bool xelsGetModelHeaderInfo(XelNetwork::XelInfo_t *p_xel_info)
+{
+  bool ret = false;
+
+  ret = xelsReadModelId(p_xel_info);
+  if(ret == true)
+  {
+    switch(p_xel_info->model_id)
+    {
+      case XELS_SENSORXEL_MODEL_ID:
+      case XELS_POWERXEL_MODEL_ID:
+        ret = xelsReadHeader(p_xel_info);
+        break;
+
+      case XELS_COMMXEL_MODEL_ID:
+        break;
+
+      default: //Dynamixel
+        ret = xelCheckAndSetDxlInfo(p_xel_info);
+        break;
+    }
+  }
+  if(ret == false)
+  {
+    p_xel_info->xel_id = 0;
   }
 
   return ret;
@@ -182,7 +186,7 @@ bool xelsReadHeader(XelNetwork::XelInfo_t *p_xel_info)
 
 bool xelsReadData(XelNetwork::XelInfo_t *p_xel_info)
 {
-  bool ret = true;
+  bool ret = false;
   dxl_error_t dxl_ret;
   dxl_t    *p_dxl_node;
   uint16_t data_addr;
@@ -197,10 +201,29 @@ bool xelsReadData(XelNetwork::XelInfo_t *p_xel_info)
   if (dxl_ret == DXL_RET_RX_RESP)
   {
     memcpy(p_xel_info->data, resp_read.p_node[0]->p_data, data_length);
+    ret = true;
   }
-  else
+
+  return ret;
+}
+
+bool xelsWriteData(XelNetwork::XelInfo_t *p_xel_info)
+{
+  bool ret = false;
+  dxl_error_t dxl_ret;
+  dxl_t    *p_dxl_node;
+  uint16_t data_addr;
+  uint16_t data_length;
+
+  p_dxl_node = &dxl_cmd;
+
+  data_addr   = p_xel_info->header.data_addr;
+  data_length = p_xel_info->header.data_length;
+
+  dxl_ret = dxlcmdWrite(p_dxl_node, p_xel_info->xel_id, p_xel_info->data, data_addr, data_length, &resp_write, 100);
+  if (dxl_ret == DXL_RET_RX_RESP)
   {
-    ret = false;
+    ret = true;
   }
 
   return ret;

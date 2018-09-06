@@ -36,17 +36,12 @@
 #define P_CONST_FW_VERSION                      6
 #define P_EEP_ID                                7
 #define P_EEP_DXL_BAUDRATE                      8
-
-#define P_MILLIS                                12
-
-
-#define P_XEL_HEADER_DATA_TYPE                  32   // 1
-#define P_XEL_HEADER_DATA_INTERVAL              33   // 4
-#define P_XEL_HEADER_DATA_NAME                  37   // 32
-#define P_XEL_HEADER_MSG_TYPE                   69   // 1
-#define P_XEL_HEADER_DATA_ADDR                  70   // 2
-#define P_XEL_HEADER_DATA_LENGTH                72   // 1
-#define P_XEL_DATA                              128  // 128
+#define P_EEP_ETHERNET_DHCP_ENABLE              9
+#define P_EEP_STATIC_LOCAL_IP                   10 //len = 16
+#define P_ASSIGNED_IP                           26 //len = 16
+#define P_EEP_REMOTE_IP                         42 //len = 16
+#define P_EEP_REMOTE_PORT                       58 //len = 2
+#define P_EEP_NODE_NAME                         60 //len = 30
 
 
 

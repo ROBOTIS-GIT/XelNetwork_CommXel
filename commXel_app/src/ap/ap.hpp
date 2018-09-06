@@ -38,6 +38,12 @@ typedef struct
   dxl_node_t      *p_dxl_usb;
 
   ctable_t        ctable;
+
+  char            assigned_ip[16];
+  char            remote_ip[16];
+  uint16_t        remote_port;
+
+  char            node_name[30];
 } ap_t;
 
 

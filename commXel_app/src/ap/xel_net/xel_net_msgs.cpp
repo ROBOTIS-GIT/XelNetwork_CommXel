@@ -7,8 +7,7 @@
 
 
 #include "xel_net_msgs.hpp"
-#include "xel/xel_struct.hpp"
-
+#include "xels/xels.h"
 
 using namespace XelNetwork;
 
@@ -252,4 +251,70 @@ void callbackMsgSensorImu(sensor_msgs::Imu* msg, void* arg)
   {
     //Not Support
   }
+}
+
+
+
+
+
+void callbackPublishDXL(sensor_msgs::JointState* msg, void* arg)
+{
+//  XelInfo_t *p_xels = (XelInfo_t*)arg;
+//  XelInfo_t *p_xel;
+//  uint8_t i, dxl_cnt = 0;
+//  int id_num = 0;
+//
+//  memset(msg, 0, sizeof(sensor_msgs::JointState));
+//
+//  for(i = 0; i < CONNECTED_XEL_MAX; i++)
+//  {
+//    p_xel = p_xels+i;
+//    if (p_xel->model_id != XELS_SENSORXEL_MODEL_ID
+//        && p_xel->model_id != XELS_POWERXEL_MODEL_ID
+//        && p_xel->model_id != XELS_COMMXEL_MODEL_ID)
+//    {
+//      itoa(id_num, msg->name[dxl_cnt], 10);
+//      p_xel->xel_id = (uint8_t)id_num;
+//      memcpy(&msg->position[dxl_cnt], p_xel->data, sizeof(msg->position[dxl_cnt]));
+//      dxl_cnt++;
+//      if(dxl_cnt == 20)
+//      {
+//        break;
+//      }
+//    }
+//  }
+//
+//  strcpy(msg->header.frame_id, "DynamiXels");
+//  msg->header.stamp = ros2::now();
+//  msg->name_size = dxl_cnt;
+//  msg->position_size = dxl_cnt;
+}
+
+void callbackSubscribeDXL(sensor_msgs::JointState* msg, void* arg)
+{
+//  XelInfo_t *p_xels = (XelInfo_t*)arg;
+//  XelInfo_t *p_xel;
+//  uint8_t i, j;
+//
+//  for(i = 0; i < 20; i++)
+//  {
+//    if(msg->name[i] != 0)
+//    {
+//      // Search correspond ID
+//      for(j = 0; j < CONNECTED_XEL_MAX; j++)
+//      {
+//        p_xel = p_xels+j;
+//        if (p_xel->model_id != XELS_SENSORXEL_MODEL_ID
+//            && p_xel->model_id != XELS_POWERXEL_MODEL_ID
+//            && p_xel->model_id != XELS_COMMXEL_MODEL_ID)
+//        {
+//          if (p_xel->xel_id == atoi(msg->name[i]))
+//          {
+//            memcpy(p_xel->data, &msg->position[i], sizeof(msg->position[i]));
+//            p_xel->status.flag_get_data = true;
+//          }
+//        }
+//      }
+//    }
+//  }
 }

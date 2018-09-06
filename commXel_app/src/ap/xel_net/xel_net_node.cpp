@@ -8,6 +8,7 @@
 
 #include "xel_net_node.hpp"
 #include "xel_net_msgs.hpp"
+#include "xels/xels.h"
 
 
 bool XelNetwork::createNewTopicWithXel(XelNetwork::XelNetworkNode* node, XelNetwork::XelInfo_t* info)

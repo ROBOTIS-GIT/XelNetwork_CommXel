@@ -184,7 +184,8 @@ class Node
       {
         if(pub_list_[i] != NULL && pub_list_[i]->writer_id_ == writer_id)
         {
-          //TODO: Delete DDS resources
+          mrObjectId obj_id = {pub_list_[i]->writer_id_, MR_DATAWRITER_ID};
+          mr_write_delete_entity(participant_.session, participant_.output_stream_id, obj_id);
           delete(pub_list_[i]);
           pub_list_[i] = NULL;
           pub_cnt_--;
@@ -199,7 +200,8 @@ class Node
       {
         if(sub_list_[i] != NULL && sub_list_[i]->reader_id_ == reader_id)
         {
-          //TODO: Delete DDS resources
+          mrObjectId obj_id = {sub_list_[i]->reader_id_, MR_DATAREADER_ID};
+          mr_write_delete_entity(participant_.session, participant_.output_stream_id, obj_id);
           delete(sub_list_[i]);
           sub_list_[i] = NULL;
           sub_cnt_--;

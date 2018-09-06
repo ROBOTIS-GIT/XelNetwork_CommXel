@@ -12,9 +12,6 @@
 #include "xels/xels.h"
 
 
-#define CONNECTED_XEL_MAX      30
-
-
 extern osSemaphoreId dxl_semaphore;
 
 namespace XelNetwork
@@ -32,6 +29,7 @@ class Core
 
     void run(void)
     {
+      bool ret = false;
       XelInfo_t* p_xel;
 
       for(uint8_t i = 0; i < CONNECTED_XEL_MAX; i++)
@@ -40,15 +38,30 @@ class Core
         switch(p_xel->status.current)
         {
           case NEW_CONNECTION:
-            if(createNewTopicWithXel(&node_, p_xel) == true)
+            if(p_xel->model_id == XELS_SENSORXEL_MODEL_ID || p_xel->model_id == XELS_POWERXEL_MODEL_ID)
+            {
+              ret = createNewTopicWithXel(&node_, p_xel);
+            }
+            else if(p_xel->model_id != XELS_COMMXEL_MODEL_ID)
+            {
+              if(node_.is_created_dxl_topic == false)
+              {
+                node_.createDxlTopic(xel_tbl);
+              }
+              ret = true;
+            }
+
+            if(ret == true)
             {
               p_xel->status.previous = p_xel->status.current;
               p_xel->status.current = RUNNING;
             }
+
             break;
 
           case LOST_CONNECTION:
-            if(p_xel->status.previous == RUNNING)
+            if(p_xel->status.previous == RUNNING &&
+                (p_xel->model_id == XELS_SENSORXEL_MODEL_ID || p_xel->model_id == XELS_POWERXEL_MODEL_ID))
             {
               deleteDDSResource(p_xel);
             }
@@ -65,13 +78,13 @@ class Core
                 osSemaphoreRelease(dxl_semaphore);
               }
             }
-            else // send data to xel //XelNetwork::RECEIVE
+            else // XelNetwork::RECEIVE - send data to xel
             {
               if(p_xel->status.flag_get_data == true)
               {
                 if(osSemaphoreWait(dxl_semaphore, 0) == osOK)
                 {
-                  //TODO: send data to xel
+                  xelsWriteData(p_xel);
                   osSemaphoreRelease(dxl_semaphore);
                   p_xel->status.flag_get_data = false;
                 }
@@ -115,7 +128,6 @@ class PlugAndPlay
     {
       interval_ms_ = interval_ms;
 
-      xelsInit();
       scanWhenInit();
     }
 
@@ -165,7 +177,6 @@ class PlugAndPlay
         }
         else //new id scan
         {
-          //select id for scan
           static uint8_t id = 0;
           bool ret = true;
 
@@ -198,7 +209,16 @@ class PlugAndPlay
             p_xel->xel_id = 0;
           }
 
-          id++;
+          // Protocol ID Max(252)
+          if(id < 252)
+          {
+            id++;
+          }
+          else
+          {
+            id = 0;
+          }
+
         }
 
         if(checking_tbl_num >= CONNECTED_XEL_MAX)

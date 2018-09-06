@@ -57,6 +57,7 @@ void apInit(void)
 
   p_ap->p_dxl_usb  = &p_ap->dxl_slave;
 
+  xelsInit();
 
   dxlSlaveInit();
   dxlCtableInit();
@@ -123,7 +124,8 @@ void apMain(void)
 enum OperatingMode
 {
   OP_USB_DXL_BYPASS = 0,
-  OP_XEL_NETWORK
+  OP_XEL_NETWORK,
+  OP_CONTROL_TABLE
 };
 
 static OperatingMode operating_mode = OP_XEL_NETWORK;
@@ -134,8 +136,8 @@ static void threadApMode(void const * argument)
   {
     if (buttonGetReleasedEvent(_HW_DEF_BUTTON_MODE) == true)
     {
-      if (buttonGetReleasedTime(_HW_DEF_BUTTON_MODE) < 1000
-          && buttonGetPressedTime(_HW_DEF_BUTTON_MODE) > 3000)
+      if (buttonGetReleasedTime(_HW_DEF_BUTTON_MODE) < 500
+          && buttonGetPressedTime(_HW_DEF_BUTTON_MODE) > 2000 && buttonGetPressedTime(_HW_DEF_BUTTON_MODE) < 5000)
       {
         if(operating_mode == OP_XEL_NETWORK)
         {
@@ -147,10 +149,14 @@ static void threadApMode(void const * argument)
           operating_mode = OP_XEL_NETWORK;
           ledOff(_DEF_LED1);
         }
-
+      }
+      else if (buttonGetReleasedTime(_HW_DEF_BUTTON_MODE) < 500
+          && buttonGetPressedTime(_HW_DEF_BUTTON_MODE) > 5000)
+      {
+        operating_mode = OP_CONTROL_TABLE;
       }
     }
-    delay(1);
+    osThreadYield();
   }
 }
 
@@ -160,6 +166,12 @@ static void threadXelNetwork(void const * argument)
   {
     if(ethernetGetDhcpStatus() == DHCP_ADDRESS_ASSIGNED)
     {
+      char ip_addr[16];
+      strcpy(ip_addr, ethernetGetIpAddrAsString());
+      for(uint8_t i = 0; i < (uint8_t)strlen(ip_addr); i++)
+      {
+        eepromWriteByte(P_ASSIGNED_IP+i, (uint8_t)ip_addr[i]);
+      }
       break;
     }
   }
@@ -173,6 +185,7 @@ static void threadXelNetwork(void const * argument)
     {
       XelNetwork.run();
     }
+    osThreadYield();
   }
 
   for( ;; )
@@ -183,7 +196,7 @@ static void threadXelNetwork(void const * argument)
 
 static void threadXelPlugAndPlay(void const * argument)
 {
-  XelNetwork::PlugAndPlay PlugAndPlay(500);
+  XelNetwork::PlugAndPlay PlugAndPlay(100);
 
   for( ;; )
   {
@@ -191,6 +204,7 @@ static void threadXelPlugAndPlay(void const * argument)
     {
       PlugAndPlay.run();
     }
+    osThreadYield();
   }
 
   for( ;; )
@@ -203,15 +217,20 @@ static void threadUsbDxlBypass(void const * argument)
 {
   for( ;; )
   {
-    if(operating_mode == OP_USB_DXL_BYPASS)
+    switch(operating_mode)
     {
-      u2dRun();
+      case OP_USB_DXL_BYPASS:
+        u2dRun();
+        break;
+
+      case OP_CONTROL_TABLE:
+        dxlSlaveLoop();
+        break;
+
+      default:
+        break;
     }
-    else
-    {
-      dxlSlaveLoop();
-      osThreadYield();
-    }
+    osThreadYield();
   }
 
   for( ;; )

@@ -9,9 +9,9 @@
 #define SRC_AP_XELS_XELS_H_
 
 
+#include "xels/xels_struct.hpp"
 #include "hw.h"
 #include "ap_def.h"
-#include "xel/xel_struct.hpp"
 
 #define XELS_SENSORXEL_MODEL_ID  460
 #define XELS_POWERXEL_MODEL_ID   462
@@ -48,6 +48,7 @@ bool xelsPing(XelNetwork::XelInfo_t *p_xel_info);
 bool xelsReadModelId(XelNetwork::XelInfo_t *p_xel_info);
 bool xelsReadHeader(XelNetwork::XelInfo_t *p_xel_info);
 bool xelsReadData(XelNetwork::XelInfo_t *p_xel_info);
+bool xelsWriteData(XelNetwork::XelInfo_t *p_xel_info);
 bool xelCheckAndSetDxlInfo(XelNetwork::XelInfo_t *p_xel_info);
 
 #endif /* SRC_AP_XELS_XELS_H_ */

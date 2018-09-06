@@ -36,7 +36,7 @@ class JointState : public ros2::Topic<JointState>
 {
 public: 
     std_msgs::Header header;
-    char name[20][10];
+    char name[20][4];
     uint32_t name_size;
     double position[20];
     uint32_t position_size;
