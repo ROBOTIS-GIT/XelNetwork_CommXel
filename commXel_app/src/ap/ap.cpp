@@ -134,26 +134,49 @@ static void threadApMode(void const * argument)
 {
   for(;;)
   {
+    static uint32_t pre_time = 0;
+    switch(operating_mode)
+    {
+      case OP_XEL_NETWORK:
+        if(millis() - pre_time > 2000)
+        {
+          pre_time = millis();
+          ledToggle(_DEF_LED1);
+        }
+        break;
+
+      case OP_USB_DXL_BYPASS:
+        if(millis() - pre_time > 500)
+        {
+          pre_time = millis();
+          ledToggle(_DEF_LED1);
+        }
+        break;
+
+      case OP_CONTROL_TABLE:
+        if(millis() - pre_time > 50)
+        {
+          pre_time = millis();
+          ledToggle(_DEF_LED1);
+        }
+        break;
+    }
+
     if (buttonGetReleasedEvent(_HW_DEF_BUTTON_MODE) == true)
     {
       if (buttonGetReleasedTime(_HW_DEF_BUTTON_MODE) < 500
-          && buttonGetPressedTime(_HW_DEF_BUTTON_MODE) > 2000 && buttonGetPressedTime(_HW_DEF_BUTTON_MODE) < 5000)
+          && buttonGetPressedTime(_HW_DEF_BUTTON_MODE) > 1000 && buttonGetPressedTime(_HW_DEF_BUTTON_MODE) < 5000)
       {
-        if(operating_mode == OP_XEL_NETWORK)
-        {
-          operating_mode = OP_USB_DXL_BYPASS;
-          ledOn(_DEF_LED1);
-        }
-        else
-        {
-          operating_mode = OP_XEL_NETWORK;
-          ledOff(_DEF_LED1);
-        }
+        operating_mode = OP_USB_DXL_BYPASS;
       }
       else if (buttonGetReleasedTime(_HW_DEF_BUTTON_MODE) < 500
           && buttonGetPressedTime(_HW_DEF_BUTTON_MODE) > 5000)
       {
         operating_mode = OP_CONTROL_TABLE;
+      }
+      else
+      {
+        operating_mode = OP_XEL_NETWORK;
       }
     }
     osThreadYield();

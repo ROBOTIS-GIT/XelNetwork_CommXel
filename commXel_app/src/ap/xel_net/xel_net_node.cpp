@@ -82,11 +82,6 @@ bool XelNetwork::createNewTopicWithXel(XelNetwork::XelNetworkNode* node, XelNetw
       ret = node->createNewTopic<std_msgs::Float64>(info);
       break;
 
-    case IMU:
-      info->dds.p_callback_func = (ros2::CallbackFunc)callbackMsgSensorImu;
-      ret = node->createNewTopic<sensor_msgs::Imu>(info);
-      break;
-
     case MILLIS:
       info->dds.p_callback_func = (ros2::CallbackFunc)callbackMsgStdUint32;
       ret = node->createNewTopic<std_msgs::UInt32>(info);
@@ -140,6 +135,11 @@ bool XelNetwork::createNewTopicWithXel(XelNetwork::XelNetworkNode* node, XelNetw
     case POWER:
       info->dds.p_callback_func = (ros2::CallbackFunc)callbackPowerXelPower;
       ret = node->createNewTopic<sensor_msgs::BatteryState>(info);
+      break;
+
+    case IMU:
+      info->dds.p_callback_func = (ros2::CallbackFunc)callbackMsgSensorImu;
+      ret = node->createNewTopic<sensor_msgs::Imu>(info);
       break;
 
     case JOYSTICK:

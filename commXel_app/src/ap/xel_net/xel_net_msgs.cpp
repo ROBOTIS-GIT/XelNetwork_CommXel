@@ -27,7 +27,6 @@ void callbackMsgStdBool(std_msgs::Bool* msg, void* arg)
   else
   {
     p_data->data = msg->data;
-    printf("%d ", p_data->data);
     p_xel->status.flag_get_data = true;
   }
 }
@@ -245,13 +244,13 @@ void callbackMsgSensorJoy(sensor_msgs::Joy* msg, void* arg)
     msg->axes[1] = (float)p_data->axis_y;
     msg->axes_size = 2;
     msg->buttons[0] = (int32_t)p_data->button;
-    msg->axes_size = 1;
+    msg->buttons_size = 1;
   }
   else
   {
     p_data->axis_x = (uint32_t)msg->axes[0];
     p_data->axis_y = (uint32_t)msg->axes[1];
-    p_data->button = msg->buttons[0]>0?true:false;
+    p_data->button = (uint32_t)msg->buttons[0];
   }
 }
 

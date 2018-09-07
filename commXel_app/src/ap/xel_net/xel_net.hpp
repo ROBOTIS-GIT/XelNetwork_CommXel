@@ -179,7 +179,7 @@ class PlugAndPlay
         }
         else //new id scan
         {
-          static uint8_t id = 0;
+          static uint8_t id = XELS_START_ID_FOR_SCAN;
           bool ret = true;
 
           for(uint8_t i = 0; i < CONNECTED_XEL_MAX; i++)
@@ -212,13 +212,13 @@ class PlugAndPlay
           }
 
           // Protocol ID Max(252)
-          if(id < 252)
+          if(id < XELS_END_ID_FOR_SCAN)
           {
             id++;
           }
           else
           {
-            id = 0;
+            id = XELS_START_ID_FOR_SCAN;
           }
 
         }
