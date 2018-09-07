@@ -80,7 +80,7 @@ public:
     uint8_t power_supply_health;
     uint8_t power_supply_technology;
     bool present;
-    float* cell_voltage;
+    float cell_voltage[10];
     uint32_t cell_voltage_size;
     char location[255];
     char serial_number[255];
@@ -90,8 +90,11 @@ public:
     header(),
     voltage(0), current(0), charge(0), capacity(0), design_capacity(0), percentage(0),
     power_supply_status(0), power_supply_health(0), power_supply_technology(0),
-    present(0), cell_voltage(NULL), cell_voltage_size(0)
+    present(0), cell_voltage_size(1)
   { 
+    memset(cell_voltage, 0, sizeof(cell_voltage));
+    memset(location, 0, sizeof(location));
+    memset(serial_number, 0, sizeof(serial_number));
   }
 
   bool serialize(struct MicroBuffer* writer, const BatteryState* topic)

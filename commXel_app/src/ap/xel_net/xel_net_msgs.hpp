@@ -27,17 +27,16 @@ void callbackMsgStdUint64(std_msgs::UInt64* msg, void* arg);
 void callbackMsgStdFloat32(std_msgs::Float32* msg, void* arg);
 void callbackMsgStdFloat64(std_msgs::Float64* msg, void* arg);
 
-void callbackMsgGeometryVector3(geometry_msgs::Vector3* msg, void* arg);
-void callbackMsgGeometryQauternion(geometry_msgs::Quaternion* msg, void* arg);
-void callbackMsgGeometryPoint(geometry_msgs::Point* msg, void* arg);
-void callbackMsgGeometryTwist(geometry_msgs::Twist* msg, void* arg);
-
 void callbackMsgSensorImu(sensor_msgs::Imu* msg, void* arg);
+void callbackMsgSensorJoy(sensor_msgs::Joy* msg, void* arg);
 
 
 /* For XelNetwork DXL */
 void callbackPublishDXL(sensor_msgs::JointState* msg, void* arg);
 void callbackSubscribeDXL(sensor_msgs::JointState* msg, void* arg);
+
+/* For PowerXel power */
+void callbackPowerXelPower(sensor_msgs::BatteryState* msg, void* arg);
 
 #endif /* XEL_NET_MSGS_HPP_ */
 

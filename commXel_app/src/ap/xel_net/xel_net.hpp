@@ -70,27 +70,29 @@ class Core
             break;
 
           case RUNNING:
-            if(p_xel->header.data_direction == XelNetwork::SEND)
+            if(p_xel->model_id == XELS_SENSORXEL_MODEL_ID || p_xel->model_id == XELS_POWERXEL_MODEL_ID)
             {
-              if(osSemaphoreWait(dxl_semaphore, 0) == osOK)
-              {
-                xelsReadData(p_xel);
-                osSemaphoreRelease(dxl_semaphore);
-              }
-            }
-            else // XelNetwork::RECEIVE - send data to xel
-            {
-              if(p_xel->status.flag_get_data == true)
+              if(p_xel->header.data_direction == XelNetwork::SEND)
               {
                 if(osSemaphoreWait(dxl_semaphore, 0) == osOK)
                 {
-                  xelsWriteData(p_xel);
+                  xelsReadData(p_xel);
                   osSemaphoreRelease(dxl_semaphore);
-                  p_xel->status.flag_get_data = false;
+                }
+              }
+              else // XelNetwork::RECEIVE - send data to xel
+              {
+                if(p_xel->status.flag_get_data == true)
+                {
+                  if(osSemaphoreWait(dxl_semaphore, 0) == osOK)
+                  {
+                    xelsWriteData(p_xel);
+                    osSemaphoreRelease(dxl_semaphore);
+                    p_xel->status.flag_get_data = false;
+                  }
                 }
               }
             }
-
             break;
 
           case NOT_CONNECTTED:

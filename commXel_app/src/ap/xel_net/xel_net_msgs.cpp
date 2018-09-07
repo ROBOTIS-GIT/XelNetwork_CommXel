@@ -211,27 +211,6 @@ void callbackMsgStdFloat64(std_msgs::Float64* msg, void* arg)
 }
 
 
-void callbackMsgGeometryVector3(geometry_msgs::Vector3* msg, void* arg)
-{
-  (void)(msg); (void)(arg);
-}
-
-void callbackMsgGeometryQauternion(geometry_msgs::Quaternion* msg, void* arg)
-{
-  (void)(msg); (void)(arg);
-}
-
-void callbackMsgGeometryPoint(geometry_msgs::Point* msg, void* arg)
-{
-  (void)(msg); (void)(arg);
-}
-
-void callbackMsgGeometryTwist(geometry_msgs::Twist* msg, void* arg)
-{
-  (void)(msg); (void)(arg);
-}
-
-
 void callbackMsgSensorImu(sensor_msgs::Imu* msg, void* arg)
 {
   XelInfo_t *p_xel = (XelInfo_t*)arg;
@@ -253,33 +232,63 @@ void callbackMsgSensorImu(sensor_msgs::Imu* msg, void* arg)
   }
 }
 
+void callbackMsgSensorJoy(sensor_msgs::Joy* msg, void* arg)
+{
+  XelInfo_t *p_xel = (XelInfo_t*)arg;
+  JoyStick_t *p_data = (JoyStick_t*)p_xel->data;
+
+  if(p_xel->header.data_direction == XelNetwork::SEND)
+  {
+    sprintf(msg->header.frame_id, "JoyStick %d", p_xel->xel_id);
+    msg->header.stamp = ros2::now();
+    msg->axes[0] = (float)p_data->axis_x;
+    msg->axes[1] = (float)p_data->axis_y;
+    msg->axes_size = 2;
+    msg->buttons[0] = (int32_t)p_data->button;
+    msg->axes_size = 1;
+  }
+  else
+  {
+    p_data->axis_x = (uint32_t)msg->axes[0];
+    p_data->axis_y = (uint32_t)msg->axes[1];
+    p_data->button = msg->buttons[0]>0?true:false;
+  }
+}
 
 
 
+//extern osSemaphoreId dxl_semaphore;
 
 void callbackPublishDXL(sensor_msgs::JointState* msg, void* arg)
 {
+  //TODO:
 //  XelInfo_t *p_xels = (XelInfo_t*)arg;
 //  XelInfo_t *p_xel;
 //  uint8_t i, dxl_cnt = 0;
-//  int id_num = 0;
+//  uint32_t position;
 //
 //  memset(msg, 0, sizeof(sensor_msgs::JointState));
+//  msg->name_size = 1;
+//  msg->position_size = 1;
+//  msg->velocity_size = 1;
+//  msg->effort_size = 1;
 //
 //  for(i = 0; i < CONNECTED_XEL_MAX; i++)
 //  {
-//    p_xel = p_xels+i;
+//    p_xel = &p_xels[i];
 //    if (p_xel->model_id != XELS_SENSORXEL_MODEL_ID
 //        && p_xel->model_id != XELS_POWERXEL_MODEL_ID
 //        && p_xel->model_id != XELS_COMMXEL_MODEL_ID)
 //    {
-//      itoa(id_num, msg->name[dxl_cnt], 10);
-//      p_xel->xel_id = (uint8_t)id_num;
-//      memcpy(&msg->position[dxl_cnt], p_xel->data, sizeof(msg->position[dxl_cnt]));
-//      dxl_cnt++;
-//      if(dxl_cnt == 20)
+//      if(p_xel->status.current == XelNetwork::RUNNING)
 //      {
-//        break;
+//        itoa((int)p_xel->xel_id, msg->name[dxl_cnt], 10);
+//        memcpy(&msg->position[dxl_cnt], p_xel->data, sizeof(msg->position[dxl_cnt]));
+//        dxl_cnt++;
+//        if(dxl_cnt == 10)
+//        {
+//          break;
+//        }
 //      }
 //    }
 //  }
@@ -288,27 +297,31 @@ void callbackPublishDXL(sensor_msgs::JointState* msg, void* arg)
 //  msg->header.stamp = ros2::now();
 //  msg->name_size = dxl_cnt;
 //  msg->position_size = dxl_cnt;
+//  msg->velocity_size = dxl_cnt;
+//  msg->effort_size = dxl_cnt;
 }
 
 void callbackSubscribeDXL(sensor_msgs::JointState* msg, void* arg)
 {
+  //TODO:
 //  XelInfo_t *p_xels = (XelInfo_t*)arg;
 //  XelInfo_t *p_xel;
 //  uint8_t i, j;
+//  uint32_t position;
 //
-//  for(i = 0; i < 20; i++)
+//  for(i = 0; i < 10; i++)
 //  {
 //    if(msg->name[i] != 0)
 //    {
 //      // Search correspond ID
 //      for(j = 0; j < CONNECTED_XEL_MAX; j++)
 //      {
-//        p_xel = p_xels+j;
+//        p_xel = &p_xels[j];
 //        if (p_xel->model_id != XELS_SENSORXEL_MODEL_ID
 //            && p_xel->model_id != XELS_POWERXEL_MODEL_ID
 //            && p_xel->model_id != XELS_COMMXEL_MODEL_ID)
 //        {
-//          if (p_xel->xel_id == atoi(msg->name[i]))
+//          if (p_xel->xel_id == atoi(msg->name[i]) && p_xel->status.current == XelNetwork::RUNNING)
 //          {
 //            memcpy(p_xel->data, &msg->position[i], sizeof(msg->position[i]));
 //            p_xel->status.flag_get_data = true;
@@ -317,4 +330,32 @@ void callbackSubscribeDXL(sensor_msgs::JointState* msg, void* arg)
 //      }
 //    }
 //  }
+}
+
+
+void callbackPowerXelPower(sensor_msgs::BatteryState* msg, void* arg)
+{
+  XelInfo_t *p_xel = (XelInfo_t*)arg;
+  Power_t *p_data = (Power_t*)p_xel->data;
+  static float voltage;
+  uint32_t voltage_int, current_int;
+
+  if(p_xel->header.data_direction == XelNetwork::SEND)
+  {
+    sprintf(msg->header.frame_id, "PowerXel %d", p_xel->xel_id);
+    msg->header.stamp = ros2::now();
+
+    memcpy(&voltage_int, &p_data[0], sizeof(voltage_int));
+    memcpy(&current_int, &p_data[4], sizeof(current_int));
+
+    voltage = (float)(voltage_int/100) + ((float)(voltage_int%100)/100);
+
+    msg->voltage = voltage;
+    msg->current = (float)current_int;
+    msg->cell_voltage_size = 1;
+  }
+  else
+  {
+    //Not Support
+  }
 }

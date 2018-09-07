@@ -137,6 +137,16 @@ bool XelNetwork::createNewTopicWithXel(XelNetwork::XelNetworkNode* node, XelNetw
       ret = node->createNewTopic<std_msgs::Bool>(info);
       break;
 
+    case POWER:
+      info->dds.p_callback_func = (ros2::CallbackFunc)callbackPowerXelPower;
+      ret = node->createNewTopic<sensor_msgs::BatteryState>(info);
+      break;
+
+    case JOYSTICK:
+      info->dds.p_callback_func = (ros2::CallbackFunc)callbackMsgSensorJoy;
+      ret = node->createNewTopic<sensor_msgs::Joy>(info);
+      break;
+
     default:
       break;
   }

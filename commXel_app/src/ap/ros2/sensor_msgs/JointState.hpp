@@ -36,19 +36,19 @@ class JointState : public ros2::Topic<JointState>
 {
 public: 
     std_msgs::Header header;
-    char name[20][4];
+    char name[10][4];
     uint32_t name_size;
-    double position[20];
+    double position[10];
     uint32_t position_size;
-    double velocity[20];
+    double velocity[10];
     uint32_t velocity_size;
-    double effort[20];
+    double effort[10];
     uint32_t effort_size;
 
   JointState():
     Topic("sensor_msgs::msg::dds_::JointState_", SENSOR_MSGS_JOINT_STATE_TOPIC),
     header(),
-    name_size(0), position_size(0), velocity_size(0), effort_size(0)
+    name_size(1), position_size(1), velocity_size(1), effort_size(1)
   { 
     memset(name, 0, sizeof(name));
     memset(position, 0, sizeof(position));
