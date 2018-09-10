@@ -39,6 +39,8 @@ typedef struct
 
   ctable_t        ctable;
 
+  bool            dhcp_enable;
+  uint8_t         mac_addr[6];
   char            assigned_ip[16];
   char            remote_ip[16];
   uint16_t        remote_port;

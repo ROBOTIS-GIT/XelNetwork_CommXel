@@ -76,10 +76,6 @@
 #define _HW_DEF_BUTTON_CH_MAX                 1
 #define _HW_DEF_DXLPORT_CH_MAX                2
 
-#ifdef _USE_HW_ETH
-#define _HW_DEF_DEFAULT_MAC_ADDR              {0x00, 0x08, 0xDC, 0x50, 0xF4, 0xF5}
-#endif
-
 
 #define _HW_DEF_DXLCMD_MAX_NODE               32
 #define _HW_DEF_DXLCMD_MAX_NODE_BUFFER_SIZE   32

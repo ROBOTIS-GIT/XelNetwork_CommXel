@@ -69,7 +69,6 @@ void apInit(void)
 
   /* Begin Ethernet */
 #ifdef _USE_HW_ETH
-  static uint8_t mac_addr[6] = _HW_DEF_DEFAULT_MAC_ADDR;
   static ip_addr_t ip_addr, subnet, gateway, dns_server;
 
   /* Static */
@@ -78,7 +77,11 @@ void apInit(void)
   IP4_ADDR(&gateway, 192, 168, 0, 1);
   IP4_ADDR(&dns_server, 8, 8, 8, 8);
 
-  ethernetIfBegin(IP_DHCP, mac_addr, &ip_addr, &subnet, &gateway, &dns_server);
+  if(p_ap->mac_addr[0] != 0x00 || p_ap->mac_addr[1] != 0x00 || p_ap->mac_addr[2] != 0x00
+      || p_ap->mac_addr[3] != 0x00 || p_ap->mac_addr[4] != 0x00 || p_ap->mac_addr[5] != 0x00 )
+  {
+    ethernetIfBegin((ip_assign_type_t)p_ap->dhcp_enable, p_ap->mac_addr, &ip_addr, &subnet, &gateway, &dns_server);
+  }
 #endif /* _USE_HW_ETH */
 
   osThreadDef(threadApMode, threadApMode, osPriorityNormal, 0, 1*1024/4);
@@ -189,17 +192,11 @@ static void threadXelNetwork(void const * argument)
   {
     if(ethernetGetDhcpStatus() == DHCP_ADDRESS_ASSIGNED)
     {
-      char ip_addr[16];
-      strcpy(ip_addr, ethernetGetIpAddrAsString());
-      for(uint8_t i = 0; i < (uint8_t)strlen(ip_addr); i++)
-      {
-        eepromWriteByte(P_ASSIGNED_IP+i, (uint8_t)ip_addr[i]);
-      }
-      break;
+      strcpy(p_ap->assigned_ip, ethernetGetIpAddrAsString());
     }
   }
 
-  ros2::init("192.168.60.88", 2018);
+  ros2::init(p_ap->remote_ip, p_ap->remote_port);
   XelNetwork::Core XelNetwork;
 
   for( ;; )
