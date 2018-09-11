@@ -24,7 +24,7 @@ public:
   XelNetworkNode()
   : Node(), is_created_dxl_topic(false)
   {
-    this->createSubscriber<builtin_interfaces::Time>("commxel_time_sync", (ros2::CallbackFunc)subscribeTimeSync, NULL);
+    this->createSubscriber<builtin_interfaces::Time>("time_sync", (ros2::CallbackFunc)subscribeTimeSync, NULL);
   }
 
   template <typename MsgT>
@@ -86,11 +86,11 @@ public:
 
   void createDxlTopic(XelInfo_t* info)
   {
-    ros2::Publisher<sensor_msgs::JointState>* p_pub = this->createPublisher<sensor_msgs::JointState>((const char*)"DXL_status");
+    ros2::Publisher<sensor_msgs::JointState>* p_pub = this->createPublisher<sensor_msgs::JointState>((const char*)"joint_states");
     this->createWallFreq(DXL_STATUS_PUB_HZ, (ros2::CallbackFunc)callbackPublishDXL, info, p_pub);
     is_created_dxl_topic = (p_pub!=NULL?true:false);
 
-    ros2::Subscriber<sensor_msgs::JointState>* p_sub = this->createSubscriber<sensor_msgs::JointState>((const char*)"DXL_control", (ros2::CallbackFunc)callbackSubscribeDXL, info);
+    ros2::Subscriber<sensor_msgs::JointState>* p_sub = this->createSubscriber<sensor_msgs::JointState>((const char*)"cmd_dynamixel", (ros2::CallbackFunc)callbackSubscribeDXL, info);
     is_created_dxl_topic = (p_sub!=NULL?true:false);
   }
 

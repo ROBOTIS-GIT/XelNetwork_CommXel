@@ -148,8 +148,6 @@ void callbackMsgStdUint32(std_msgs::UInt32* msg, void* arg)
   XelInfo_t *p_xel = (XelInfo_t*)arg;
   Uint32_t *p_data = (Uint32_t*)p_xel->data;
 
-  printf("Uint32_t Callback : %d \r\n", p_xel->xel_id);
-
   if(p_xel->header.data_direction == XelNetwork::SEND)
   {
     msg->data = p_data->data;
@@ -217,6 +215,8 @@ void callbackMsgSensorImu(sensor_msgs::Imu* msg, void* arg)
 
   if(p_xel->header.data_direction == XelNetwork::SEND)
   {
+    strcpy(msg->header.frame_id, "world");
+
     msg->angular_velocity.x = p_data->gyro_x;
     msg->angular_velocity.y = p_data->gyro_y;
     msg->angular_velocity.z = p_data->gyro_z;
@@ -238,7 +238,7 @@ void callbackMsgSensorJoy(sensor_msgs::Joy* msg, void* arg)
 
   if(p_xel->header.data_direction == XelNetwork::SEND)
   {
-    sprintf(msg->header.frame_id, "JoyStick %d", p_xel->xel_id);
+    strcpy(msg->header.frame_id, "world");
     msg->header.stamp = ros2::now();
     msg->axes[0] = (float)p_data->axis_x;
     msg->axes[1] = (float)p_data->axis_y;
@@ -254,6 +254,46 @@ void callbackMsgSensorJoy(sensor_msgs::Joy* msg, void* arg)
   }
 }
 
+
+
+
+
+/* For Dynamixel */
+int32_t convertRadian2Value(float radian)
+{
+  int32_t value = 0;
+
+  if (radian > 0)
+  {
+    value = (radian * (4096 - 2048) / 3.14) + 2048;
+  }
+  else if (radian < 0)
+  {
+    value = (radian * (0 - 2048) / -3.14) + 2048;
+  }
+  else
+  {
+    value = 2048;
+  }
+
+  return value;
+}
+
+float convertValue2Radian(int32_t value)
+{
+  float radian = 0.0;
+
+  if (value > 2048)
+  {
+    radian = (float)(value - 2048) * 3.14 / (float)(4096 - 2048);
+  }
+  else if (value < 2048)
+  {
+    radian = (float)(value - 2048) * -3.14 / (float)(0 - 2048);
+  }
+
+  return radian;
+}
 
 
 extern osSemaphoreId dxl_semaphore;
@@ -277,7 +317,7 @@ void callbackPublishDXL(sensor_msgs::JointState* msg, void* arg)
       {
         itoa((int)p_xel->xel_id, msg->name[dxl_cnt], 10);
         memcpy(&joint_state, p_xel->data, sizeof(DXLJoint_t));
-        msg->position[dxl_cnt] = (double)joint_state.position;
+        msg->position[dxl_cnt] = (double)convertValue2Radian(joint_state.position);
         msg->velocity[dxl_cnt] = (double)joint_state.velocity;
         msg->effort[dxl_cnt] = (double)joint_state.current;
         dxl_cnt++;
@@ -290,7 +330,7 @@ void callbackPublishDXL(sensor_msgs::JointState* msg, void* arg)
     }
   }
 
-  strcpy(msg->header.frame_id, "DynamiXels");
+  strcpy(msg->header.frame_id, "world");
   msg->header.stamp = ros2::now();
   msg->name_size = dxl_cnt;
   msg->position_size = dxl_cnt;
@@ -318,7 +358,7 @@ void callbackSubscribeDXL(sensor_msgs::JointState* msg, void* arg)
         {
           if (p_xel->xel_id == atoi(msg->name[i]) && p_xel->status.current == XelNetwork::RUNNING)
           {
-            data.position = (int32_t)msg->position[i];
+            data.position = (int32_t)convertRadian2Value(msg->position[i]);
             data.velocity = (int32_t)msg->velocity[i];
             data.current = (int16_t)msg->effort[i];
             if(osSemaphoreWait(dxl_semaphore, 0) == osOK)
@@ -345,7 +385,7 @@ void callbackPowerXelPower(sensor_msgs::BatteryState* msg, void* arg)
 
   if(p_xel->header.data_direction == XelNetwork::SEND)
   {
-    sprintf(msg->header.frame_id, "PowerXel %d", p_xel->xel_id);
+    strcpy(msg->header.frame_id, "world");
     msg->header.stamp = ros2::now();
 
     memcpy(&voltage_int, &p_data[0], sizeof(voltage_int));
