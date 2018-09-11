@@ -261,43 +261,42 @@ void callbackMsgSensorJoy(sensor_msgs::Joy* msg, void* arg)
 void callbackPublishDXL(sensor_msgs::JointState* msg, void* arg)
 {
   //TODO:
-//  XelInfo_t *p_xels = (XelInfo_t*)arg;
-//  XelInfo_t *p_xel;
-//  uint8_t i, dxl_cnt = 0;
-//  uint32_t position;
-//
-//  memset(msg, 0, sizeof(sensor_msgs::JointState));
-//  msg->name_size = 1;
-//  msg->position_size = 1;
-//  msg->velocity_size = 1;
-//  msg->effort_size = 1;
-//
-//  for(i = 0; i < CONNECTED_XEL_MAX; i++)
-//  {
-//    p_xel = &p_xels[i];
-//    if (p_xel->model_id != XELS_SENSORXEL_MODEL_ID
-//        && p_xel->model_id != XELS_POWERXEL_MODEL_ID
-//        && p_xel->model_id != XELS_COMMXEL_MODEL_ID)
-//    {
-//      if(p_xel->status.current == XelNetwork::RUNNING)
-//      {
-//        itoa((int)p_xel->xel_id, msg->name[dxl_cnt], 10);
-//        memcpy(&msg->position[dxl_cnt], p_xel->data, sizeof(msg->position[dxl_cnt]));
-//        dxl_cnt++;
-//        if(dxl_cnt == 10)
-//        {
-//          break;
-//        }
-//      }
-//    }
-//  }
-//
-//  strcpy(msg->header.frame_id, "DynamiXels");
-//  msg->header.stamp = ros2::now();
-//  msg->name_size = dxl_cnt;
-//  msg->position_size = dxl_cnt;
-//  msg->velocity_size = dxl_cnt;
-//  msg->effort_size = dxl_cnt;
+  XelInfo_t *p_xels = (XelInfo_t*)arg;
+  XelInfo_t *p_xel;
+  uint8_t i, dxl_cnt = 0;
+  uint32_t position;
+
+  memset(msg, 0, sizeof(sensor_msgs::JointState));
+  msg->name_size = 1;
+  msg->position_size = 1;
+  msg->velocity_size = 1;
+  msg->effort_size = 1;
+
+  for(i = 0; i < CONNECTED_XEL_MAX; i++)
+  {
+    p_xel = &p_xels[i];
+    if (p_xel->model_id != XELS_SENSORXEL_MODEL_ID
+        && p_xel->model_id != XELS_POWERXEL_MODEL_ID
+        && p_xel->model_id != XELS_COMMXEL_MODEL_ID)
+    {
+      if(p_xel->status.current == XelNetwork::RUNNING)
+      {
+        itoa((int)p_xel->xel_id, msg->name[dxl_cnt], 10);
+        msg->name[dxl_cnt][3] = 0;
+        memcpy(&msg->position[dxl_cnt], &position, sizeof(msg->position[dxl_cnt]));
+        dxl_cnt++;
+        if(dxl_cnt == 10)
+        {
+          break;
+        }
+      }
+    }
+  }
+
+  strcpy(msg->header.frame_id, "DynamiXels");
+  msg->header.stamp = ros2::now();
+  msg->name_size = dxl_cnt;
+  msg->position_size = dxl_cnt;
 }
 
 void callbackSubscribeDXL(sensor_msgs::JointState* msg, void* arg)

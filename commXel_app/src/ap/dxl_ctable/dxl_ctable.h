@@ -25,7 +25,7 @@
 #define EEP_ADDR_BAUD                           3
 
 #define EEP_ETHERNET_MAC_ADDR                   4   //length = 6
-#define EEP_ETHERNET_DHCP_ENABLE                  10  //length = 1
+#define EEP_ETHERNET_DHCP_ENABLE                10  //length = 1
 //#define EEP_STATIC_LOCAL_IP                     11  //length = 16
 //#define EEP_STATIC_SUBNET                       27  //length = 16
 //#define EEP_STATIC_GATEWAY                      43  //length = 16

@@ -77,11 +77,17 @@ void apInit(void)
   IP4_ADDR(&gateway, 192, 168, 0, 1);
   IP4_ADDR(&dns_server, 8, 8, 8, 8);
 
+#if 0
   if(p_ap->mac_addr[0] != 0x00 || p_ap->mac_addr[1] != 0x00 || p_ap->mac_addr[2] != 0x00
       || p_ap->mac_addr[3] != 0x00 || p_ap->mac_addr[4] != 0x00 || p_ap->mac_addr[5] != 0x00 )
   {
     ethernetIfBegin((ip_assign_type_t)p_ap->dhcp_enable, p_ap->mac_addr, &ip_addr, &subnet, &gateway, &dns_server);
   }
+#else
+  uint8_t mac_addr[6] = {0x00, 0x08, 0xDC, 0x50, 0xF4, 0xF5};
+  ethernetIfBegin(IP_DHCP, mac_addr, &ip_addr, &subnet, &gateway, &dns_server);
+#endif
+
 #endif /* _USE_HW_ETH */
 
   osThreadDef(threadApMode, threadApMode, osPriorityNormal, 0, 1*1024/4);
@@ -91,21 +97,21 @@ void apInit(void)
     cmdifPrintf("osThreadCreate : threadApMode fail\n");
   }
 
-  osThreadDef(threadXelPlugAndPlay, threadXelPlugAndPlay, osPriorityNormal, 0, 8*1024/4);
+  osThreadDef(threadXelPlugAndPlay, threadXelPlugAndPlay, osPriorityNormal, 0, 1*1024/4);
   ret = osThreadCreate (osThread(threadXelPlugAndPlay), NULL);
   if (ret == NULL)
   {
     cmdifPrintf("osThreadCreate : threadXelPlugAndPlay fail\n");
   }
 
-  osThreadDef(threadXelNetwork, threadXelNetwork, osPriorityNormal, 0, 32*1024/4);
+  osThreadDef(threadXelNetwork, threadXelNetwork, osPriorityNormal, 0, 48*1024/4);
   ret = osThreadCreate (osThread(threadXelNetwork), NULL);
   if (ret == NULL)
   {
     cmdifPrintf("osThreadCreate : threadXelNetwork fail\n");
   }
 
-  osThreadDef(threadUsbDxlBypass, threadUsbDxlBypass, osPriorityNormal, 0, 8*1024/4);
+  osThreadDef(threadUsbDxlBypass, threadUsbDxlBypass, osPriorityNormal, 0, 1*1024/4);
   ret = osThreadCreate (osThread(threadUsbDxlBypass), NULL);
   if (ret == NULL)
   {
@@ -196,7 +202,11 @@ static void threadXelNetwork(void const * argument)
     }
   }
 
+#if 0
   ros2::init(p_ap->remote_ip, p_ap->remote_port);
+#else
+  ros2::init("192.168.60.88", 2018);
+#endif
   XelNetwork::Core XelNetwork;
 
   for( ;; )
