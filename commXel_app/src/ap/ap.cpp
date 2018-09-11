@@ -97,21 +97,21 @@ void apInit(void)
     cmdifPrintf("osThreadCreate : threadApMode fail\n");
   }
 
-  osThreadDef(threadXelPlugAndPlay, threadXelPlugAndPlay, osPriorityNormal, 0, 1*1024/4);
+  osThreadDef(threadXelPlugAndPlay, threadXelPlugAndPlay, osPriorityNormal, 0, 4*1024/4);
   ret = osThreadCreate (osThread(threadXelPlugAndPlay), NULL);
   if (ret == NULL)
   {
     cmdifPrintf("osThreadCreate : threadXelPlugAndPlay fail\n");
   }
 
-  osThreadDef(threadXelNetwork, threadXelNetwork, osPriorityNormal, 0, 48*1024/4);
+  osThreadDef(threadXelNetwork, threadXelNetwork, osPriorityNormal, 0, 32*1024/4);
   ret = osThreadCreate (osThread(threadXelNetwork), NULL);
   if (ret == NULL)
   {
     cmdifPrintf("osThreadCreate : threadXelNetwork fail\n");
   }
 
-  osThreadDef(threadUsbDxlBypass, threadUsbDxlBypass, osPriorityNormal, 0, 1*1024/4);
+  osThreadDef(threadUsbDxlBypass, threadUsbDxlBypass, osPriorityNormal, 0, 4*1024/4);
   ret = osThreadCreate (osThread(threadUsbDxlBypass), NULL);
   if (ret == NULL)
   {
@@ -199,6 +199,7 @@ static void threadXelNetwork(void const * argument)
     if(ethernetGetDhcpStatus() == DHCP_ADDRESS_ASSIGNED)
     {
       strcpy(p_ap->assigned_ip, ethernetGetIpAddrAsString());
+      break;
     }
   }
 

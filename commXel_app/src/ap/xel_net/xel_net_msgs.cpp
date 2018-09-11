@@ -256,7 +256,7 @@ void callbackMsgSensorJoy(sensor_msgs::Joy* msg, void* arg)
 
 
 
-//extern osSemaphoreId dxl_semaphore;
+extern osSemaphoreId dxl_semaphore;
 
 void callbackPublishDXL(sensor_msgs::JointState* msg, void* arg)
 {
@@ -264,13 +264,7 @@ void callbackPublishDXL(sensor_msgs::JointState* msg, void* arg)
   XelInfo_t *p_xels = (XelInfo_t*)arg;
   XelInfo_t *p_xel;
   uint8_t i, dxl_cnt = 0;
-  uint32_t position;
-
-  memset(msg, 0, sizeof(sensor_msgs::JointState));
-  msg->name_size = 1;
-  msg->position_size = 1;
-  msg->velocity_size = 1;
-  msg->effort_size = 1;
+  DXLJoint_t joint_state;
 
   for(i = 0; i < CONNECTED_XEL_MAX; i++)
   {
@@ -282,9 +276,12 @@ void callbackPublishDXL(sensor_msgs::JointState* msg, void* arg)
       if(p_xel->status.current == XelNetwork::RUNNING)
       {
         itoa((int)p_xel->xel_id, msg->name[dxl_cnt], 10);
-        msg->name[dxl_cnt][3] = 0;
-        memcpy(&msg->position[dxl_cnt], &position, sizeof(msg->position[dxl_cnt]));
+        memcpy(&joint_state, p_xel->data, sizeof(DXLJoint_t));
+        msg->position[dxl_cnt] = (double)joint_state.position;
+        msg->velocity[dxl_cnt] = (double)joint_state.velocity;
+        msg->effort[dxl_cnt] = (double)joint_state.current;
         dxl_cnt++;
+
         if(dxl_cnt == 10)
         {
           break;
@@ -302,32 +299,40 @@ void callbackPublishDXL(sensor_msgs::JointState* msg, void* arg)
 void callbackSubscribeDXL(sensor_msgs::JointState* msg, void* arg)
 {
   //TODO:
-//  XelInfo_t *p_xels = (XelInfo_t*)arg;
-//  XelInfo_t *p_xel;
-//  uint8_t i, j;
-//  uint32_t position;
-//
-//  for(i = 0; i < 10; i++)
-//  {
-//    if(msg->name[i] != 0)
-//    {
-//      // Search correspond ID
-//      for(j = 0; j < CONNECTED_XEL_MAX; j++)
-//      {
-//        p_xel = &p_xels[j];
-//        if (p_xel->model_id != XELS_SENSORXEL_MODEL_ID
-//            && p_xel->model_id != XELS_POWERXEL_MODEL_ID
-//            && p_xel->model_id != XELS_COMMXEL_MODEL_ID)
-//        {
-//          if (p_xel->xel_id == atoi(msg->name[i]) && p_xel->status.current == XelNetwork::RUNNING)
-//          {
-//            memcpy(p_xel->data, &msg->position[i], sizeof(msg->position[i]));
-//            p_xel->status.flag_get_data = true;
-//          }
-//        }
-//      }
-//    }
-//  }
+  XelInfo_t *p_xels = (XelInfo_t*)arg;
+  XelInfo_t *p_xel;
+  uint8_t i, j;
+  DXLJoint_t data;
+
+  for(i = 0; i < 10; i++)
+  {
+    if(msg->name[i] != 0)
+    {
+      // Search correspond ID
+      for(j = 0; j < CONNECTED_XEL_MAX; j++)
+      {
+        p_xel = &p_xels[j];
+        if (p_xel->model_id != XELS_SENSORXEL_MODEL_ID
+            && p_xel->model_id != XELS_POWERXEL_MODEL_ID
+            && p_xel->model_id != XELS_COMMXEL_MODEL_ID)
+        {
+          if (p_xel->xel_id == atoi(msg->name[i]) && p_xel->status.current == XelNetwork::RUNNING)
+          {
+            data.position = (int32_t)msg->position[i];
+            data.velocity = (int32_t)msg->velocity[i];
+            data.current = (int16_t)msg->effort[i];
+            if(osSemaphoreWait(dxl_semaphore, 0) == osOK)
+            {
+              xelWriteDXLJointState(p_xel, &data);
+              osSemaphoreRelease(dxl_semaphore);
+            }
+            //TODO:
+            //p_xel->status.flag_get_data = true;
+          }
+        }
+      }
+    }
+  }
 }
 
 

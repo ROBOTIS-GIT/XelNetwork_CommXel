@@ -244,6 +244,166 @@ bool xelCheckAndSetDxlInfo(XelNetwork::XelInfo_t *p_xel_info)
   return ret;
 }
 
+bool xelReadDXLJointState(XelNetwork::XelInfo_t *p_xel_info)
+{
+  bool ret = false;
+  dxl_error_t dxl_ret;
+  dxl_t    *p_dxl_node;
+  DXLJoint_t *p_data;
+  uint16_t data_addr, data_length;
+
+  p_dxl_node = &dxl_cmd;
+  p_data = (DXLJoint_t*)p_xel_info->data;
+
+  // present position
+  data_addr = 132;
+  data_length = 4;
+  dxl_ret = dxlcmdRead(p_dxl_node, p_xel_info->xel_id, data_addr, data_length, &resp_read, 100);
+  if (dxl_ret == DXL_RET_RX_RESP)
+  {
+    memcpy(&p_data->position, resp_read.p_node[0]->p_data, sizeof(p_data->position));
+    ret = true;
+  }
+
+  // present velocity
+  data_addr = 128;
+  data_length = 4;
+  dxl_ret = dxlcmdRead(p_dxl_node, p_xel_info->xel_id, data_addr, data_length, &resp_read, 100);
+  if (dxl_ret == DXL_RET_RX_RESP)
+  {
+    memcpy(&p_data->velocity, resp_read.p_node[0]->p_data, sizeof(p_data->velocity));
+    ret = true;
+  }
+
+  // present current
+  data_addr = 126;
+  data_length = 2;
+  dxl_ret = dxlcmdRead(p_dxl_node, p_xel_info->xel_id, data_addr, data_length, &resp_read, 100);
+  if (dxl_ret == DXL_RET_RX_RESP)
+  {
+    memcpy(&p_data->current, resp_read.p_node[0]->p_data, sizeof(p_data->current));
+    ret = true;
+  }
+  return ret;
+}
+
+bool xelWriteDXLJointState(XelNetwork::XelInfo_t *p_xel_info)
+{
+  bool ret = false;
+  dxl_error_t dxl_ret;
+  dxl_t    *p_dxl_node;
+  DXLJoint_t *p_data;
+  uint16_t data_addr, data_length;
+
+  p_dxl_node = &dxl_cmd;
+  p_data = (DXLJoint_t*)p_xel_info->data;
+
+  // present position
+  data_addr = 116;
+  data_length = 4;
+  dxl_ret = dxlcmdWrite(p_dxl_node, p_xel_info->xel_id, (uint8_t*)&p_data->position, data_addr, data_length, &resp_write, 100);
+  if (dxl_ret == DXL_RET_RX_RESP)
+  {
+    ret = true;
+  }
+
+  // present velocity
+  data_addr = 104;
+  data_length = 4;
+  dxl_ret = dxlcmdWrite(p_dxl_node, p_xel_info->xel_id, (uint8_t*)&p_data->velocity, data_addr, data_length, &resp_write, 100);
+  if (dxl_ret == DXL_RET_RX_RESP)
+  {
+    ret = true;
+  }
+
+  // present current
+  data_addr = 102;
+  data_length = 2;
+  dxl_ret = dxlcmdWrite(p_dxl_node, p_xel_info->xel_id, (uint8_t*)&p_data->position, data_addr, data_length, &resp_write, 100);
+  if (dxl_ret == DXL_RET_RX_RESP)
+  {
+    ret = true;
+  }
+
+  return ret;
+}
+
+// Implicit
+bool xelWriteDXLJointState(XelNetwork::XelInfo_t *p_xel_info, DXLJoint_t *p_data)
+{
+  bool ret = false;
+  dxl_error_t dxl_ret;
+  dxl_t    *p_dxl_node;
+  uint16_t data_addr, data_length;
+
+  p_dxl_node = &dxl_cmd;
+
+  // present position
+  data_addr = 116;
+  data_length = 4;
+  dxl_ret = dxlcmdWrite(p_dxl_node, p_xel_info->xel_id, (uint8_t*)&p_data->position, data_addr, data_length, &resp_write, 100);
+  if (dxl_ret == DXL_RET_RX_RESP)
+  {
+    ret = true;
+  }
+
+  // present velocity
+  data_addr = 104;
+  data_length = 4;
+  dxl_ret = dxlcmdWrite(p_dxl_node, p_xel_info->xel_id, (uint8_t*)&p_data->velocity, data_addr, data_length, &resp_write, 100);
+  if (dxl_ret == DXL_RET_RX_RESP)
+  {
+    ret = true;
+  }
+
+  // present current
+  data_addr = 102;
+  data_length = 2;
+  dxl_ret = dxlcmdWrite(p_dxl_node, p_xel_info->xel_id, (uint8_t*)&p_data->position, data_addr, data_length, &resp_write, 100);
+  if (dxl_ret == DXL_RET_RX_RESP)
+  {
+    ret = true;
+  }
+
+  return ret;
+}
+
+bool xelSetDXLModePositionAndTouque(XelNetwork::XelInfo_t *p_xel_info)
+{
+  bool ret = false;
+  dxl_error_t dxl_ret;
+  dxl_t    *p_dxl_node;
+  uint16_t data_addr;
+  uint16_t data_length;
+  uint8_t data;
+
+  p_dxl_node = &dxl_cmd;
+
+  //position mode
+  data_addr   = 11;
+  data_length = 1;
+  data = 3;
+
+  dxl_ret = dxlcmdWrite(p_dxl_node, p_xel_info->xel_id, &data, data_addr, data_length, &resp_write, 100);
+  if (dxl_ret == DXL_RET_RX_RESP)
+  {
+    ret = true;
+  }
+
+  //touque enable
+  data_addr   = 64;
+  data_length = 1;
+  data = 1;
+
+  dxl_ret = dxlcmdWrite(p_dxl_node, p_xel_info->xel_id, &data, data_addr, data_length, &resp_write, 100);
+  if (dxl_ret == DXL_RET_RX_RESP)
+  {
+    ret = true;
+  }
+
+  return ret;
+}
+
 
 #ifdef _XELS_DEBUG
 int xelsCmdif(int argc, char **argv)

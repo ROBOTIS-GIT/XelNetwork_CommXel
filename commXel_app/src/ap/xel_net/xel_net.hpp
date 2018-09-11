@@ -48,6 +48,12 @@ class Core
               {
                 node_.createDxlTopic(xel_tbl);
               }
+
+              if(osSemaphoreWait(dxl_semaphore, 100) == osOK)
+              {
+                xelSetDXLModePositionAndTouque(p_xel);
+                osSemaphoreRelease(dxl_semaphore);
+              }
               ret = true;
             }
 
@@ -93,6 +99,15 @@ class Core
                 }
               }
             }
+            else if(p_xel->model_id != XELS_COMMXEL_MODEL_ID)
+            {
+              // Read for publish
+              if(osSemaphoreWait(dxl_semaphore, 0) == osOK)
+              {
+                xelReadDXLJointState(p_xel);
+                osSemaphoreRelease(dxl_semaphore);
+              }
+            }
             break;
 
           case NOT_CONNECTTED:
@@ -135,7 +150,7 @@ class PlugAndPlay
 
     void run()
     {
-      if(osSemaphoreWait(dxl_semaphore, 1) == osOK)
+      if(osSemaphoreWait(dxl_semaphore, 0) == osOK)
       {
         scanIdEveryInterval();
         osSemaphoreRelease(dxl_semaphore);
