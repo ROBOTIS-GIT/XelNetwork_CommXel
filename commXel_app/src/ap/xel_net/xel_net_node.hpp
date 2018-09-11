@@ -12,6 +12,7 @@
 #include "ros2.hpp"
 #include "xel_net_msgs.hpp"
 
+void subscribeTimeSync(builtin_interfaces::Time* msg, void* arg);
 
 namespace XelNetwork {
 
@@ -23,6 +24,7 @@ public:
   XelNetworkNode()
   : Node(), is_created_dxl_topic(false)
   {
+    this->createSubscriber<builtin_interfaces::Time>("commxel_time_sync", (ros2::CallbackFunc)subscribeTimeSync, NULL);
   }
 
   template <typename MsgT>

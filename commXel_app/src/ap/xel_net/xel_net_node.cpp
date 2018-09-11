@@ -10,6 +10,13 @@
 #include "xel_net_msgs.hpp"
 #include "xels/xels.h"
 
+void subscribeTimeSync(builtin_interfaces::Time* msg, void* arg)
+{
+  (void)(arg);
+
+  ros2::syncTimeFromRemote(msg);
+}
+
 
 bool XelNetwork::createNewTopicWithXel(XelNetwork::XelNetworkNode* node, XelNetwork::XelInfo_t* info)
 {
