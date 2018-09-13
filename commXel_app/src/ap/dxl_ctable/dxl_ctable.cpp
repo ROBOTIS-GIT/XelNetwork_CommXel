@@ -271,8 +271,8 @@ void updateNetworkInfo(uint32_t addr, uint8_t mode, uint16_t update_addr, uint8_
         break;
 
       case P_EEP_ETHERNET_REMOTE_PORT:
-        p_ap->remote_port = eepromReadByte(EEP_ETHERNET_REMOTE_PORT);
-        p_ap->remote_port |= eepromReadByte(EEP_ETHERNET_REMOTE_PORT + 1) << 8;
+        p_ap->remote_port = (uint16_t)eepromReadByte(EEP_ETHERNET_REMOTE_PORT);
+        p_ap->remote_port |= (uint16_t)eepromReadByte(EEP_ETHERNET_REMOTE_PORT + 1) << 8;
         break;
     }
   }

@@ -72,12 +72,12 @@ void apInit(void)
   static ip_addr_t ip_addr, subnet, gateway, dns_server;
 
   /* Static */
-  IP4_ADDR(&ip_addr, 192, 168, 0, 4);
+  IP4_ADDR(&ip_addr, 192, 168, 0, 44);
   IP4_ADDR(&subnet, 255, 255, 255, 0);
   IP4_ADDR(&gateway, 192, 168, 0, 1);
   IP4_ADDR(&dns_server, 8, 8, 8, 8);
 
-#if 0
+#if 1
   if(p_ap->mac_addr[0] != 0x00 || p_ap->mac_addr[1] != 0x00 || p_ap->mac_addr[2] != 0x00
       || p_ap->mac_addr[3] != 0x00 || p_ap->mac_addr[4] != 0x00 || p_ap->mac_addr[5] != 0x00 )
   {
@@ -203,10 +203,10 @@ static void threadXelNetwork(void const * argument)
     }
   }
 
-#if 0
+#if 1
   ros2::init(p_ap->remote_ip, p_ap->remote_port);
 #else
-  ros2::init("192.168.60.88", 2018);
+  ros2::init("192.168.0.4", 2018);
 #endif
   XelNetwork::Core XelNetwork;
 
@@ -227,7 +227,7 @@ static void threadXelNetwork(void const * argument)
 
 static void threadXelPlugAndPlay(void const * argument)
 {
-  XelNetwork::PlugAndPlay PlugAndPlay(100);
+  XelNetwork::PlugAndPlay PlugAndPlay(300);
 
   for( ;; )
   {

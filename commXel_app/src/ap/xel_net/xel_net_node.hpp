@@ -16,7 +16,7 @@ void subscribeTimeSync(builtin_interfaces::Time* msg, void* arg);
 
 namespace XelNetwork {
 
-const uint32_t DXL_STATUS_PUB_HZ  = 30;
+const uint32_t DXL_STATUS_PUB_HZ  = 10;
 
 class XelNetworkNode : public ros2::Node
 {

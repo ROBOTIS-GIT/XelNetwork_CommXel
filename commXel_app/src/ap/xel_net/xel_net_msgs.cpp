@@ -322,7 +322,7 @@ void callbackPublishDXL(sensor_msgs::JointState* msg, void* arg)
         msg->effort[dxl_cnt] = (double)joint_state.current;
         dxl_cnt++;
 
-        if(dxl_cnt == 10)
+        if(dxl_cnt == CONNECTED_DXL_MAX)
         {
           break;
         }
@@ -344,7 +344,7 @@ void callbackSubscribeDXL(sensor_msgs::JointState* msg, void* arg)
   uint8_t i, j;
   DXLJoint_t data;
 
-  for(i = 0; i < 10; i++)
+  for(i = 0; i < CONNECTED_DXL_MAX; i++)
   {
     if(msg->name[i] != 0)
     {

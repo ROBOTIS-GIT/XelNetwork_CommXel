@@ -36,13 +36,13 @@ class JointState : public ros2::Topic<JointState>
 {
 public: 
     std_msgs::Header header;
-    char name[10][4];
+    char name[255][10];
     uint32_t name_size;
-    double position[10];
+    double position[255];
     uint32_t position_size;
-    double velocity[10];
+    double velocity[255];
     uint32_t velocity_size;
-    double effort[10];
+    double effort[255];
     uint32_t effort_size;
 
   JointState():
