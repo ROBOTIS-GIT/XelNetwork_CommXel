@@ -23,7 +23,7 @@
 #include "usbd_cdc.h"
 #include "usbd_cdc_interface.h"
 
-#define _BSP_DEF_BOARD_NAME "CM-DEV revA"
+#define _BSP_DEF_BOARD_NAME "CommXel revA"
 #define _BSP_BOARD_VER_NUM  1
 
 void bspInit();

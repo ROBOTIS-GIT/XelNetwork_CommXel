@@ -14,7 +14,7 @@
 #endif
 
 
-#define _BOOT_VER_STR               "SENSORXEL BOOTLOADER V180202R1"
+#define _BOOT_VER_STR               "COMMXEL BOOTLOADER V180202R1"
 #define _BOOT_VER_NUM               {1, 0, 0}
 
 typedef enum
