@@ -77,16 +77,11 @@ void apInit(void)
   IP4_ADDR(&gateway, 192, 168, 0, 1);
   IP4_ADDR(&dns_server, 8, 8, 8, 8);
 
-#if 1
   if(p_ap->mac_addr[0] != 0x00 || p_ap->mac_addr[1] != 0x00 || p_ap->mac_addr[2] != 0x00
       || p_ap->mac_addr[3] != 0x00 || p_ap->mac_addr[4] != 0x00 || p_ap->mac_addr[5] != 0x00 )
   {
     ethernetIfBegin((ip_assign_type_t)p_ap->dhcp_enable, p_ap->mac_addr, &ip_addr, &subnet, &gateway, &dns_server);
   }
-#else
-  uint8_t mac_addr[6] = {0x00, 0x08, 0xDC, 0x50, 0xF4, 0xF5};
-  ethernetIfBegin(IP_DHCP, mac_addr, &ip_addr, &subnet, &gateway, &dns_server);
-#endif
 
 #endif /* _USE_HW_ETH */
 
@@ -206,11 +201,7 @@ static void threadXelNetwork(void const * argument)
     }
   }
 
-#if 1
   ros2::init(p_ap->remote_ip, p_ap->remote_port);
-#else
-  ros2::init("192.168.60.88", 2018);
-#endif
   XelNetwork::Core XelNetwork;
 
   for( ;; )
