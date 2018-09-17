@@ -129,7 +129,6 @@ void apMain(void)
   }
 }
 
-
 enum OperatingMode
 {
   OP_USB_DXL_BYPASS = 0,
@@ -138,6 +137,7 @@ enum OperatingMode
 };
 
 static OperatingMode operating_mode = OP_XEL_NETWORK;
+extern bool enable_auto_reset;
 
 static void threadApMode(void const * argument)
 {
@@ -177,15 +177,18 @@ static void threadApMode(void const * argument)
           && buttonGetPressedTime(_HW_DEF_BUTTON_MODE) > 1000 && buttonGetPressedTime(_HW_DEF_BUTTON_MODE) < 5000)
       {
         operating_mode = OP_USB_DXL_BYPASS;
+        enable_auto_reset = false;
       }
       else if (buttonGetReleasedTime(_HW_DEF_BUTTON_MODE) < 500
           && buttonGetPressedTime(_HW_DEF_BUTTON_MODE) > 5000)
       {
         operating_mode = OP_CONTROL_TABLE;
+        enable_auto_reset = true;
       }
       else
       {
         operating_mode = OP_XEL_NETWORK;
+        enable_auto_reset = true;
       }
     }
     osThreadYield();
@@ -206,7 +209,7 @@ static void threadXelNetwork(void const * argument)
 #if 1
   ros2::init(p_ap->remote_ip, p_ap->remote_port);
 #else
-  ros2::init("192.168.0.4", 2018);
+  ros2::init("192.168.60.88", 2018);
 #endif
   XelNetwork::Core XelNetwork;
 

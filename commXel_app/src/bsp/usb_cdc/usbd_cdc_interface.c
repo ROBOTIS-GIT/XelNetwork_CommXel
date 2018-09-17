@@ -50,6 +50,7 @@
 #include "swtimer.h"
 #include "wdg.h"
 
+bool enable_auto_reset = true;
 
 /* Private typedef -----------------------------------------------------------*/
 /* Private define ------------------------------------------------------------*/
@@ -206,7 +207,10 @@ static int8_t CDC_Itf_Control (uint8_t cmd, uint8_t* pbuf, uint16_t length)
 
     if( LineCoding.bitrate == RESET_FLAG_BAUDRATE )
     {
-      CDC_Reset_Status = 1;
+      if(enable_auto_reset == true)
+      {
+    	CDC_Reset_Status = 1;
+      }
     }
     break;
 
