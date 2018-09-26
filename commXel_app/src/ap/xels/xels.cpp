@@ -368,7 +368,7 @@ bool xelWriteDXLJointState(XelNetwork::XelInfo_t *p_xel_info, DXLJoint_t *p_data
   return ret;
 }
 
-bool xelSetDXLModePositionAndTouque(XelNetwork::XelInfo_t *p_xel_info)
+bool xelEnableDXLTouque(XelNetwork::XelInfo_t *p_xel_info)
 {
   bool ret = false;
   dxl_error_t dxl_ret;
@@ -378,17 +378,6 @@ bool xelSetDXLModePositionAndTouque(XelNetwork::XelInfo_t *p_xel_info)
   uint8_t data;
 
   p_dxl_node = &dxl_cmd;
-
-  //position mode
-  data_addr   = 11;
-  data_length = 1;
-  data = 3;
-
-  dxl_ret = dxlcmdWrite(p_dxl_node, p_xel_info->xel_id, &data, data_addr, data_length, &resp_write, 100);
-  if (dxl_ret == DXL_RET_RX_RESP)
-  {
-    ret = true;
-  }
 
   //touque enable
   data_addr   = 64;
