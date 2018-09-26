@@ -51,7 +51,7 @@ class Core
 
               if(osSemaphoreWait(dxl_semaphore, 100) == osOK)
               {
-                xelSetDXLModePositionAndTouque(p_xel);
+            	xelEnableDXLTouque(p_xel);
                 osSemaphoreRelease(dxl_semaphore);
               }
               ret = true;
@@ -177,6 +177,8 @@ class PlugAndPlay
       XelInfo_t* p_xel;
       static uint32_t pre_time = 0;
       static uint8_t checking_tbl_num = 0;
+      uint8_t retry_cnt = 0;
+      bool ret = false;
 
       if (millis() - pre_time > interval_ms_)
       {
@@ -185,7 +187,16 @@ class PlugAndPlay
 
         if (p_xel->status.current == RUNNING || p_xel->status.current == NEW_CONNECTION)
         {
-          if (xelsPing(p_xel) == false)
+          for(retry_cnt = 0; retry_cnt < 10; retry_cnt++)
+          {
+        	ret = xelsPing(p_xel);
+        	if(ret == true)
+        	{
+        	  break;
+        	}
+          }
+
+          if (ret == false)
           {
             p_xel->status.previous = p_xel->status.current;
             p_xel->status.current = LOST_CONNECTION;

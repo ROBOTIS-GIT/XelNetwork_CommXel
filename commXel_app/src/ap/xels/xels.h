@@ -54,6 +54,6 @@ bool xelCheckAndSetDxlInfo(XelNetwork::XelInfo_t *p_xel_info);
 bool xelReadDXLJointState(XelNetwork::XelInfo_t *p_xel_info);
 bool xelWriteDXLJointState(XelNetwork::XelInfo_t *p_xel_info);
 bool xelWriteDXLJointState(XelNetwork::XelInfo_t *p_xel_info, DXLJoint_t *p_data);
-bool xelSetDXLModePositionAndTouque(XelNetwork::XelInfo_t *p_xel_info);
+bool xelEnableDXLTouque(XelNetwork::XelInfo_t *p_xel_info);
 
 #endif /* SRC_AP_XELS_XELS_H_ */
