@@ -40,14 +40,17 @@
 
 int __io_putchar(int ch)
 {
-  vcpPutch(ch);
+  //vcpPutch(ch);
+
+  uartPutch(_DEF_UART3, (uint8_t)ch);
 
   return 1;
 }
 
 int __io_getchar(void)
 {
-  return vcpGetch();
+  //return vcpGetch();
+  return uartGetch(_DEF_UART3);
   //return 0;
 }
 
