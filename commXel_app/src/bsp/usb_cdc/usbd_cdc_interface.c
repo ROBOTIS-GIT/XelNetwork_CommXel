@@ -209,7 +209,7 @@ static int8_t CDC_Itf_Control (uint8_t cmd, uint8_t* pbuf, uint16_t length)
     {
       if(enable_auto_reset == true)
       {
-    	CDC_Reset_Status = 1;
+        CDC_Reset_Status = 1;
       }
     }
     break;

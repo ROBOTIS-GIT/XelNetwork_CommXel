@@ -154,6 +154,11 @@ bool XelNetwork::createNewTopicWithXel(XelNetwork::XelNetworkNode* node, XelNetw
       ret = node->createNewTopic<sensor_msgs::Joy>(info);
       break;
 
+    case I2CTEST:
+      info->dds.p_callback_func = (ros2::CallbackFunc)callbackMsgTest;
+      ret = node->createNewTopic<geometry_msgs::Point>(info);
+      break;
+
     default:
       break;
   }

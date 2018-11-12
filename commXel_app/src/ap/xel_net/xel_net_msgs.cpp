@@ -402,3 +402,24 @@ void callbackPowerXelPower(sensor_msgs::BatteryState* msg, void* arg)
     //Not Support
   }
 }
+
+
+
+
+void callbackMsgTest(geometry_msgs::Point* msg, void* arg)
+{
+  XelInfo_t *p_xel = (XelInfo_t*)arg;
+  JoyStick_t *p_data = (JoyStick_t*)p_xel->data;
+
+  if(p_xel->header.data_direction == XelNetwork::SEND)
+  {
+    msg->x = (double)p_data->axis_x;
+    msg->y = (double)p_data->axis_y;
+    msg->z = (double)p_data->button;
+  }
+  else
+  {
+
+  }
+}
+

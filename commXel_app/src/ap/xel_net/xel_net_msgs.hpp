@@ -38,5 +38,8 @@ void callbackSubscribeDXL(sensor_msgs::JointState* msg, void* arg);
 /* For PowerXel power */
 void callbackPowerXelPower(sensor_msgs::BatteryState* msg, void* arg);
 
+/* For Test */
+void callbackMsgTest(geometry_msgs::Point* msg, void* arg);
+
 #endif /* XEL_NET_MSGS_HPP_ */
 

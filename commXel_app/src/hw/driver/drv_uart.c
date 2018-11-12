@@ -140,7 +140,7 @@ bool drvUartOpen(uint8_t channel, uint32_t baud, uint32_t option)
       if (channel == _DEF_UART3)
       {
         p_drv_uart->hw.h_uart_inst = USART2;
-        p_drv_uart->hw.tx_dma_enable = true;
+        p_drv_uart->hw.tx_dma_enable = false;
       }
 
       p_drv_uart->hw.dma_enable  = true;
