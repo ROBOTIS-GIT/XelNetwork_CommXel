@@ -23,7 +23,6 @@
 #define _SENSOR_MSGS_JOY_HPP_
 
 
-#include "micrortps.hpp"
 #include <topic_config.h>
 #include <topic.hpp>
 
@@ -50,39 +49,38 @@ public:
     memset(buttons, 0, sizeof(buttons));
   }
 
-  bool serialize(struct MicroBuffer* writer, const Joy* topic)
+  bool serialize(ucdrBuffer* writer, const Joy* topic)
   {
     (void) header.serialize(writer, &topic->header);
     
-    (void) serialize_sequence_float(writer, topic->axes, topic->axes_size);
-    (void) serialize_sequence_int32_t(writer, topic->buttons, topic->buttons_size);
+    (void) ucdr_serialize_sequence_float(writer, topic->axes, topic->axes_size);
+    (void) ucdr_serialize_sequence_int32_t(writer, topic->buttons, topic->buttons_size);
 
-    return writer->error == BUFFER_OK;
+    return !writer->error;
   }
 
-  bool deserialize(struct MicroBuffer* reader, Joy* topic)
+  bool deserialize(ucdrBuffer* reader, Joy* topic)
   {
     (void) header.deserialize(reader, &topic->header);
     
-    (void) deserialize_sequence_float(reader, topic->axes, &topic->axes_size);
-    (void) deserialize_sequence_int32_t(reader, topic->buttons, &topic->buttons_size);
+    (void) ucdr_deserialize_sequence_float(reader, topic->axes, sizeof(topic->axes)/sizeof(float), &topic->axes_size);
+    (void) ucdr_deserialize_sequence_int32_t(reader, topic->buttons, sizeof(topic->buttons)/sizeof(int32_t), &topic->buttons_size);
 
-    return reader->error == BUFFER_OK;
-
-    return reader->error == BUFFER_OK;
+    return !reader->error;
   }
 
   virtual uint32_t size_of_topic(const Joy* topic, uint32_t size)
   {
-    size  = header.size_of_topic(&topic->header, size);
+    uint32_t previousSize = size;
+    size += header.size_of_topic(&topic->header, size);
 
-    size += 4 + get_alignment(size, 4);
-    size += (topic->axes_size * 4) + get_alignment(size, 4);
+    size += ucdr_alignment(size, 4) + 4;
+    size += ucdr_alignment(size, 4) + (topic->axes_size * 4);
 
-    size += 4 + get_alignment(size, 4);
-    size += (topic->buttons_size * 4) + get_alignment(size, 4);
+    size += ucdr_alignment(size, 4) + 4;
+    size += ucdr_alignment(size, 4) + (topic->buttons_size * 4);
 
-    return size;
+    return size - previousSize;
   }
 
 };

@@ -9,7 +9,7 @@
 #define ROS2_PUBLISHER_HPP_
 
 #include <stdio.h>
-#include "micrortps.hpp"
+#include "rtps/rtps.hpp"
 #include "node_handle.hpp"
 #include "topic.hpp"
 #include "hw.h"
@@ -27,7 +27,7 @@ class Publisher:public PublisherHandle
 {
  
 public:
-  Publisher(micrortps::Participant_t* node, const char* name)
+  Publisher(rtps::Participant_t* node, const char* name)
     : PublisherHandle()
   {
     node_ = node;
@@ -47,7 +47,9 @@ public:
       callback((void*)&topic_, callback_arg);
     }
 
-    topic_.writeTopic(node_->session, publisher_.participant->output_stream_id, publisher_.writer_id, &topic_);
+    ucdrBuffer mb;
+    rtps::publish(&publisher_, (void*)&mb, topic_.size_of_topic(&topic_, 0));
+    topic_.serialize(&mb, &topic_);
   }
 
   void recreate()
@@ -57,15 +59,14 @@ public:
 
     char writer_profile[512] = {0, };
     sprintf(writer_profile, DEFAULT_WRITER_XML, getPrefixString(TOPICS_PUBLISH), name_, topic_.type_);
-    is_registered_ = micrortps::createPublisher(node_, &publisher_, publisher_profile, writer_profile);
-    this->writer_id_ = publisher_.writer_id.id;
+    is_registered_ = rtps::createPublisher(node_, &publisher_, publisher_profile, writer_profile);
   }
 
 private:
   MsgT topic_;
   const char* name_;
-  micrortps::Participant_t* node_;
-  micrortps::Publisher_t publisher_;
+  rtps::Participant_t* node_;
+  rtps::Publisher_t publisher_;
 };
 
 

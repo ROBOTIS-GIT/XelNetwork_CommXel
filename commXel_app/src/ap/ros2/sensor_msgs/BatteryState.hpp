@@ -23,7 +23,6 @@
 #define _SENSOR_MSGS_BATTERY_STATE_HPP_
 
 
-#include "micrortps.hpp"
 #include <topic_config.h>
 #include <topic.hpp>
 
@@ -97,72 +96,71 @@ public:
     memset(serial_number, 0, sizeof(serial_number));
   }
 
-  bool serialize(struct MicroBuffer* writer, const BatteryState* topic)
+  bool serialize(ucdrBuffer* writer, const BatteryState* topic)
   {
     (void) header.serialize(writer, &topic->header);
-    (void) serialize_float(writer, topic->voltage);
-    (void) serialize_float(writer, topic->current);
-    (void) serialize_float(writer, topic->charge);
-    (void) serialize_float(writer, topic->capacity);
-    (void) serialize_float(writer, topic->design_capacity);
-    (void) serialize_float(writer, topic->percentage);
-    (void) serialize_uint8_t(writer, topic->power_supply_status);
-    (void) serialize_uint8_t(writer, topic->power_supply_health);
-    (void) serialize_uint8_t(writer, topic->power_supply_technology);
-    (void) serialize_bool(writer, topic->present);
-    (void) serialize_sequence_float(writer, topic->cell_voltage, topic->cell_voltage_size);
-    (void) serialize_sequence_char(writer, topic->location, (uint32_t)(strlen(topic->location) + 1));
-    (void) serialize_sequence_char(writer, topic->serial_number, (uint32_t)(strlen(topic->serial_number) + 1));
+    (void) ucdr_serialize_float(writer, topic->voltage);
+    (void) ucdr_serialize_float(writer, topic->current);
+    (void) ucdr_serialize_float(writer, topic->charge);
+    (void) ucdr_serialize_float(writer, topic->capacity);
+    (void) ucdr_serialize_float(writer, topic->design_capacity);
+    (void) ucdr_serialize_float(writer, topic->percentage);
+    (void) ucdr_serialize_uint8_t(writer, topic->power_supply_status);
+    (void) ucdr_serialize_uint8_t(writer, topic->power_supply_health);
+    (void) ucdr_serialize_uint8_t(writer, topic->power_supply_technology);
+    (void) ucdr_serialize_bool(writer, topic->present);
+    (void) ucdr_serialize_sequence_float(writer, topic->cell_voltage, topic->cell_voltage_size);
+    (void) ucdr_serialize_string(writer, topic->location);
+    (void) ucdr_serialize_string(writer, topic->serial_number);
 
-    return writer->error == BUFFER_OK;
+    return !writer->error;
   }
 
-  bool deserialize(struct MicroBuffer* reader, BatteryState* topic)
+  bool deserialize(ucdrBuffer* reader, BatteryState* topic)
   {
-    uint32_t size_location = 0;
-    uint32_t size_serial_number = 0;
-
     (void) header.deserialize(reader, &topic->header);
-    (void) deserialize_float(reader, &topic->voltage);
-    (void) deserialize_float(reader, &topic->current);
-    (void) deserialize_float(reader, &topic->charge);
-    (void) deserialize_float(reader, &topic->capacity);
-    (void) deserialize_float(reader, &topic->design_capacity);
-    (void) deserialize_float(reader, &topic->percentage);
-    (void) deserialize_uint8_t(reader, &topic->power_supply_status);
-    (void) deserialize_uint8_t(reader, &topic->power_supply_health);
-    (void) deserialize_uint8_t(reader, &topic->power_supply_technology);
-    (void) deserialize_bool(reader, &topic->present);
-    (void) deserialize_sequence_float(reader, topic->cell_voltage, &topic->cell_voltage_size);
-    (void) deserialize_sequence_char(reader, topic->location, &size_location);
-    (void) deserialize_sequence_char(reader, topic->serial_number, &size_serial_number);
+    (void) ucdr_deserialize_float(reader, &topic->voltage);
+    (void) ucdr_deserialize_float(reader, &topic->current);
+    (void) ucdr_deserialize_float(reader, &topic->charge);
+    (void) ucdr_deserialize_float(reader, &topic->capacity);
+    (void) ucdr_deserialize_float(reader, &topic->design_capacity);
+    (void) ucdr_deserialize_float(reader, &topic->percentage);
+    (void) ucdr_deserialize_uint8_t(reader, &topic->power_supply_status);
+    (void) ucdr_deserialize_uint8_t(reader, &topic->power_supply_health);
+    (void) ucdr_deserialize_uint8_t(reader, &topic->power_supply_technology);
+    (void) ucdr_deserialize_bool(reader, &topic->present);
+    (void) ucdr_deserialize_sequence_float(reader, topic->cell_voltage, sizeof(topic->cell_voltage)/sizeof(float), &topic->cell_voltage_size);
+    (void) ucdr_deserialize_string(reader, topic->location, sizeof(topic->location));
+    (void) ucdr_deserialize_string(reader, topic->serial_number, sizeof(topic->serial_number));
 
-    return reader->error == BUFFER_OK;
+    return !reader->error;
   }
 
   uint32_t size_of_topic(const BatteryState* topic, uint32_t size)
   {
-    size  = header.size_of_topic(&topic->header, size);
+    uint32_t previousSize = size;
 
-    size += 4 + get_alignment(size, 4);
-    size += 4 + get_alignment(size, 4);
-    size += 4 + get_alignment(size, 4);
-    size += 4 + get_alignment(size, 4);
-    size += 4 + get_alignment(size, 4);
-    size += 4 + get_alignment(size, 4);
+    size += header.size_of_topic(&topic->header, size);
 
-    size += 1 + get_alignment(size, 1);
-    size += 1 + get_alignment(size, 1);
-    size += 1 + get_alignment(size, 1);
-    size += 1 + get_alignment(size, 1);
+    size += ucdr_alignment(size, 4) + 4;
+    size += ucdr_alignment(size, 4) + 4;
+    size += ucdr_alignment(size, 4) + 4;
+    size += ucdr_alignment(size, 4) + 4;
+    size += ucdr_alignment(size, 4) + 4;
+    size += ucdr_alignment(size, 4) + 4;
 
-    size += 4 + get_alignment(size, 4);
-    size += (topic->cell_voltage_size * 4) + get_alignment(size, 4);
+    size += ucdr_alignment(size, 1) + 1;
+    size += ucdr_alignment(size, 1) + 1;
+    size += ucdr_alignment(size, 1) + 1;
+    size += ucdr_alignment(size, 1) + 1;
 
-    size += 4 + get_alignment(size, 4) + (uint32_t)(strlen(topic->location) + 1);
-    size += 4 + get_alignment(size, 4) + (uint32_t)(strlen(topic->serial_number) + 1);
+    size += ucdr_alignment(size, 4) + 4;
+    size += ucdr_alignment(size, 4) + (topic->cell_voltage_size * 4);
 
-    return size;
+    size += ucdr_alignment(size, 4) + 4 + (uint32_t)(strlen(topic->location) + 1);
+    size += ucdr_alignment(size, 4) + 4 + (uint32_t)(strlen(topic->serial_number) + 1);
+
+    return size - previousSize;
   }
 
 };
