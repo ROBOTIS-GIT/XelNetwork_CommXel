@@ -54,12 +54,13 @@ public:
 
   void recreate()
   {
-    char publisher_profile[100] = {0, };
-    sprintf(publisher_profile, "<publisher name=\"%s\"", name_);
+    //char publisher_profile[100] = {0, };
+    //sprintf(publisher_profile, "<publisher name=\"%s\"", name_);
+    const char* publisher_profile = "";
 
     char writer_profile[512] = {0, };
     sprintf(writer_profile, DEFAULT_WRITER_XML, getPrefixString(TOPICS_PUBLISH), name_, topic_.type_);
-    is_registered_ = rtps::createPublisher(node_, &publisher_, publisher_profile, writer_profile);
+    is_registered_ = rtps::createPublisher(node_, &publisher_, (char*)publisher_profile, writer_profile);
   }
 
 private:

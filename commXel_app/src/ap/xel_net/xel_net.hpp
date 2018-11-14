@@ -51,7 +51,7 @@ class Core
 
               if(osSemaphoreWait(dxl_semaphore, 100) == osOK)
               {
-            	xelEnableDXLTouque(p_xel);
+                xelEnableDXLTouque(p_xel);
                 osSemaphoreRelease(dxl_semaphore);
               }
               ret = true;

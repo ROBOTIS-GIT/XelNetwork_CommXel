@@ -58,15 +58,17 @@ class Node
 
       rtps::initTransportAndSession(&transport_, onTopicCallback, (void*)this);
 
-      const char* participant_xml = "<dds>"
-                                        "<participant>"
-                                            "<rtps>"
-                                                "<name>CommXEL Participant</name>"
-                                            "</rtps>"
-                                        "</participant>"
-                                    "</dds>";
+//      const char* participant_xml = "<dds>"
+//                                        "<participant>"
+//                                            "<rtps>"
+//                                                "<name>default_xrce_participant</name>"
+//                                            "</rtps>"
+//                                        "</participant>"
+//                                    "</dds>";
 
-      node_register_state_ = rtps::createParticipant(&this->participant_, participant_xml);
+      node_register_state_ = rtps::createParticipant(&this->participant_, "default_xrce_participant_profile");
+
+      printf("Create Participant : %d \r\n", (int)node_register_state_);
 
       uint8_t i;
       for(i = 0; i < ROS2_PUBLISHER_MAX; i++)
@@ -107,6 +109,8 @@ class Node
       // Register Topic
       ret = this->registerTopic<MsgT>(name, TOPICS_PUBLISH);
 
+      printf("Register Topic(%s) : %d \r\n", name, (int)ret);
+
       if (ret == false)
       {
         err_code = 2;
@@ -114,6 +118,8 @@ class Node
       }
 
       p_pub = new ros2::Publisher<MsgT>(&this->participant_, name);
+
+      printf("Create Publisher : %d \r\n", p_pub!=NULL?1:0);
 
       if(p_pub->is_registered_ == false)
       {
@@ -158,6 +164,8 @@ class Node
       // Register Topic
       ret = this->registerTopic<MsgT>(name, TOPICS_SUBSCRIBE);
 
+      printf("Register Topic(%s) : %d \r\n", name, (int)ret);
+
       if (ret == false)
       {
         err_code = 10 + 2;
@@ -165,6 +173,8 @@ class Node
       }
 
       p_sub = new ros2::Subscriber<MsgT>(&this->participant_, name, callback, callback_arg);
+
+      printf("Create Subscriber : %d \r\n", p_sub!=NULL?1:0);
 
       if(p_sub->is_registered_ == false)
       {
