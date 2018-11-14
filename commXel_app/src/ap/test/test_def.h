@@ -16,7 +16,7 @@
 #define _TEST_ENABLE_SPI        0
 
 #define _TEST_CERTIFICATION     0
-#define _TEST_MODBUS            1
+#define _TEST_MODBUS            0
 
 
 

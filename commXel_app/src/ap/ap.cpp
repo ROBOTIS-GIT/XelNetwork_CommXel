@@ -44,7 +44,7 @@ void apInit(void)
   timerAttachInterrupt(_DEF_TIMER1, swtimerISR);
   timerStart(_DEF_TIMER1);
 
-  cmdifBegin(_DEF_UART1, 57600);
+  //cmdifBegin(_DEF_UART1, 57600);
   //dxlportOpen(_DEF_DXL1, 1000000);
 
   /* Setup DEBUG port */

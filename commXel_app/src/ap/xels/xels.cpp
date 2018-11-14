@@ -11,7 +11,7 @@
 #include "xels.h"
 #include "dxl/dxl.h"
 
-#define _XELS_DEBUG
+//#define _XELS_DEBUG
 
 
 
