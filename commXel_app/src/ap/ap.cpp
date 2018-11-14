@@ -178,7 +178,7 @@ static void threadApMode(void const * argument)
     if (buttonGetReleasedEvent(_HW_DEF_BUTTON_MODE) == true)
     {
       if (buttonGetReleasedTime(_HW_DEF_BUTTON_MODE) < 500
-          && buttonGetPressedTime(_HW_DEF_BUTTON_MODE) > 1000 && buttonGetPressedTime(_HW_DEF_BUTTON_MODE) < 5000)
+          && buttonGetPressedTime(_HW_DEF_BUTTON_MODE) > 1000 && buttonGetPressedTime(_HW_DEF_BUTTON_MODE) < 3000)
       {
         operating_mode = OP_USB_DXL_BYPASS;
         enable_auto_reset = false;
