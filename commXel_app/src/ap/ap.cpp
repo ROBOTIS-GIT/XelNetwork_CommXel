@@ -133,7 +133,7 @@ enum OperatingMode
   OP_TEST
 };
 
-static OperatingMode operating_mode = OP_USB_DXL_BYPASS;//OP_XEL_NETWORK;
+static OperatingMode operating_mode = OP_XEL_NETWORK;
 extern bool enable_auto_reset;
 
 static void threadApMode(void const * argument)
@@ -269,11 +269,19 @@ static void threadUsbDxlBypass(void const * argument)
     switch(operating_mode)
     {
       case OP_USB_DXL_BYPASS:
-        u2dRun();
+        if(osSemaphoreWait(dxl_semaphore, 0) == osOK)
+        {
+          u2dRun();
+          osSemaphoreRelease(dxl_semaphore);
+        }
         break;
 
       case OP_CONTROL_TABLE:
-        dxlSlaveLoop();
+        if(osSemaphoreWait(dxl_semaphore, 0) == osOK)
+        {
+          dxlSlaveLoop();
+          osSemaphoreRelease(dxl_semaphore);
+        }
         break;
 
       case OP_TEST:

@@ -12,8 +12,8 @@
 //    See the License for the specific language governing permissions and
 //    limitations under the License.
 
-#ifndef _MICRORTPS_CLIENT_CONFIG_H_
-#define _MICRORTPS_CLIENT_CONFIG_H_
+#ifndef _UXR_CLIENT_CONFIG_H_
+#define _UXR_CLIENT_CONFIG_H_
 
 #define UXR_CLIENT_VERSION_MAJOR 1
 #define UXR_CLIENT_VERSION_MINOR 0
@@ -71,4 +71,4 @@
 #include "transport/serial_transport_commxel.h"
 
 
-#endif // _MICRORTPS_CLIENT_CONFIG_H_
+#endif // _UXR_CLIENT_CONFIG_H_

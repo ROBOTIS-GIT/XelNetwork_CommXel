@@ -46,8 +46,8 @@ public:
   {
   }
 
-  virtual bool serialize(struct ucdrBuffer* writer, const MsgT* topic) = 0;
-  virtual bool deserialize(struct ucdrBuffer* reader, MsgT* topic) = 0;
+  virtual bool serialize(ucdrBuffer* writer, const MsgT* topic) = 0;
+  virtual bool deserialize(ucdrBuffer* reader, MsgT* topic) = 0;
   virtual uint32_t size_of_topic(const MsgT* topic, uint32_t size)
   {
     (void)(topic); (void)(size);
