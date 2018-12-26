@@ -17,6 +17,8 @@
 
 #define _TEST_CERTIFICATION     0
 #define _TEST_MODBUS            0
+#define _TEST_ETHERNET          0
+#define _TEST_USB               0
 
 
 
