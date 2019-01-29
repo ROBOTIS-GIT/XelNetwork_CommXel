@@ -8,8 +8,8 @@
 #ifndef XEL_NET_MSGS_HPP_
 #define XEL_NET_MSGS_HPP_
 
-#include "ros2.hpp"
-#include "xels/xels_struct.hpp"
+#include <ros2xrcedds/ros2.hpp>
+#include <xels/xels_struct.hpp>
 #include "xel_net_config.h"
 
 

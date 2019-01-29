@@ -127,11 +127,11 @@ class Core
     {
       if(p_xel->header.data_direction == XelNetwork::SEND)
       {
-        node_.deleteWriter(p_xel->dds.entity_id);
+        node_.deletePublisher(p_xel->dds.entity_id);
       }
       else
       {
-        node_.deleteReader(p_xel->dds.entity_id);
+        node_.deleteSubscriber(p_xel->dds.entity_id);
       }
     }
 

@@ -4,14 +4,6 @@
 [submodule "commXel_boot/src/xelsdk"]
 	path = commXel_boot/src/xelsdk
 	url = https://github.com/ROBOTIS-GIT/XelNetwork_FwSDK.git
-[submodule "commXel_app/src/lib/micrortps/client"]
-	path = commXel_app/src/lib/micrortps/client
-	url = https://github.com/ROBOTIS-GIT/micro-RTPS-client.git
-
-
-[submodule "/src/lib/micro_xrce_dds/client"]
-	path = /src/lib/micro_xrce_dds/client
-	url = https://github.com/eProsima/Micro-XRCE-DDS-Client.git
-[submodule "commXel_app/src/lib/micro_xrce_dds/client"]
-	path = commXel_app/src/lib/micro_xrce_dds/client
-	url = https://github.com/eProsima/Micro-XRCE-DDS-Client.git
+[submodule "commXel_app/src/lib/ros2xrcedds"]
+	path = commXel_app/src/lib/ros2xrcedds
+	url = https://github.com/ROBOTIS-GIT/ros2xrcedds.git

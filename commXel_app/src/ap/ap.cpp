@@ -220,7 +220,7 @@ static void threadXelNetwork(void const * argument)
     osThreadYield();
   }
 
-  ros2::init(p_ap->remote_ip, p_ap->remote_port);
+  ros2::init(NULL, p_ap->remote_ip, p_ap->remote_port, false);
   XelNetwork::Core XelNetwork;
 
   for( ;; )
