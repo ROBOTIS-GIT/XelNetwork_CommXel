@@ -18,7 +18,7 @@
 #include "dxl_slave/dxl_slave.h"
 
 #include "ethernet/ap_ethernet.h"
-#include "ros2/ros2.hpp"
+#include "ros2xrcedds/ros2.hpp"
 #include "xels/xels.h"
 #include "xel_net/xel_net.hpp"
 #include "usb_to_dxl/usb_to_dxl.hpp"

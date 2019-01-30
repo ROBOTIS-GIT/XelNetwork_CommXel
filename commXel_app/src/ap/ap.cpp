@@ -2,7 +2,7 @@
  * ap.cpp
  *
  *  Created on: 2017. 2. 13.
- *      Author: baram
+ *      Author: baram, Kei
  */
 
 
@@ -11,6 +11,7 @@
 
 #include "ap.hpp"
 #include "hw.h"
+#include "test/test.h"
 
 //-- Internal Variables
 //
@@ -43,9 +44,11 @@ void apInit(void)
   timerAttachInterrupt(_DEF_TIMER1, swtimerISR);
   timerStart(_DEF_TIMER1);
 
-  cmdifBegin(_DEF_UART1, 57600);
+  //cmdifBegin(_DEF_UART1, 57600);
   //dxlportOpen(_DEF_DXL1, 1000000);
 
+  /* Setup DEBUG port */
+  uartOpen(_DEF_UART3, 57600);
 
   p_ap->model_number = DXL_MODEL_NUMBER;
   p_ap->firmware_version = 1;
@@ -61,8 +64,6 @@ void apInit(void)
 
   dxlSlaveInit();
   dxlCtableInit();
-
-
 
   osSemaphoreDef(semaphore_dxl);
   dxl_semaphore = osSemaphoreCreate(osSemaphore(semaphore_dxl) , 1);
@@ -119,8 +120,8 @@ void apInit(void)
 
 void apMain(void)
 {
-  while(1){
-
+  while(1)
+  {
   }
 }
 
@@ -128,7 +129,8 @@ enum OperatingMode
 {
   OP_USB_DXL_BYPASS = 0,
   OP_XEL_NETWORK,
-  OP_CONTROL_TABLE
+  OP_CONTROL_TABLE,
+  OP_TEST
 };
 
 static OperatingMode operating_mode = OP_XEL_NETWORK;
@@ -163,21 +165,34 @@ static void threadApMode(void const * argument)
           pre_time = millis();
           ledToggle(_DEF_LED1);
         }
+
+      case OP_TEST:
+        if(millis() - pre_time > 1000)
+        {
+          pre_time = millis();
+          ledToggle(_DEF_LED1);
+        }
         break;
     }
 
     if (buttonGetReleasedEvent(_HW_DEF_BUTTON_MODE) == true)
     {
       if (buttonGetReleasedTime(_HW_DEF_BUTTON_MODE) < 500
-          && buttonGetPressedTime(_HW_DEF_BUTTON_MODE) > 1000 && buttonGetPressedTime(_HW_DEF_BUTTON_MODE) < 5000)
+          && buttonGetPressedTime(_HW_DEF_BUTTON_MODE) > 1000 && buttonGetPressedTime(_HW_DEF_BUTTON_MODE) < 3000)
       {
         operating_mode = OP_USB_DXL_BYPASS;
         enable_auto_reset = false;
       }
       else if (buttonGetReleasedTime(_HW_DEF_BUTTON_MODE) < 500
-          && buttonGetPressedTime(_HW_DEF_BUTTON_MODE) > 5000)
+          && buttonGetPressedTime(_HW_DEF_BUTTON_MODE) > 3000 && buttonGetPressedTime(_HW_DEF_BUTTON_MODE) < 5000)
       {
         operating_mode = OP_CONTROL_TABLE;
+        enable_auto_reset = true;
+      }
+      else if (buttonGetReleasedTime(_HW_DEF_BUTTON_MODE) < 500
+          && buttonGetPressedTime(_HW_DEF_BUTTON_MODE) > 5000)
+      {
+        operating_mode = OP_TEST;
         enable_auto_reset = true;
       }
       else
@@ -194,14 +209,18 @@ static void threadXelNetwork(void const * argument)
 {
   for(;;)
   {
-    if(ethernetGetDhcpStatus() == DHCP_ADDRESS_ASSIGNED)
+    if(operating_mode == OP_XEL_NETWORK)
     {
-      strcpy(p_ap->assigned_ip, ethernetGetIpAddrAsString());
-      break;
+      if(ethernetGetDhcpStatus() == DHCP_ADDRESS_ASSIGNED)
+      {
+        strcpy(p_ap->assigned_ip, ethernetGetIpAddrAsString());
+        break;
+      }
     }
+    osThreadYield();
   }
 
-  ros2::init(p_ap->remote_ip, p_ap->remote_port);
+  ros2::init(NULL, p_ap->remote_ip, p_ap->remote_port, false);
   XelNetwork::Core XelNetwork;
 
   for( ;; )
@@ -219,6 +238,7 @@ static void threadXelNetwork(void const * argument)
   }
 }
 
+
 static void threadXelPlugAndPlay(void const * argument)
 {
   XelNetwork::PlugAndPlay PlugAndPlay(300);
@@ -228,6 +248,10 @@ static void threadXelPlugAndPlay(void const * argument)
     if(operating_mode == OP_XEL_NETWORK)
     {
       PlugAndPlay.run();
+    }
+    else if(operating_mode == OP_USB_DXL_BYPASS)
+    {
+      //u2dPrintDebugMessages(1000);
     }
     osThreadYield();
   }
@@ -245,11 +269,23 @@ static void threadUsbDxlBypass(void const * argument)
     switch(operating_mode)
     {
       case OP_USB_DXL_BYPASS:
-        u2dRun();
+        if(osSemaphoreWait(dxl_semaphore, 0) == osOK)
+        {
+          u2dRun();
+          osSemaphoreRelease(dxl_semaphore);
+        }
         break;
 
       case OP_CONTROL_TABLE:
-        dxlSlaveLoop();
+        if(osSemaphoreWait(dxl_semaphore, 0) == osOK)
+        {
+          dxlSlaveLoop();
+          osSemaphoreRelease(dxl_semaphore);
+        }
+        break;
+
+      case OP_TEST:
+        testMain();
         break;
 
       default:

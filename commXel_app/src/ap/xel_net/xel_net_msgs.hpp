@@ -8,8 +8,8 @@
 #ifndef XEL_NET_MSGS_HPP_
 #define XEL_NET_MSGS_HPP_
 
-#include "ros2.hpp"
-#include "xels/xels_struct.hpp"
+#include <ros2xrcedds/ros2.hpp>
+#include <xels/xels_struct.hpp>
 #include "xel_net_config.h"
 
 
@@ -37,6 +37,9 @@ void callbackSubscribeDXL(sensor_msgs::JointState* msg, void* arg);
 
 /* For PowerXel power */
 void callbackPowerXelPower(sensor_msgs::BatteryState* msg, void* arg);
+
+/* For Test */
+void callbackMsgTest(geometry_msgs::Point* msg, void* arg);
 
 #endif /* XEL_NET_MSGS_HPP_ */
 

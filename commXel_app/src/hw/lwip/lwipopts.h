@@ -101,7 +101,7 @@ a lot of data that needs to be copied, this should be set high. */
 #define LWIP_IPV4                1
 
 /* ---------- TCP options ---------- */
-#define LWIP_TCP                                0
+#define LWIP_TCP                                1
 #define TCP_TTL                                 255
 #define LWIP_TCP_CLOSE_TIMEOUT_MS_DEFAULT       5000
 

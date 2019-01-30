@@ -9,7 +9,7 @@
 #define XEL_NET_NODE_HPP_
 
 
-#include "ros2.hpp"
+#include "ros2xrcedds/ros2.hpp"
 #include "xel_net_msgs.hpp"
 
 void subscribeTimeSync(builtin_interfaces::Time* msg, void* arg);

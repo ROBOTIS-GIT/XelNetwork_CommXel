@@ -14,6 +14,7 @@
 void u2dInit(void);
 void u2dRun(void);
 
+void u2dPrintDebugMessages(uint32_t interval_ms);
 
 
 #endif /* USB_TO_DXL_HPP_ */

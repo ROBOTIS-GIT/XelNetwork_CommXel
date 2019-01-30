@@ -71,7 +71,7 @@
 #define _HW_DEF_LED_CH_MAX                    1
 #define _HW_DEF_SW_TIMER_MAX                  8
 #define _HW_DEF_USER_EXTI_MAX                 1
-#define _HW_DEF_UART_CH_MAX                   2
+#define _HW_DEF_UART_CH_MAX                   3
 #define _HW_DEF_TIMER_CH_MAX                  2
 #define _HW_DEF_BUTTON_CH_MAX                 1
 #define _HW_DEF_DXLPORT_CH_MAX                2
